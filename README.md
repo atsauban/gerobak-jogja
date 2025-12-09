@@ -18,6 +18,10 @@ Website untuk bisnis Gerobak Jogja yang melayani pembuatan dan pemesanan berbaga
 - React Router DOM
 - Tailwind CSS
 - Lucide React (icons)
+- Firebase (Firestore, Storage, Authentication)
+- Cloudinary (Image hosting)
+- Netlify Functions (Serverless backend)
+- Marked (Markdown parser untuk blog)
 
 ## Instalasi
 
@@ -28,8 +32,44 @@ npm install
 # Jalankan development server
 npm run dev
 
+# Jalankan dengan Netlify Dev (untuk testing Netlify Functions)
+netlify dev
+
 # Build untuk production
 npm run build
+```
+
+## Development dengan Netlify Dev
+
+Untuk menjalankan project dengan Netlify Functions (diperlukan untuk fitur Cloudinary auto-delete):
+
+```bash
+# Install Netlify CLI (jika belum)
+npm install -g netlify-cli
+
+# Jalankan development server dengan Netlify
+netlify dev
+```
+
+Server akan berjalan di `http://localhost:8888`
+
+**Fitur yang memerlukan Netlify Dev:**
+- Auto-delete gambar dari Cloudinary saat dihapus di admin
+- Netlify Functions untuk backend operations
+
+**Environment Variables:**
+Buat file `.env.development` dengan isi:
+```env
+VITE_WHATSAPP_NUMBER=6282327220077
+VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 ```
 
 ## Konfigurasi Kontak
@@ -45,11 +85,20 @@ Edit file ini untuk mengubah semua kontak info sekaligus.
 
 Akses admin panel di `/admin`
 
-**Login Demo:**
-- Username: `admin`
-- Password: `admin123`
+**Autentikasi:**
+- Menggunakan Firebase Authentication
+- Setup user admin di Firebase Console > Authentication > Users
+- Login dengan email dan password yang sudah dibuat
 
-⚠️ **Penting:** Untuk production, implementasikan autentikasi yang proper dengan backend!
+**Fitur Admin:**
+- ✅ Kelola Produk (CRUD dengan upload gambar ke Cloudinary)
+- ✅ Kelola Galeri (Upload/delete dengan auto-delete dari Cloudinary)
+- ✅ Kelola Blog (Markdown support)
+- ✅ Kelola Testimoni
+- ✅ Kelola FAQ
+- ✅ Set Featured Products (max 3 produk unggulan)
+
+⚠️ **Penting:** Pastikan Firebase Rules sudah dikonfigurasi dengan benar untuk keamanan!
 
 ## Customisasi
 
@@ -93,28 +142,59 @@ Uncomment dan ganti ID di `index.html`:
 
 ## Deployment
 
-### Vercel (Recommended)
+### Netlify (Recommended)
+
+**Mengapa Netlify?**
+- Support Netlify Functions untuk Cloudinary auto-delete
+- Automatic deployments dari GitHub
+- Environment variables management
+- Free SSL certificate
+
+**Deploy Steps:**
+
+1. **Connect ke GitHub:**
+   - Login ke Netlify
+   - New site from Git
+   - Pilih repository `gerobak-jogja`
+
+2. **Build Settings:**
+   - Build command: `npm run build`
+   - Publish directory: `dist`
+
+3. **Environment Variables:**
+   Tambahkan di Netlify Dashboard > Site settings > Environment variables:
+   ```
+   VITE_WHATSAPP_NUMBER=6282327220077
+   VITE_FIREBASE_API_KEY=your_key
+   VITE_FIREBASE_AUTH_DOMAIN=your_domain
+   VITE_FIREBASE_PROJECT_ID=your_project_id
+   VITE_FIREBASE_STORAGE_BUCKET=your_bucket
+   VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+   VITE_FIREBASE_APP_ID=your_app_id
+   CLOUDINARY_CLOUD_NAME=your_cloud_name
+   CLOUDINARY_API_KEY=your_api_key
+   CLOUDINARY_API_SECRET=your_api_secret
+   ```
+
+4. **Deploy:**
+   - Push ke GitHub main branch
+   - Netlify akan auto-deploy
+
+### Vercel
+⚠️ **Note:** Vercel tidak support Netlify Functions, fitur Cloudinary auto-delete tidak akan berfungsi.
+
 ```bash
 npm install -g vercel
 vercel
 ```
 
-### Netlify
-1. Build: `npm run build`
-2. Drag & drop folder `dist` ke Netlify
-3. Atau connect dengan GitHub
+### Manual Deploy
+```bash
+# Build
+npm run build
 
-### GitHub Pages
-1. Install: `npm install -D gh-pages`
-2. Add to `package.json`:
-   ```json
-   "homepage": "https://username.github.io/repo-name",
-   "scripts": {
-     "predeploy": "npm run build",
-     "deploy": "gh-pages -d dist"
-   }
-   ```
-3. Run: `npm run deploy`
+# Upload folder dist ke hosting
+```
 
 ## Dokumentasi Lengkap
 
