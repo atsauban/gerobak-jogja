@@ -1,5 +1,44 @@
-# https://www.robotstxt.org/robotstxt.html
+# robots.txt for Gerobak Jogja
+# https://gerobakjogja.vercel.app/robots.txt
+
 User-agent: *
 Allow: /
 
-Sitemap: https://gerobakjogja.com/sitemap.xml
+# Disallow admin pages
+Disallow: /admin
+Disallow: /admin/*
+
+# Disallow API endpoints if any
+Disallow: /api/
+Disallow: /.netlify/
+
+# Allow all images
+Allow: /images/
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$
+Allow: /*.webp$
+Allow: /*.gif$
+
+# Sitemap location
+Sitemap: https://gerobakjogja.vercel.app/sitemap.xml
+
+# Crawl-delay (optional, adjust if needed)
+# Crawl-delay: 1
+
+# Specific bot rules
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Block bad bots (optional)
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10

@@ -8,6 +8,8 @@
     "dev:vite": "vite",
     "dev:netlify": "netlify dev",
     "build": "vite build",
+    "build:sitemap": "node scripts/generate-sitemap.js && vite build",
+    "generate:sitemap": "node scripts/generate-sitemap.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },
