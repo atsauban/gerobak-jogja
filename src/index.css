@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary-600 to-primary-700 text-white px-6 py-3 rounded-lg font-semibold 
+           hover:from-primary-700 hover:to-primary-800 transform hover:scale-105 transition-all duration-300 
+           shadow-lg hover:shadow-xl;
+  }
+  
+  .btn-whatsapp {
+    @apply bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg font-semibold 
+           hover:from-green-600 hover:to-green-700 transform hover:scale-105 transition-all duration-300 
+           shadow-lg hover:shadow-xl flex items-center gap-2;
+  }
+  
+  .card {
+    @apply bg-white rounded-xl shadow-md hover:shadow-2xl transition-all duration-300 
+           transform hover:-translate-y-2;
+  }
+  
+  .section-title {
+    @apply text-4xl md:text-5xl font-display font-bold text-gray-900 mb-4;
+  }
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent;
+  }
+
+  /* Blog Content Styling */
+  .prose {
+    @apply text-gray-700;
+  }
+  
+  .prose h2 {
+    @apply text-3xl font-bold text-gray-900 mt-12 mb-6;
+  }
+  
+  .prose h3 {
+    @apply text-2xl font-bold text-gray-900 mt-8 mb-4;
+  }
+  
+  .prose p {
+    @apply mb-6 leading-relaxed;
+  }
+  
+  .prose ul, .prose ol {
+    @apply mb-6 ml-6 space-y-2;
+  }
+  
+  .prose ul {
+    @apply list-disc;
+  }
+  
+  .prose ol {
+    @apply list-decimal;
+  }
+  
+  .prose li {
+    @apply leading-relaxed;
+  }
+  
+  .prose strong {
+    @apply font-bold text-gray-900;
+  }
+  
+  .prose table {
+    @apply w-full border-collapse mb-6;
+  }
+  
+  .prose th {
+    @apply bg-gray-100 border border-gray-300 px-4 py-2 text-left font-semibold;
+  }
+  
+  .prose td {
+    @apply border border-gray-300 px-4 py-2;
+  }
+}

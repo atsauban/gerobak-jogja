@@ -1,0 +1,193 @@
+import { Link } from 'react-router-dom';
+import { ShoppingCart, Award, Users, Wrench, ArrowRight, Star, TrendingUp } from 'lucide-react';
+import WhatsAppButton from '../components/WhatsAppButton';
+import Testimonials from '../components/Testimonials';
+import FAQ from '../components/FAQ';
+import { CONTACT_INFO } from '../config/contact';
+import { useProducts } from '../context/ProductContext';
+
+export default function Home() {
+  const { products } = useProducts();
+  const features = [
+    { icon: <Award className="w-12 h-12" />, title: 'Kualitas Terjamin', desc: 'Material pilihan dan pengerjaan profesional', color: 'from-blue-500 to-blue-600' },
+    { icon: <Wrench className="w-12 h-12" />, title: 'Custom Design', desc: 'Desain sesuai kebutuhan bisnis Anda', color: 'from-purple-500 to-purple-600' },
+    { icon: <Users className="w-12 h-12" />, title: 'Berpengalaman', desc: 'Lebih dari 10 tahun melayani pelanggan', color: 'from-green-500 to-green-600' },
+    { icon: <ShoppingCart className="w-12 h-12" />, title: 'Harga Kompetitif', desc: 'Harga terbaik dengan kualitas premium', color: 'from-orange-500 to-orange-600' },
+  ];
+
+  // Get only featured products (max 3)
+  const featuredProducts = products.filter(p => p.featured === true).slice(0, 3);
+
+  const stats = [
+    { value: '500+', label: 'Pelanggan Puas', icon: <Users className="w-8 h-8" /> },
+    { value: '10+', label: 'Tahun Pengalaman', icon: <Award className="w-8 h-8" /> },
+    { value: '1000+', label: 'Gerobak Terjual', icon: <TrendingUp className="w-8 h-8" /> },
+  ];
+
+  return (
+    <div className="pt-16">
+      {/* Hero Section */}
+      <section className="relative bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 text-white py-24 md:py-32 overflow-hidden">
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDE2YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00em0wIDI0YzAtMi4yMSAxLjc5LTQgNC00czQgMS43OSA0IDQtMS43OSA0LTQgNC00LTEuNzktNC00ek0xMiAxNmMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHptMCAyNGMwLTIuMjEgMS43OS00IDQtNHM0IDEuNzkgNCA0LTEuNzkgNC00IDQtNC0xLjc5LTQtNHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="text-center animate-fade-in">
+            <div className="inline-block mb-4 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm font-semibold">
+              ✨ Dipercaya oleh 500+ Pelanggan
+            </div>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-6 animate-slide-up">
+              Gerobak Berkualitas<br />
+              <span className="text-accent-300">untuk Bisnis Anda</span>
+            </h1>
+            <p className="text-xl md:text-2xl mb-10 text-blue-100 max-w-3xl mx-auto animate-slide-up">
+              Spesialis pembuatan gerobak aluminium, kayu, dan stainless steel dengan desain custom dan harga terbaik
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center animate-slide-up">
+              <Link 
+                to="/katalog" 
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-primary-600 font-semibold rounded-xl hover:bg-gray-50 hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              >
+                Lihat Katalog
+                <ArrowRight size={20} />
+              </Link>
+              <WhatsAppButton 
+                message={CONTACT_INFO.messages.consultation}
+                className="btn-whatsapp justify-center"
+              >
+                Konsultasi Gratis
+              </WhatsAppButton>
+            </div>
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {stats.map((stat, index) => (
+              <div key={index} className="text-center bg-white/10 backdrop-blur-sm rounded-2xl p-6 animate-scale-in">
+                <div className="flex justify-center mb-3 text-accent-300">{stat.icon}</div>
+                <div className="text-4xl font-display font-bold mb-2">{stat.value}</div>
+                <div className="text-blue-100">{stat.label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className="py-20 bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="section-title">Mengapa Pilih Kami?</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Kami berkomitmen memberikan produk terbaik dengan layanan yang memuaskan
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
+              <div key={index} className="card p-8 text-center group">
+                <div className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${feature.color} text-white mb-6 
+                              group-hover:scale-110 transition-transform duration-300`}>
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-bold mb-3 text-gray-900">{feature.title}</h3>
+                <p className="text-gray-600">{feature.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Products Preview */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="section-title">Produk Unggulan</h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Pilihan terbaik untuk memulai bisnis gerobak Anda
+            </p>
+          </div>
+          {featuredProducts.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {featuredProducts.map((product, index) => (
+              <div key={product.id} className="card overflow-hidden group">
+                <div className="relative overflow-hidden">
+                  <img 
+                    src={product.images?.[0] || product.image || 'https://via.placeholder.com/400x300?text=No+Image'} 
+                    alt={product.name} 
+                    className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-500" 
+                  />
+                  <div className="absolute top-4 right-4">
+                    <span className="bg-accent-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
+                      {product.badge}
+                    </span>
+                  </div>
+
+                </div>
+                <div className="p-6">
+                  <h3 className="text-2xl font-bold mb-2 text-gray-900">{product.name}</h3>
+                  <p className="text-primary-600 font-bold text-2xl mb-6">
+                    Mulai Rp {parseInt(product.price).toLocaleString('id-ID')}
+                  </p>
+                  <div className="flex gap-2">
+                    <Link 
+                      to={`/produk/${product.id}`}
+                      className="flex-1 btn-primary justify-center"
+                    >
+                      Lihat Detail
+                    </Link>
+                    <WhatsAppButton 
+                      productName={product.name}
+                      className="flex-1 btn-whatsapp justify-center"
+                    >
+                      Pesan
+                    </WhatsAppButton>
+                  </div>
+                </div>
+              </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg mb-4">Belum ada produk unggulan yang dipilih.</p>
+              <p className="text-gray-400">Admin dapat memilih produk unggulan di halaman admin.</p>
+            </div>
+          )}
+          <div className="text-center mt-12">
+            <Link 
+              to="/katalog" 
+              className="inline-flex items-center gap-2 text-primary-600 font-semibold text-lg hover:gap-4 transition-all"
+            >
+              Lihat Semua Produk
+              <ArrowRight size={20} />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <Testimonials />
+
+      {/* FAQ */}
+      <FAQ />
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-primary-600 to-primary-800 text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-4xl md:text-5xl font-display font-bold mb-6">
+            Siap Memulai Bisnis Gerobak Anda?
+          </h2>
+          <p className="text-xl mb-8 text-blue-100">
+            Konsultasikan kebutuhan Anda dengan tim kami sekarang juga!
+          </p>
+          <WhatsAppButton 
+            message={CONTACT_INFO.messages.consultation}
+            className="btn-whatsapp inline-flex text-lg px-8 py-4"
+          >
+            Hubungi Kami Sekarang
+          </WhatsAppButton>
+        </div>
+      </section>
+    </div>
+  );
+}
