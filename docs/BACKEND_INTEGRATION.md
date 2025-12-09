@@ -56,7 +56,7 @@ Panduan lengkap untuk mengintegrasikan backend dengan website Gerobak Jogja.
 
 2. **Enable Services**
    - Firestore Database (untuk data produk)
-   - Authentication (untuk admin login)
+   - Authentication (untuk admin login) 
    - Storage (untuk upload gambar)
    - Hosting (untuk deploy website)
 
