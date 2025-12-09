@@ -2,15 +2,46 @@ import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star, Check, Package, Truck, Shield, Ruler, ChevronLeft, ChevronRight } from 'lucide-react';
 import WhatsAppButton from '../components/WhatsAppButton';
+import Breadcrumbs from '../components/Breadcrumbs';
+import LazyImage from '../components/LazyImage';
 import { useProducts } from '../context/ProductContext';
 
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { getProductById } = useProducts();
+  const { getProductById, loading } = useProducts();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const product = getProductById(id);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="pt-16 min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="animate-pulse">
+            <div className="h-4 bg-gray-200 rounded w-1/3 mb-8"></div>
+            <div className="grid md:grid-cols-2 gap-12">
+              <div>
+                <div className="h-96 bg-gray-200 rounded-2xl mb-4"></div>
+                <div className="grid grid-cols-4 gap-3">
+                  {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="h-20 bg-gray-200 rounded-lg"></div>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="h-10 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-6 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-20 bg-gray-200 rounded"></div>
+                <div className="h-32 bg-gray-200 rounded"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   /* Removed hardcoded products array - now using context
   const allProducts = [
@@ -156,11 +187,20 @@ export default function ProductDetail() {
 
   if (!product) {
     return (
-      <div className="pt-16 min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Produk tidak ditemukan</h2>
-          <Link to="/katalog" className="btn-primary">
-                Kembali ke Katalog
+      <div className="pt-16 min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-white">
+        <div className="text-center px-4">
+          <div className="w-32 h-32 mx-auto mb-6 relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-red-100 to-red-200 rounded-full opacity-50 animate-pulse"></div>
+            <div className="relative flex items-center justify-center h-full">
+              <span className="text-7xl opacity-50">❌</span>
+            </div>
+          </div>
+          <h2 className="text-3xl font-bold mb-4 text-gray-900">Produk Tidak Ditemukan</h2>
+          <p className="text-gray-600 mb-8 max-w-md mx-auto">
+            Produk yang Anda cari tidak tersedia atau telah dihapus.
+          </p>
+          <Link to="/katalog" className="btn-primary inline-flex">
+            Kembali ke Katalog
           </Link>
         </div>
       </div>
@@ -179,20 +219,19 @@ export default function ProductDetail() {
     <div className="pt-16 min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-gray-600 mb-8">
-          <Link to="/" className="hover:text-primary-600">Beranda</Link>
-          <span>/</span>
-          <Link to="/katalog" className="hover:text-primary-600">Katalog</Link>
-          <span>/</span>
-          <span className="text-gray-900 font-medium">{product.name}</span>
-        </div>
+        <Breadcrumbs
+          items={[
+            { label: 'Katalog', href: '/katalog' },
+            { label: product.name }
+          ]}
+        />
 
         {/* Back Button */}
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-gray-600 hover:text-primary-600 mb-8 transition-colors"
+          className="flex items-center gap-2 text-gray-600 hover:text-primary-600 mb-8 transition-colors group"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
           Kembali
         </button>
 
@@ -208,9 +247,9 @@ export default function ProductDetail() {
                 </div>
               )}
               
-              <img
+              <LazyImage
                 src={product.images[currentImageIndex]}
-                alt={product.name}
+                alt={`${product.name} - Gambar ${currentImageIndex + 1}`}
                 className="w-full h-96 object-cover rounded-2xl shadow-xl"
               />
 
@@ -233,25 +272,27 @@ export default function ProductDetail() {
             </div>
 
             {/* Thumbnails */}
-            <div className="grid grid-cols-4 gap-3">
-              {product.images.map((image, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentImageIndex(index)}
-                  className={`rounded-lg overflow-hidden border-2 transition-all ${
-                    currentImageIndex === index
-                      ? 'border-primary-600 scale-105'
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <img
-                    src={image}
-                    alt={`${product.name} ${index + 1}`}
-                    className="w-full h-20 object-cover"
-                  />
-                </button>
-              ))}
-            </div>
+            {product.images.length > 1 && (
+              <div className="grid grid-cols-4 gap-3">
+                {product.images.map((image, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentImageIndex(index)}
+                    className={`rounded-lg overflow-hidden border-2 transition-all ${
+                      currentImageIndex === index
+                        ? 'border-primary-600 scale-105 shadow-md'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <LazyImage
+                      src={image}
+                      alt={`${product.name} thumbnail ${index + 1}`}
+                      className="w-full h-20 object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Product Info */}

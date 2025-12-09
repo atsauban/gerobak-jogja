@@ -4,6 +4,16 @@ Website untuk bisnis Gerobak Jogja yang melayani pembuatan dan pemesanan berbaga
 
 ## Fitur
 
+### 🎨 NEW! Design Improvements (Dec 2025)
+- ⚡ **Loading Skeletons** - Professional animated placeholders
+- 🖼️ **Lazy Image Loading** - Blur-to-clear transitions with error handling
+- 🔍 **Real-time Search** - Instant product filtering
+- ⚡ **Quick View Modal** - Preview products without leaving page
+- 🧭 **Breadcrumbs** - Better navigation
+- 📱 **Mobile Optimized** - Fully responsive design
+- ♿ **Accessible** - Focus states, ARIA labels, keyboard navigation
+
+### Core Features
 - 🏠 **Landing Page** - Halaman utama dengan hero section dan highlight produk
 - 📦 **Katalog Produk** - Menampilkan berbagai jenis gerobak dengan filter kategori
 - 🖼️ **Galeri** - Galeri foto produk dengan lightbox
@@ -196,11 +206,23 @@ npm run build
 # Upload folder dist ke hosting
 ```
 
-## Dokumentasi Lengkap
+## 📚 Dokumentasi Lengkap
 
-- `FEATURES.md` - Daftar fitur lengkap
-- `STYLE_GUIDE.md` - Panduan styling
-- `public/images/README.md` - Panduan images
+**Lihat [DOCS.md](DOCS.md) untuk index lengkap semua dokumentasi!**
+
+### 🎨 Design & Components (NEW!)
+- [docs/QUICK_DESIGN_GUIDE.md](docs/QUICK_DESIGN_GUIDE.md) - Quick reference komponen baru
+- [docs/DESIGN_IMPROVEMENTS.md](docs/DESIGN_IMPROVEMENTS.md) - Detail implementasi
+- [docs/BEFORE_AFTER_COMPARISON.md](docs/BEFORE_AFTER_COMPARISON.md) - Perbandingan visual
+- [docs/COMPONENT_MIGRATION_GUIDE.md](docs/COMPONENT_MIGRATION_GUIDE.md) - Panduan migrasi
+- [docs/IMPLEMENTATION_COMPLETE.md](docs/IMPLEMENTATION_COMPLETE.md) - Summary
+
+### Quick Links
+- [docs/START_HERE.md](docs/START_HERE.md) - Setup Cloudinary (5 menit)
+- [docs/QUICK_START.md](docs/QUICK_START.md) - Quick start guide
+- [docs/STYLE_GUIDE.md](docs/STYLE_GUIDE.md) - Panduan styling
+- [docs/FEATURES.md](docs/FEATURES.md) - Daftar fitur lengkap
+- [docs/INDEX.md](docs/INDEX.md) - Index semua dokumentasi
 
 ## Lisensi
 

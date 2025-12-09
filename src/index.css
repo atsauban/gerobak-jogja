@@ -18,13 +18,13 @@
   .btn-primary {
     @apply bg-gradient-to-r from-primary-600 to-primary-700 text-white px-6 py-3 rounded-lg font-semibold 
            hover:from-primary-700 hover:to-primary-800 transform hover:scale-105 transition-all duration-300 
-           shadow-lg hover:shadow-xl;
+           shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-primary-300;
   }
   
   .btn-whatsapp {
     @apply bg-gradient-to-r from-green-500 to-green-600 text-white px-6 py-3 rounded-lg font-semibold 
            hover:from-green-600 hover:to-green-700 transform hover:scale-105 transition-all duration-300 
-           shadow-lg hover:shadow-xl flex items-center gap-2;
+           shadow-lg hover:shadow-xl flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-green-300;
   }
   
   .card {
@@ -33,11 +33,33 @@
   }
   
   .section-title {
-    @apply text-4xl md:text-5xl font-display font-bold text-gray-900 mb-4;
+    @apply text-3xl sm:text-4xl md:text-5xl font-display font-bold text-gray-900 mb-4;
   }
   
   .gradient-text {
     @apply bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent;
+  }
+
+  /* Line clamp utilities */
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   /* Blog Content Styling */
