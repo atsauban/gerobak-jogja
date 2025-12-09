@@ -19,6 +19,8 @@ import {
   updateFAQ,
   deleteFAQ
 } from '../services/firebaseService';
+import { sanitizeText, sanitizePrice, sanitizeUrl } from '../utils/sanitize';
+import { logProductAction } from '../utils/auditLog';
 
 export default function Admin() {
   const { products, addProduct, updateProduct, deleteProduct } = useProducts();
@@ -89,21 +91,30 @@ export default function Admin() {
       return;
     }
 
+    // Sanitize all inputs
     const productData = {
-      name: formData.name,
-      category: formData.category,
-      price: formData.price.replace(/\D/g, ''), // Remove non-numeric
-      shortDesc: formData.shortDesc,
-      description: formData.description || formData.shortDesc,
-      badge: formData.badge || '',
-      images: Array.isArray(formData.images) ? formData.images : [formData.images],
+      name: sanitizeText(formData.name, 100),
+      category: formData.category, // Already validated by select
+      price: sanitizePrice(formData.price),
+      shortDesc: sanitizeText(formData.shortDesc, 200),
+      description: sanitizeText(formData.description || formData.shortDesc, 2000),
+      badge: sanitizeText(formData.badge, 50),
+      images: Array.isArray(formData.images) 
+        ? formData.images.map(url => sanitizeUrl(url)).filter(url => url) 
+        : [sanitizeUrl(formData.images)].filter(url => url),
       rating: 0,
       reviews: 0,
       featured: formData.featured || false,
       specifications: formData.specifications || {},
-      features: formData.features || [],
-      includes: formData.includes || []
+      features: (formData.features || []).map(f => sanitizeText(f, 200)),
+      includes: (formData.includes || []).map(i => sanitizeText(i, 200))
     };
+
+    // Validate sanitized data
+    if (!productData.name || !productData.shortDesc || productData.images.length === 0) {
+      alert('Data tidak valid setelah sanitasi. Periksa input Anda.');
+      return;
+    }
 
     try {
       if (editingId) {
@@ -112,18 +123,48 @@ export default function Admin() {
         if (product && typeof product.id === 'string' && product.id.length > 10) {
           // Firebase ID (long string) - can update
           await updateProduct(editingId, productData);
+          
+          // Log update action
+          await logProductAction(user, 'update', { 
+            id: editingId, 
+            ...productData 
+          });
         } else {
           // LocalStorage ID (number) - create new instead
           alert('Produk ini dari localStorage. Akan dibuat sebagai produk baru di Firebase.');
-          await addProduct(productData);
+          const newId = await addProduct(productData);
+          
+          // Log create action
+          await logProductAction(user, 'create', { 
+            id: newId, 
+            ...productData 
+          });
         }
         setEditingId(null);
       } else {
-        await addProduct(productData);
+        const newId = await addProduct(productData);
+        
+        // Log create action
+        await logProductAction(user, 'create', { 
+          id: newId, 
+          ...productData 
+        });
       }
       
-      setFormData({ name: '', category: '', price: '', shortDesc: '', badge: '', images: [] });
+      setFormData({ 
+        name: '', 
+        category: '', 
+        price: '', 
+        shortDesc: '', 
+        description: '',
+        badge: '', 
+        images: [],
+        specifications: {},
+        features: [],
+        includes: []
+      });
       setShowForm(false);
+      alert('Produk berhasil disimpan!');
     } catch (error) {
       console.error('Full error:', error);
       alert('Gagal menyimpan produk: ' + error.message);
@@ -147,9 +188,26 @@ export default function Admin() {
     setShowForm(true);
   };
 
-  const handleDelete = (id) => {
-    if (confirm('Yakin ingin menghapus produk ini?')) {
-      deleteProduct(id);
+  const handleDelete = async (id) => {
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+    
+    if (confirm(`Yakin ingin menghapus produk "${product.name}"?`)) {
+      try {
+        await deleteProduct(id);
+        
+        // Log delete action
+        await logProductAction(user, 'delete', { 
+          id: id, 
+          name: product.name,
+          category: product.category
+        });
+        
+        alert('Produk berhasil dihapus!');
+      } catch (error) {
+        console.error('Delete error:', error);
+        alert('Gagal menghapus produk: ' + error.message);
+      }
     }
   };
 
