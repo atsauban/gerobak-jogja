@@ -15,8 +15,9 @@
 - **[BEFORE_AFTER_COMPARISON.md](BEFORE_AFTER_COMPARISON.md)** - Visual comparison
 - **[COMPONENT_MIGRATION_GUIDE.md](COMPONENT_MIGRATION_GUIDE.md)** - Migration guide
 - **[COUNTUP_ANIMATION.md](COUNTUP_ANIMATION.md)** - Count-up animation guide
+- **[ADVANCED_UI_FEATURES.md](ADVANCED_UI_FEATURES.md)** - Advanced UI features (NEW!)
 
-**New Components**: LazyImage, SearchBar, EmptyState, QuickViewModal, Breadcrumbs, LoadingSkeleton, CountUpNumber
+**New Components**: LazyImage, SearchBar, EmptyState, QuickViewModal, Breadcrumbs, LoadingSkeleton, CountUpNumber, FloatingActionButton, ProgressBar, ScrollReveal, AnimatedBackground
 
 ---
 

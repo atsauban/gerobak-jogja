@@ -81,32 +81,32 @@ export default function Galeri() {
           ))}
         </div>
 
-        {/* Images Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Images Grid - Masonry Layout */}
+        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
           {filteredImages.map((image, index) => (
             <div 
               key={image.id}
               onClick={() => setSelectedImage(image)}
-              className="relative overflow-hidden rounded-2xl shadow-lg cursor-pointer group animate-scale-in"
+              className="relative overflow-hidden rounded-2xl shadow-lg cursor-pointer group break-inside-avoid animate-scale-in hover:shadow-2xl transition-all duration-300"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <img 
                 src={image.url} 
                 alt={image.title}
-                className="w-full h-72 object-cover transition-transform duration-500 group-hover:scale-110"
+                className="w-full object-cover transition-transform duration-500 group-hover:scale-110"
                 onError={(e) => {
                   console.error('Image failed to load:', image.url);
                   e.target.src = 'https://via.placeholder.com/500x400?text=Image+Error';
                 }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-end p-6">
-                <ZoomIn className="text-white mb-3 transform scale-0 group-hover:scale-100 transition-transform duration-300" size={32} />
+                <ZoomIn className="text-white mb-3 transform scale-0 group-hover:scale-100 transition-transform duration-300 animate-float" size={32} />
                 <p className="text-white font-bold text-lg text-center transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
                   {image.title}
                 </p>
               </div>
-              {/* Badge */}
-              <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold text-gray-700">
+              {/* Badge with Glassmorphism */}
+              <div className="absolute top-4 left-4 glass px-3 py-1 rounded-full text-sm font-semibold text-white backdrop-blur-md">
                 {categories.find(c => c.id === image.category)?.name}
               </div>
             </div>

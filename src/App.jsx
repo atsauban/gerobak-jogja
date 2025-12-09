@@ -3,8 +3,8 @@ import { ProductProvider } from './context/ProductContext';
 import { AuthProvider } from './context/AuthContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import WhatsAppFloat from './components/WhatsAppFloat';
-import ScrollToTop from './components/ScrollToTop';
+import FloatingActionButton from './components/FloatingActionButton';
+import ProgressBar from './components/ProgressBar';
 import ScrollToTopOnMount from './components/ScrollToTopOnMount';
 import Home from './pages/Home';
 import Katalog from './pages/Katalog';
@@ -56,6 +56,7 @@ function App() {
     <AuthProvider>
       <ProductProvider>
         <Router>
+        <ProgressBar />
         <ScrollToTopOnMount />
         <div className="flex flex-col min-h-screen">
           <Navbar />
@@ -73,8 +74,7 @@ function App() {
             </Routes>
           </main>
           <Footer />
-          <WhatsAppFloat />
-          <ScrollToTop />
+          <FloatingActionButton />
         </div>
       </Router>
     </ProductProvider>

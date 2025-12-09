@@ -113,7 +113,7 @@ export default function Katalog() {
             {filteredProducts.map((product, index) => (
               <div 
                 key={product.id} 
-                className="card overflow-hidden group animate-scale-in"
+                className="card-3d overflow-hidden group animate-scale-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
                 <div className="relative overflow-hidden">
