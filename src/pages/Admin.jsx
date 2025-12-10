@@ -27,6 +27,7 @@ export default function Admin() {
   const { products, addProduct, updateProduct, deleteProduct } = useProducts();
   const { user, loading: authLoading, login, logout } = useAuth();
   const toast = useToast();
+  const [activeTab, setActiveTab] = useState('products');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -441,51 +442,120 @@ export default function Admin() {
   }
 
   return (
-    <div className="pt-16 min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex justify-between items-center mb-8">
-          <div>
-            <h1 className="text-4xl font-bold">Admin Panel</h1>
-            <p className="text-gray-600 mt-2">Kelola produk gerobak Anda</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-sm text-gray-600">Logged in as:</p>
-              <p className="font-semibold text-gray-900">{user.email}</p>
+    <div className="pt-16 min-h-screen gradient-subtle">
+      {/* Header Section */}
+      <div className="gradient-primary text-white relative z-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+              <div className="inline-block mb-2 px-3 py-1 bg-white/10 backdrop-blur-sm rounded-full text-sm font-semibold">
+                🛠️ Admin Dashboard
+              </div>
+              <h1 className="text-3xl md:text-4xl font-display font-bold mb-2">
+                Panel Administrasi
+              </h1>
+              <p className="text-blue-100">
+                Kelola produk, blog, testimoni, dan galeri gerobak Anda
+              </p>
             </div>
-            <button
-              onClick={handleLogout}
-              className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 flex items-center gap-2"
-            >
-              <LogOut size={18} />
-              Logout
-            </button>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full md:w-auto">
+              <div className="glass rounded-xl p-3 sm:p-4 text-left sm:text-right w-full sm:w-auto">
+                <p className="text-xs sm:text-sm text-blue-100">Logged in as:</p>
+                <p className="font-semibold text-white text-sm sm:text-base truncate">{user.email}</p>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="bg-white/10 backdrop-blur-sm text-white px-4 py-3 rounded-xl hover:bg-white/20 transition-all duration-300 flex items-center justify-center gap-2 border border-white/20 w-full sm:w-auto"
+              >
+                <LogOut size={18} />
+                <span className="sm:hidden md:inline">Logout</span>
+              </button>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="text-3xl font-bold text-blue-600 mb-2">{products.length}</div>
-            <div className="text-gray-600">Total Produk</div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-20">
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 -mt-16 relative z-40">
+          <div className="card p-4 sm:p-6 text-center group hover:scale-105 transition-all duration-300">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3 sm:mb-4 text-white">
+              <Star size={20} className="sm:w-6 sm:h-6" />
+            </div>
+            <div className="text-2xl sm:text-3xl font-display font-bold text-gray-900 mb-1 sm:mb-2">{products.length}</div>
+            <div className="text-gray-600 font-medium text-sm sm:text-base">Total Produk</div>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="text-3xl font-bold text-green-600 mb-2">
+          
+          <div className="card p-4 sm:p-6 text-center group hover:scale-105 transition-all duration-300">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-3 sm:mb-4 text-white">
+              <Plus size={20} className="sm:w-6 sm:h-6" />
+            </div>
+            <div className="text-2xl sm:text-3xl font-display font-bold text-gray-900 mb-1 sm:mb-2">
               {products.filter(p => p.category === 'aluminium').length}
             </div>
-            <div className="text-gray-600">Gerobak Aluminium</div>
+            <div className="text-gray-600 font-medium text-sm sm:text-base">Gerobak Aluminium</div>
           </div>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="text-3xl font-bold text-purple-600 mb-2">
+          
+          <div className="card p-4 sm:p-6 text-center group hover:scale-105 transition-all duration-300">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mx-auto mb-3 sm:mb-4 text-white">
+              <Edit size={20} className="sm:w-6 sm:h-6" />
+            </div>
+            <div className="text-2xl sm:text-3xl font-display font-bold text-gray-900 mb-1 sm:mb-2">
               {products.filter(p => p.category === 'kayu').length}
             </div>
-            <div className="text-gray-600">Gerobak Kayu</div>
+            <div className="text-gray-600 font-medium text-sm sm:text-base">Gerobak Kayu</div>
+          </div>
+          
+          <div className="card p-4 sm:p-6 text-center group hover:scale-105 transition-all duration-300">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-accent-500 to-accent-600 rounded-xl flex items-center justify-center mx-auto mb-3 sm:mb-4 text-white">
+              <Star size={20} className="sm:w-6 sm:h-6" fill="currentColor" />
+            </div>
+            <div className="text-2xl sm:text-3xl font-display font-bold text-gray-900 mb-1 sm:mb-2">
+              {products.filter(p => p.featured).length}
+            </div>
+            <div className="text-gray-600 font-medium text-sm sm:text-base">Produk Unggulan</div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">Kelola Produk</h2>
+        {/* Navigation Tabs */}
+        <div className="mb-6 sm:mb-8">
+          <div className="card p-2">
+            <div className="flex flex-wrap gap-1 sm:gap-2">
+              {[
+                { id: 'products', label: 'Produk', icon: <Star size={16} className="sm:w-[18px] sm:h-[18px]" /> },
+                { id: 'gallery', label: 'Galeri', icon: <Eye size={16} className="sm:w-[18px] sm:h-[18px]" /> },
+                { id: 'testimonials', label: 'Testimoni', icon: <Plus size={16} className="sm:w-[18px] sm:h-[18px]" /> },
+                { id: 'blog', label: 'Blog', icon: <Edit size={16} className="sm:w-[18px] sm:h-[18px]" /> },
+                { id: 'faq', label: 'FAQ', icon: <Trash2 size={16} className="sm:w-[18px] sm:h-[18px]" /> }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-1 sm:gap-2 px-3 sm:px-4 py-2 sm:py-3 rounded-lg sm:rounded-xl font-medium transition-all duration-300 text-sm sm:text-base flex-1 sm:flex-none justify-center sm:justify-start ${
+                    activeTab === tab.id
+                      ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg'
+                      : 'text-gray-600 hover:text-primary-600 hover:bg-primary-50'
+                  }`}
+                >
+                  {tab.icon}
+                  <span className="hidden sm:inline">{tab.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="card p-4 sm:p-6 lg:p-8">
+          {/* Products Tab */}
+          {activeTab === 'products' && (
+            <>
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <div>
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Kelola Produk</h2>
+                  <p className="text-gray-600 mt-1 text-sm sm:text-base">Tambah, edit, dan kelola produk gerobak</p>
+                </div>
             <button
               onClick={() => {
                 setShowForm(!showForm);
@@ -508,15 +578,16 @@ export default function Admin() {
                 setFeatureInput('');
                 setIncludeInput('');
               }}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2"
+              className="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl text-sm sm:text-base w-full sm:w-auto justify-center"
             >
-              {showForm ? <X size={20} /> : <Plus size={20} />}
-              {showForm ? 'Tutup' : 'Tambah Produk'}
+              {showForm ? <X size={18} className="sm:w-5 sm:h-5" /> : <Plus size={18} className="sm:w-5 sm:h-5" />}
+              <span className="hidden xs:inline">{showForm ? 'Tutup' : 'Tambah Produk'}</span>
+              <span className="xs:hidden">{showForm ? 'Tutup' : 'Tambah'}</span>
             </button>
           </div>
 
           {showForm && (
-            <form onSubmit={handleSubmit} className="mb-6 p-6 bg-gray-50 rounded-lg">
+            <form onSubmit={handleSubmit} className="mb-6 p-4 sm:p-6 bg-gray-50 rounded-lg">
               <div className="space-y-4 mb-4">
                 {/* Row 1: Nama & Slug */}
                 <div className="grid md:grid-cols-2 gap-4">
@@ -855,40 +926,78 @@ export default function Admin() {
               <p>Belum ada produk. Klik "Tambah Produk" untuk menambahkan produk baru.</p>
             </div>
           )}
+            </>
+          )}
+
+          {/* Gallery Tab */}
+          {activeTab === 'gallery' && (
+            <>
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Kelola Galeri</h2>
+                <p className="text-gray-600 mt-1">Upload dan kelola foto galeri gerobak</p>
+              </div>
+              <GalleryManager />
+            </>
+          )}
+
+          {/* Testimonials Tab */}
+          {activeTab === 'testimonials' && (
+            <>
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Kelola Testimoni</h2>
+                <p className="text-gray-600 mt-1">Tambah dan kelola testimoni pelanggan</p>
+              </div>
+              <TestimonialManager />
+            </>
+          )}
+
+          {/* Blog Tab */}
+          {activeTab === 'blog' && (
+            <>
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Kelola Blog</h2>
+                <p className="text-gray-600 mt-1">Tulis dan kelola artikel blog</p>
+              </div>
+              <BlogManager />
+            </>
+          )}
+
+          {/* FAQ Tab */}
+          {activeTab === 'faq' && (
+            <>
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">Kelola FAQ</h2>
+                <p className="text-gray-600 mt-1">Tambah dan kelola pertanyaan yang sering diajukan</p>
+              </div>
+              <FAQManager />
+            </>
+          )}
         </div>
 
-        {/* Testimonials Management */}
-        <div className="mt-8 bg-white rounded-lg shadow-md p-6">
-          <TestimonialManager />
-        </div>
-
-        {/* Blog Management */}
-        <div className="mt-8 bg-white rounded-lg shadow-md p-6">
-          <BlogManager />
-        </div>
-
-        {/* FAQ Management */}
-        <div className="mt-8 bg-white rounded-lg shadow-md p-6">
-          <FAQManager />
-        </div>
-
-        {/* Gallery Management */}
-        <div className="mt-8 bg-white rounded-lg shadow-md p-6">
-          <GalleryManager />
-        </div>
-
-        {/* Info */}
-        <div className="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
-          <h3 className="font-bold text-blue-900 mb-2">ℹ️ Informasi</h3>
-          <ul className="text-sm text-blue-800 space-y-1">
-            <li>• Semua data disimpan di Firebase Cloud (produk, testimoni, blog, FAQ, galeri)</li>
-            <li>• Perubahan akan langsung terlihat di website</li>
-            <li>• Upload maksimal 5 gambar per produk, 1 gambar per galeri (max 5MB per file)</li>
-            <li>• Gambar pertama produk akan menjadi foto utama</li>
-            <li>• Format gambar: JPG, PNG, atau WebP</li>
-            <li>• Testimoni dan galeri akan muncul di halaman utama</li>
-            <li>• Blog posts bisa di-featured untuk tampil di home</li>
-          </ul>
+        {/* Info Footer */}
+        <div className="mt-6 sm:mt-8 glass rounded-2xl p-4 sm:p-6 border border-primary-200/30">
+          <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center flex-shrink-0 text-white text-lg sm:text-xl">
+              ℹ️
+            </div>
+            <div className="flex-1">
+              <h3 className="font-bold text-gray-900 mb-3 text-lg sm:text-xl">Informasi Sistem</h3>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 text-sm sm:text-base text-gray-600">
+                <div className="space-y-2">
+                  <p>• Data tersimpan di Firebase Cloud</p>
+                  <p>• Perubahan langsung terlihat di website</p>
+                  <p>• Maksimal 5 gambar per produk</p>
+                  <p>• Format: JPG, PNG, WebP (max 5MB)</p>
+                </div>
+                <div className="space-y-2">
+                  <p>• Gambar pertama = foto utama produk</p>
+                  <p>• Testimoni muncul di halaman utama</p>
+                  <p>• Blog bisa di-featured untuk home</p>
+                  <p>• FAQ membantu customer support</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

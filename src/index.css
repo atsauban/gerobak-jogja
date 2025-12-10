@@ -253,6 +253,16 @@
   .subtle-hover {
     @apply transition-all duration-300 hover:scale-[1.02] hover:shadow-xl;
   }
+
+  /* Extra small breakpoint utilities */
+  @media (min-width: 475px) {
+    .xs\:inline {
+      display: inline;
+    }
+    .xs\:hidden {
+      display: none;
+    }
+  }
   /* Hero Background Options */
   .hero-gradient {
     @apply bg-gradient-to-br from-primary-600 via-primary-700 to-primary-800;
