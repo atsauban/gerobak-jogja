@@ -40,7 +40,8 @@ export default function Blog() {
     return matchCategory && matchSearch;
   });
 
-  const featuredArticle = articles[0];
+  // Get featured article (first one with featured: true)
+  const featuredArticle = articles.find(article => article.featured === true);
 
   return (
     <div className="pt-16 min-h-screen bg-gradient-to-b from-gray-50 to-white">

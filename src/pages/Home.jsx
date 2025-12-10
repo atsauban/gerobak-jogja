@@ -151,7 +151,7 @@ export default function Home() {
               {featuredProducts.map((product, index) => (
               <ScrollReveal key={product.id} animation="zoom-in" delay={index * 150}>
               <div 
-                className="card-3d overflow-hidden group"
+                className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden group"
               >
                 <div className="relative overflow-hidden">
                   <LazyImage
