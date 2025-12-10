@@ -69,6 +69,12 @@
     },
     "api/test-cloudinary.js": {
       "maxDuration": 5
+    },
+    "api/test.js": {
+      "maxDuration": 5
+    },
+    "api/[...slug].js": {
+      "maxDuration": 5
     }
   },
   "rewrites": [
