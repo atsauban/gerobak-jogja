@@ -74,6 +74,7 @@ function App() {
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogDetail />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/404-redirect" element={<NotFound />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
