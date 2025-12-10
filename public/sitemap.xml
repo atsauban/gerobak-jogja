@@ -74,5 +74,78 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- Product: qwd -->
+  <url>
+    <loc>https://gerobakjogja.vercel.app/produk/qwd</loc>
+    <lastmod>2025-12-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765373753/gerobak-jogja/products/gxwwmfy1qyafa4xyxp2x.webp</image:loc>
+      <image:title>qwd</image:title>
+    </image:image>
+  </url>
+  <!-- Product: td -->
+  <url>
+    <loc>https://gerobakjogja.vercel.app/produk/td</loc>
+    <lastmod>2025-12-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765373044/gerobak-jogja/products/qpls9t0irtcvq1vs3tyy.png</image:loc>
+      <image:title>td</image:title>
+    </image:image>
+  </url>
+  <!-- Product: adad -->
+  <url>
+    <loc>https://gerobakjogja.vercel.app/produk/adad</loc>
+    <lastmod>2025-12-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765373118/gerobak-jogja/products/oyukvr2okrllt6uo10o6.webp</image:loc>
+      <image:title>adad</image:title>
+    </image:image>
+  </url>
+  <!-- Blog: Inspirasi Desain Gerobak untuk Berbagai Jenis Usaha -->
+  <url>
+    <loc>https://gerobakjogja.vercel.app/blog/inspirasi-desain-gerobak</loc>
+    <lastmod>2025-12-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1565123409695-7b5ef63a2efb?w=800&amp;q=80</image:loc>
+      <image:title>Inspirasi Desain Gerobak untuk Berbagai Jenis Usaha</image:title>
+    </image:image>
+  </url>
+  <!-- Blog: testd -->
+  <url>
+    <loc>https://gerobakjogja.vercel.app/blog/testd</loc>
+    <lastmod>2025-12-10</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <!-- Blog: Tips Memilih Gerobak yang Tepat untuk Bisnis Anda -->
+  <url>
+    <loc>https://gerobakjogja.vercel.app/blog/tips-memilih-gerobak-yang-tepat</loc>
+    <lastmod>2025-12-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=800&amp;q=80</image:loc>
+      <image:title>Tips Memilih Gerobak yang Tepat untuk Bisnis Anda</image:title>
+    </image:image>
+  </url>
+  <!-- Blog: Perawatan Gerobak Agar Awet dan Tahan Lama -->
+  <url>
+    <loc>https://gerobakjogja.vercel.app/blog/perawatan-gerobak-agar-awet</loc>
+    <lastmod>2025-12-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&amp;q=80</image:loc>
+      <image:title>Perawatan Gerobak Agar Awet dan Tahan Lama</image:title>
+    </image:image>
+  </url>
   
 </urlset>

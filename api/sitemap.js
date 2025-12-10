@@ -1,6 +1,7 @@
 /**
- * Vercel Function: Regenerate Sitemap
- * Compatible with Vercel deployment
+ * Vercel API: Dynamic Sitemap Generator
+ * Generates sitemap.xml on-demand for Vercel deployment
+ * Usage: https://yourdomain.com/api/sitemap
  */
 
 import { initializeApp } from 'firebase/app';
@@ -125,11 +126,13 @@ async function generateSitemapXML() {
 
   try {
     // Get products from Firebase
+    console.log('📦 Fetching products from Firebase...');
     const productsSnapshot = await getDocs(collection(db, 'products'));
     const products = [];
     productsSnapshot.forEach((doc) => {
       products.push({ id: doc.id, ...doc.data() });
     });
+    console.log(`📦 Found ${products.length} products`);
 
     // Add product pages
     products.forEach((product) => {
@@ -158,11 +161,13 @@ async function generateSitemapXML() {
     });
 
     // Get blog posts from Firebase
+    console.log('📝 Fetching blog posts from Firebase...');
     const blogSnapshot = await getDocs(collection(db, 'blogPosts'));
     const blogPosts = [];
     blogSnapshot.forEach((doc) => {
       blogPosts.push({ id: doc.id, ...doc.data() });
     });
+    console.log(`📝 Found ${blogPosts.length} blog posts`);
 
     // Add blog post pages
     blogPosts.forEach((post) => {
@@ -189,8 +194,6 @@ async function generateSitemapXML() {
   </url>`;
     });
 
-    console.log(`✅ Generated sitemap with ${products.length} products and ${blogPosts.length} blog posts`);
-
   } catch (error) {
     console.error('❌ Error fetching data from Firebase:', error);
   }
@@ -202,96 +205,29 @@ async function generateSitemapXML() {
   return xml;
 }
 
-// Submit sitemap to search engines (server-side)
-async function submitToSearchEngines() {
-  const sitemapUrl = `${SITE_URL}/sitemap.xml`;
-  
-  try {
-    // Ping Google
-    const googlePingUrl = `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`;
-    const googleResponse = await fetch(googlePingUrl, { method: 'GET' });
-    console.log('✅ Sitemap submitted to Google:', googleResponse.status);
-
-    // Ping Bing
-    const bingPingUrl = `https://www.bing.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`;
-    const bingResponse = await fetch(bingPingUrl, { method: 'GET' });
-    console.log('✅ Sitemap submitted to Bing:', bingResponse.status);
-
-    return { google: googleResponse.status, bing: bingResponse.status };
-
-  } catch (error) {
-    console.error('❌ Error submitting sitemap:', error);
-    return { error: error.message };
-  }
-}
-
-// Vercel Function Handler
+// Vercel API Handler
 export default async function handler(req, res) {
-  // Add CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  // Handle preflight requests
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-
-  // Only allow POST requests
-  if (req.method !== 'POST') {
-    return res.status(405).json({ 
-      error: 'Method not allowed. Use POST.',
-      allowedMethods: ['POST']
-    });
-  }
-
   try {
-    console.log('🚀 Vercel Function: Regenerating sitemap...');
+    console.log('🚀 Generating dynamic sitemap...');
     
-    // Generate new sitemap
+    // Generate sitemap XML
     const sitemapXML = await generateSitemapXML();
     
-    // Note: In Vercel, we cannot write to filesystem (read-only)
-    // The sitemap XML is generated but not saved to public/sitemap.xml
-    // For production, consider using:
-    // 1. Vercel Blob Storage
-    // 2. External storage (S3, Cloudinary)
-    // 3. Database storage with API endpoint
-    console.log('📝 Sitemap XML generated (not saved to file in Vercel)');
+    // Set appropriate headers for XML
+    res.setHeader('Content-Type', 'application/xml');
+    res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
     
-    // Submit to search engines
-    const submissionResult = await submitToSearchEngines();
+    console.log('✅ Dynamic sitemap generated successfully');
     
-    console.log('✅ Vercel Function: Sitemap regenerated and submitted');
-    
-    // Count products and blogs for response
-    const productsSnapshot = await getDocs(collection(db, 'products'));
-    const blogSnapshot = await getDocs(collection(db, 'blogPosts'));
-    
-    return res.status(200).json({
-      success: true,
-      message: 'Sitemap regenerated successfully via Vercel Function',
-      timestamp: new Date().toISOString(),
-      sitemapUrl: `${SITE_URL}/sitemap.xml`,
-      searchEngineSubmission: submissionResult,
-      platform: 'vercel',
-      note: 'Vercel functions cannot write to filesystem. Sitemap XML generated but not saved to file.',
-      recommendation: 'For file updates, use Netlify deployment or implement Vercel Blob Storage.',
-      stats: {
-        products: productsSnapshot.size,
-        blogPosts: blogSnapshot.size,
-        totalUrls: 10 + productsSnapshot.size + blogSnapshot.size
-      }
-    });
+    // Return XML directly
+    return res.status(200).send(sitemapXML);
     
   } catch (error) {
-    console.error('❌ Vercel Function error:', error);
+    console.error('❌ Error generating sitemap:', error);
     
     return res.status(500).json({
-      success: false,
-      error: error.message,
-      platform: 'vercel',
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      error: 'Failed to generate sitemap',
+      message: error.message
     });
   }
 }

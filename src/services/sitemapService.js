@@ -223,10 +223,31 @@ export const regenerateSitemap = async () => {
     const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     
     if (isDevelopment) {
-      // In development, just log the change and skip actual submission
-      console.log('🔧 Development mode: Logging sitemap change');
+      // In development, regenerate sitemap but skip search engine submission
+      console.log('🔧 Development mode: Regenerating sitemap locally');
+      
+      try {
+        // Call the Netlify function to regenerate sitemap
+        const response = await fetch('/.netlify/functions/regenerate-sitemap', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          const result = await response.json();
+          console.log('✅ Development: Sitemap regenerated successfully', result);
+        } else {
+          console.warn('⚠️ Development: Sitemap regeneration failed, falling back to logging only');
+        }
+      } catch (error) {
+        console.warn('⚠️ Development: Could not regenerate sitemap, logging change only:', error.message);
+      }
+      
+      // Always try to submit to search engines (will fail due to CORS but logs the attempt)
       await submitSitemapToSearchEngines();
-      console.log('✅ Development: Sitemap change logged successfully');
+      console.log('✅ Development: Sitemap change processed');
       return true;
     }
     

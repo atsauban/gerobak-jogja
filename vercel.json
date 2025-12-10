@@ -61,8 +61,14 @@
     "api/regenerate-sitemap.js": {
       "maxDuration": 30
     },
+    "api/sitemap.js": {
+      "maxDuration": 20
+    },
     "api/cloudinary-delete.js": {
       "maxDuration": 10
+    },
+    "api/test-cloudinary.js": {
+      "maxDuration": 5
     }
   },
   "rewrites": [

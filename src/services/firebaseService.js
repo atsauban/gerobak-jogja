@@ -310,16 +310,27 @@ export const getBlogPost = async (id) => {
 // Create blog post
 export const createBlogPost = async (postData) => {
   try {
+    console.log('🔥 Firebase createBlogPost called with:', postData);
     const postsRef = collection(db, 'blogPosts');
+    console.log('📚 Collection reference created for blogPosts');
+    
     const docRef = await addDoc(postsRef, {
       ...postData,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     });
     
-    return { id: docRef.id, ...postData };
+    console.log('✅ Blog post added to Firebase with ID:', docRef.id);
+    const result = { id: docRef.id, ...postData };
+    console.log('📝 Returning blog post:', result);
+    return result;
   } catch (error) {
-    console.error('Error creating blog post:', error);
+    console.error('❌ Error creating blog post:', error);
+    console.error('❌ Error details:', {
+      code: error.code,
+      message: error.message,
+      stack: error.stack
+    });
     throw error;
   }
 };

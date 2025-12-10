@@ -180,20 +180,25 @@ export default function Admin() {
         }
         setEditingId(null);
       } else {
-        const newId = await addProduct(productData);
+        console.log('🆕 Creating new product with data:', productData);
+        console.log('🔗 Product slug being saved:', productData.slug);
+        
+        const newProduct = await addProduct(productData);
+        console.log('✅ Product created:', newProduct);
+        console.log('🔗 Created product slug:', newProduct.slug);
         
         // Log create action
         await logProductAction(user, 'create', { 
-          id: newId, 
-          ...productData 
+          id: newProduct.id, 
+          ...newProduct 
         });
         
         // Log sitemap change for new product
         logSitemapChange('added', 'product', {
-          id: newId,
-          name: productData.name,
-          slug: productData.slug,
-          images: productData.images
+          id: newProduct.id,
+          name: newProduct.name,
+          slug: newProduct.slug,
+          images: newProduct.images
         });
       }
       
@@ -1060,21 +1065,32 @@ export default function Admin() {
             {/* Debug Button for Testing Functions */}
             <button
               onClick={async () => {
+                // Better platform detection for development
                 const isVercel = window.location.hostname.includes('vercel.app');
-                const testUrl = isVercel ? '/api/test' : '/.netlify/functions/test';
+                const isNetlifyDev = window.location.port === '8888' || window.location.hostname === 'localhost';
                 
-                toast.info(`Testing ${isVercel ? 'Vercel' : 'Netlify'} function...`);
+                let testUrl, platform;
+                if (isVercel) {
+                  testUrl = '/api/test';
+                  platform = 'Vercel';
+                } else {
+                  testUrl = '/.netlify/functions/test';
+                  platform = 'Netlify';
+                }
+                
+                toast.info(`Testing ${platform} function...`);
+                console.log(`🔧 Testing function at: ${testUrl}`);
                 
                 try {
                   const response = await fetch(testUrl);
-                  const result = await response.json();
                   
-                  if (response.ok) {
-                    toast.success(`✅ ${result.platform} function working!`);
-                    console.log('Function test result:', result);
-                  } else {
-                    toast.error(`❌ Function test failed: ${response.status}`);
+                  if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                   }
+                  
+                  const result = await response.json();
+                  toast.success(`✅ ${result.platform || platform} function working!`);
+                  console.log('Function test result:', result);
                 } catch (error) {
                   toast.error(`❌ Function not available: ${error.message}`);
                   console.error('Function test error:', error);
@@ -1092,22 +1108,31 @@ export default function Admin() {
             {/* Test Cloudinary Button */}
             <button
               onClick={async () => {
+                // Better platform detection for development
                 const isVercel = window.location.hostname.includes('vercel.app');
-                const testUrl = isVercel ? '/api/test-cloudinary' : '/.netlify/functions/test-cloudinary';
                 
-                toast.info(`Testing Cloudinary on ${isVercel ? 'Vercel' : 'Netlify'}...`);
+                let testUrl, platform;
+                if (isVercel) {
+                  testUrl = '/api/test-cloudinary';
+                  platform = 'Vercel';
+                } else {
+                  testUrl = '/.netlify/functions/test-cloudinary';
+                  platform = 'Netlify';
+                }
+                
+                toast.info(`Testing Cloudinary on ${platform}...`);
+                console.log(`🔧 Testing Cloudinary at: ${testUrl}`);
                 
                 try {
                   const response = await fetch(testUrl);
-                  const result = await response.json();
                   
-                  if (response.ok) {
-                    toast.success(`✅ Cloudinary working on ${result.platform}!`);
-                    console.log('Cloudinary test result:', result);
-                  } else {
-                    toast.error(`❌ Cloudinary test failed: ${result.error}`);
-                    console.error('Cloudinary test error:', result);
+                  if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                   }
+                  
+                  const result = await response.json();
+                  toast.success(`✅ Cloudinary working on ${result.platform || platform}!`);
+                  console.log('Cloudinary test result:', result);
                 } catch (error) {
                   toast.error(`❌ Cloudinary function not available: ${error.message}`);
                   console.error('Cloudinary test error:', error);
@@ -1170,6 +1195,8 @@ export default function Admin() {
 
 // Testimonial Manager Component
 function TestimonialManager() {
+  const { user } = useAuth();
+  const toast = useToast();
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -1213,7 +1240,7 @@ function TestimonialManager() {
       setShowForm(false);
       setEditingId(null);
     } catch (error) {
-      alert('Gagal menyimpan testimoni: ' + error.message);
+      toast.error('Gagal menyimpan testimoni: ' + error.message);
     }
   };
 
@@ -1235,7 +1262,7 @@ function TestimonialManager() {
         await deleteTestimonial(id);
         await loadTestimonials();
       } catch (error) {
-        alert('Gagal menghapus testimoni: ' + error.message);
+        toast.error('Gagal menghapus testimoni: ' + error.message);
       }
     }
   };
@@ -1396,10 +1423,28 @@ function TestimonialManager() {
 
 // Blog Manager Component
 function BlogManager() {
+  const { user } = useAuth();
+  const toast = useToast();
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  
+  // Generate slug from blog title
+  const generateSlug = (title) => {
+    if (!title) return '';
+    
+    const slug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+      .replace(/(^-|-$)/g, ''); // Remove leading/trailing hyphens
+    
+    console.log(`🔗 Generated blog slug: "${title}" → "${slug}"`);
+    return slug;
+  };
+  
   const [formData, setFormData] = useState({
     title: '',
     slug: '',
@@ -1419,10 +1464,13 @@ function BlogManager() {
   const loadBlogs = async () => {
     try {
       setLoading(true);
+      console.log('📚 Loading blogs from Firebase...');
       const data = await getBlogPosts();
+      console.log('📚 Loaded blogs:', data.length, 'posts');
+      console.log('📚 Blog data:', data);
       setBlogs(data);
     } catch (error) {
-      console.error('Error loading blogs:', error);
+      console.error('❌ Error loading blogs:', error);
     } finally {
       setLoading(false);
     }
@@ -1449,13 +1497,22 @@ function BlogManager() {
     };
 
     try {
+      console.log('📝 Blog submit data:', blogData);
+      console.log('👤 Current user:', user?.email);
+      console.log('🔐 User authenticated:', !!user);
+      
       let resultBlog;
       if (editingId) {
+        console.log('✏️ Updating blog with ID:', editingId);
         await updateBlogPost(editingId, blogData);
         resultBlog = { ...blogData, id: editingId };
         logSitemapChange('updated', 'blog', resultBlog);
       } else {
+        console.log('➕ Creating new blog post...');
+        console.log('📝 Blog data being sent to Firebase:', blogData);
         resultBlog = await createBlogPost(blogData);
+        console.log('✅ Blog created successfully:', resultBlog);
+        console.log('🆔 Created blog ID:', resultBlog?.id);
         logSitemapChange('added', 'blog', resultBlog);
       }
       
@@ -1466,8 +1523,17 @@ function BlogManager() {
       
       // Regenerate sitemap when blog is created/updated
       debouncedRegenerateSitemap();
+      
+      // Show success message
+      toast.success(editingId ? 'Blog berhasil diupdate!' : 'Blog berhasil dibuat!');
     } catch (error) {
-      alert('Gagal menyimpan blog: ' + error.message);
+      console.error('❌ Blog submit error:', error);
+      console.error('❌ Error details:', {
+        code: error.code,
+        message: error.message,
+        stack: error.stack
+      });
+      toast.error('Gagal menyimpan blog: ' + error.message);
     }
   };
 
@@ -1736,6 +1802,8 @@ function BlogManager() {
 
 // FAQ Manager Component
 function FAQManager() {
+  const { user } = useAuth();
+  const toast = useToast();
   const [faqs, setFaqs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -1777,7 +1845,7 @@ function FAQManager() {
       setShowForm(false);
       setEditingId(null);
     } catch (error) {
-      alert('Gagal menyimpan FAQ: ' + error.message);
+      toast.error('Gagal menyimpan FAQ: ' + error.message);
     }
   };
 
@@ -1797,7 +1865,7 @@ function FAQManager() {
         await deleteFAQ(id);
         await loadFAQs();
       } catch (error) {
-        alert('Gagal menghapus FAQ: ' + error.message);
+        toast.error('Gagal menghapus FAQ: ' + error.message);
       }
     }
   };

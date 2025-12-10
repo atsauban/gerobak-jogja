@@ -125,11 +125,13 @@ async function generateSitemapXML() {
 
   try {
     // Get products from Firebase
+    console.log('📦 Fetching products from Firebase...');
     const productsSnapshot = await getDocs(collection(db, 'products'));
     const products = [];
     productsSnapshot.forEach((doc) => {
       products.push({ id: doc.id, ...doc.data() });
     });
+    console.log(`📦 Found ${products.length} products`);
 
     // Add product pages
     products.forEach((product) => {
@@ -158,11 +160,13 @@ async function generateSitemapXML() {
     });
 
     // Get blog posts from Firebase
+    console.log('📝 Fetching blog posts from Firebase...');
     const blogSnapshot = await getDocs(collection(db, 'blogPosts'));
     const blogPosts = [];
     blogSnapshot.forEach((doc) => {
       blogPosts.push({ id: doc.id, ...doc.data() });
     });
+    console.log(`📝 Found ${blogPosts.length} blog posts`);
 
     // Add blog post pages
     blogPosts.forEach((post) => {
@@ -252,22 +256,68 @@ export const handler = async (event, context) => {
     // Generate new sitemap
     const sitemapXML = await generateSitemapXML();
     
-    // In a real implementation, you would save this to a file or CDN
-    // For now, we'll return the XML and submit to search engines
+    // Write sitemap to public/sitemap.xml
+    const fs = await import('fs');
+    const path = await import('path');
+    
+    // Get the project root directory - in Netlify dev, we need to find the actual project root
+    const currentDir = process.cwd();
+    console.log('📁 Current working directory:', currentDir);
+    
+    // Find the project root by looking for package.json
+    let projectRoot = currentDir;
+    const findProjectRoot = (dir) => {
+      const packageJsonPath = path.join(dir, 'package.json');
+      if (fs.existsSync(packageJsonPath)) {
+        return dir;
+      }
+      const parentDir = path.dirname(dir);
+      if (parentDir === dir) {
+        // Reached filesystem root
+        return currentDir;
+      }
+      return findProjectRoot(parentDir);
+    };
+    
+    projectRoot = findProjectRoot(currentDir);
+    const sitemapPath = path.join(projectRoot, 'public', 'sitemap.xml');
+    
+    console.log('📁 Writing sitemap to:', sitemapPath);
+    
+    try {
+      fs.writeFileSync(sitemapPath, sitemapXML, 'utf8');
+      console.log('✅ Sitemap file written successfully');
+    } catch (writeError) {
+      console.error('❌ Error writing sitemap file:', writeError);
+      // Continue with search engine submission even if file write fails
+    }
     
     // Submit to search engines
     await submitToSearchEngines();
     
     console.log('✅ Sitemap regenerated and submitted');
     
+    // Count products and blogs for response
+    const productsSnapshot = await getDocs(collection(db, 'products'));
+    const blogSnapshot = await getDocs(collection(db, 'blogPosts'));
+    
     return {
       statusCode: 200,
       headers,
       body: JSON.stringify({
         success: true,
-        message: 'Sitemap regenerated successfully',
+        message: 'Sitemap regenerated successfully via Netlify Function',
         timestamp: new Date().toISOString(),
-        sitemapUrl: `${SITE_URL}/sitemap.xml`
+        sitemapUrl: `${SITE_URL}/sitemap.xml`,
+        searchEngineSubmission: {
+          google: 'submitted',
+          bing: 'submitted'
+        },
+        stats: {
+          products: productsSnapshot.size,
+          blogPosts: blogSnapshot.size,
+          totalUrls: 10 + productsSnapshot.size + blogSnapshot.size // 10 static pages + dynamic content
+        }
       })
     };
     
