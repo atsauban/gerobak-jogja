@@ -88,12 +88,21 @@ Sitemap: https://gerobakjogja.vercel.app/api/sitemap
 
 ### Test Dynamic Sitemap
 ```bash
+# Normal access (may be cached)
 curl https://gerobakjogja.vercel.app/api/sitemap
+
+# Bypass cache with timestamp
+curl https://gerobakjogja.vercel.app/api/sitemap?t=$(date +%s)
 ```
 
 ### Test Regenerate Function
 ```bash
 curl -X POST https://gerobakjogja.vercel.app/api/regenerate-sitemap
+```
+
+### Force Fresh Sitemap (No Cache)
+```
+https://gerobakjogja.vercel.app/api/sitemap?fresh=true&t=TIMESTAMP
 ```
 
 ## 📊 Monitoring

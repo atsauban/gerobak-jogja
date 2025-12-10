@@ -208,16 +208,34 @@ async function generateSitemapXML() {
 // Vercel API Handler
 export default async function handler(req, res) {
   try {
-    console.log('🚀 Generating dynamic sitemap...');
+    const timestamp = new Date().toISOString();
+    const isFresh = req.query.fresh === 'true';
+    
+    console.log('🚀 Generating dynamic sitemap at:', timestamp);
+    console.log('🔍 Request query params:', req.query);
+    console.log('🔄 Fresh request:', isFresh);
     
     // Generate sitemap XML
     const sitemapXML = await generateSitemapXML();
     
     // Set appropriate headers for XML
     res.setHeader('Content-Type', 'application/xml');
-    res.setHeader('Cache-Control', 'public, max-age=3600'); // Cache for 1 hour
+    res.setHeader('X-Generated-At', timestamp);
+    res.setHeader('X-Cache-Buster', Date.now().toString());
     
-    console.log('✅ Dynamic sitemap generated successfully');
+    if (isFresh) {
+      // No cache for fresh requests
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
+      console.log('🚫 Cache disabled for fresh request');
+    } else {
+      // Minimal cache for normal requests
+      res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=60');
+      console.log('⏱️ Cache set to 1 minute');
+    }
+    
+    console.log('✅ Dynamic sitemap generated successfully at:', timestamp);
     
     // Return XML directly
     return res.status(200).send(sitemapXML);
