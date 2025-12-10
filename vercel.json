@@ -60,6 +60,9 @@
   "functions": {
     "api/regenerate-sitemap.js": {
       "maxDuration": 30
+    },
+    "api/cloudinary-delete.js": {
+      "maxDuration": 10
     }
   },
   "rewrites": [

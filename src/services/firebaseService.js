@@ -196,20 +196,39 @@ export const deleteImageFromCloudinary = async (imageUrl) => {
     const pathAfterUpload = urlParts.slice(uploadIndex + 2).join('/');
     const publicId = pathAfterUpload.replace(/\.[^/.]+$/, '');
 
-    // Check if running on Netlify (production) or Netlify Dev (local)
+    // Detect platform and use appropriate function
+    const isVercel = window.location.hostname.includes('vercel.app');
     const isNetlify = window.location.hostname.includes('netlify.app') || 
                       window.location.port === '8888' ||
                       window.location.port === '8889' ||
                       window.location.hostname === 'localhost' && window.location.port !== '5173';
-
-    if (!isNetlify) {
-      console.warn('⚠️ Cloudinary auto-delete only works with Netlify Dev (port 8888) or production');
+    
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    // Check if we have a supported environment
+    if (!isVercel && !isNetlify && !isDevelopment) {
+      console.warn('⚠️ Cloudinary auto-delete only works with Vercel, Netlify, or development');
       console.warn('📋 Public ID:', publicId);
       return false;
     }
 
-    // Call Netlify Function to delete from Cloudinary
-    const response = await fetch('/.netlify/functions/cloudinary-delete', {
+    // Determine function endpoint
+    let functionUrl;
+    let platform;
+    
+    if (isVercel) {
+      functionUrl = '/api/cloudinary-delete';
+      platform = 'Vercel';
+    } else if (isNetlify || isDevelopment) {
+      functionUrl = '/.netlify/functions/cloudinary-delete';
+      platform = 'Netlify';
+    }
+
+    console.log(`🔧 Using ${platform} function for Cloudinary delete`);
+    console.log(`📡 Function URL: ${functionUrl}`);
+
+    // Call appropriate function to delete from Cloudinary
+    const response = await fetch(functionUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

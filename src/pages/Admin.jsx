@@ -1083,6 +1083,39 @@ export default function Admin() {
               <span className="hidden xs:inline">Test Function</span>
               <span className="xs:hidden">Test</span>
             </button>
+            
+            {/* Test Cloudinary Button */}
+            <button
+              onClick={async () => {
+                const isVercel = window.location.hostname.includes('vercel.app');
+                const testUrl = isVercel ? '/api/test-cloudinary' : '/.netlify/functions/test-cloudinary';
+                
+                toast.info(`Testing Cloudinary on ${isVercel ? 'Vercel' : 'Netlify'}...`);
+                
+                try {
+                  const response = await fetch(testUrl);
+                  const result = await response.json();
+                  
+                  if (response.ok) {
+                    toast.success(`✅ Cloudinary working on ${result.platform}!`);
+                    console.log('Cloudinary test result:', result);
+                  } else {
+                    toast.error(`❌ Cloudinary test failed: ${result.error}`);
+                    console.error('Cloudinary test error:', result);
+                  }
+                } catch (error) {
+                  toast.error(`❌ Cloudinary function not available: ${error.message}`);
+                  console.error('Cloudinary test error:', error);
+                }
+              }}
+              className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl hover:from-purple-600 hover:to-purple-700 transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl text-sm sm:text-base"
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span className="hidden xs:inline">Test Cloudinary</span>
+              <span className="xs:hidden">Cloud</span>
+            </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm sm:text-base text-gray-600">
             <div className="space-y-2">
@@ -1093,6 +1126,7 @@ export default function Admin() {
             <div className="space-y-2">
               <p>• <strong>Development:</strong> Logging mode dengan detailed console output</p>
               <p>• <strong>Manual trigger:</strong> Gunakan tombol di atas jika perlu</p>
+              <p>• <strong>Cloudinary:</strong> Auto-delete images on Vercel & Netlify</p>
               <p>• <strong>URL:</strong> <a href="/sitemap.xml" target="_blank" className="text-primary-600 hover:underline">/sitemap.xml</a></p>
               <p>• <strong>Status:</strong> <span className="text-green-600 font-medium">Active & Auto-updating</span></p>
             </div>
