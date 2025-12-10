@@ -41,7 +41,28 @@ export default async function handler(req, res) {
       });
     }
 
+    // Check environment variables first
+    const cloudName = process.env.VITE_CLOUDINARY_CLOUD_NAME;
+    const apiKey = process.env.CLOUDINARY_API_KEY;
+    const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+    if (!cloudName || !apiKey || !apiSecret) {
+      console.error('❌ Missing Cloudinary environment variables');
+      return res.status(500).json({
+        success: false,
+        error: 'Missing Cloudinary environment variables',
+        missing: {
+          cloudName: !cloudName,
+          apiKey: !apiKey,
+          apiSecret: !apiSecret
+        },
+        help: 'Set VITE_CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET in Vercel dashboard',
+        platform: 'vercel'
+      });
+    }
+
     console.log('🗑️ Vercel Function: Deleting Cloudinary image:', publicId);
+    console.log('🔧 Cloud name:', cloudName);
 
     // Delete from Cloudinary
     const result = await cloudinary.uploader.destroy(publicId);

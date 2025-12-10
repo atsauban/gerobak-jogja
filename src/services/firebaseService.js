@@ -239,13 +239,33 @@ export const deleteImageFromCloudinary = async (imageUrl) => {
     const result = await response.json();
 
     if (!response.ok) {
-      throw new Error(result.error || 'Failed to delete from Cloudinary');
+      console.error(`❌ ${platform} Cloudinary delete failed:`, result);
+      
+      // Provide specific error messages
+      if (result.error && result.error.includes('cloud_name')) {
+        console.error('💡 Fix: Set VITE_CLOUDINARY_CLOUD_NAME in Vercel dashboard');
+      } else if (result.missing) {
+        console.error('💡 Missing environment variables:', result.missing);
+        console.error('💡 Fix: Set all Cloudinary variables in Vercel dashboard');
+      }
+      
+      // Don't throw error, just return false so Firebase delete can continue
+      return false;
     }
 
+    console.log(`✅ ${platform} Cloudinary delete successful:`, result);
     return true;
     
   } catch (error) {
-    console.error('Error deleting from Cloudinary:', error.message);
+    console.error(`❌ ${platform} Cloudinary delete error:`, error.message);
+    
+    // Provide helpful troubleshooting info
+    if (error.message.includes('cloud_name')) {
+      console.error('💡 Fix: Set VITE_CLOUDINARY_CLOUD_NAME in Vercel dashboard');
+    } else if (error.message.includes('fetch')) {
+      console.error('💡 Fix: Function might not be deployed or environment variables missing');
+    }
+    
     // Don't throw error, just return false so Firebase delete can continue
     return false;
   }

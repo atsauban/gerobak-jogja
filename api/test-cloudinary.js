@@ -17,11 +17,30 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Check environment variables first
+    const cloudName = process.env.VITE_CLOUDINARY_CLOUD_NAME;
+    const apiKey = process.env.CLOUDINARY_API_KEY;
+    const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+    if (!cloudName || !apiKey || !apiSecret) {
+      return res.status(500).json({
+        success: false,
+        error: 'Missing Cloudinary environment variables',
+        missing: {
+          cloudName: !cloudName,
+          apiKey: !apiKey,
+          apiSecret: !apiSecret
+        },
+        help: 'Set VITE_CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET in Vercel dashboard',
+        platform: 'vercel'
+      });
+    }
+
     // Configure Cloudinary
     cloudinary.config({
-      cloud_name: process.env.VITE_CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET,
+      cloud_name: cloudName,
+      api_key: apiKey,
+      api_secret: apiSecret,
     });
 
     // Test Cloudinary connection
