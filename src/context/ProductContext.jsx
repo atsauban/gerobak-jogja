@@ -125,8 +125,8 @@ export const ProductProvider = ({ children }) => {
       setProducts(updatedProducts);
       
       // Log sitemap change
-      const updatedProduct = updatedProducts.find(p => p.id === id);
-      logSitemapChange('updated', 'product', updatedProduct);
+      const updatedProductData = updatedProducts.find(p => p.id === id);
+      logSitemapChange('updated', 'product', updatedProductData);
       
       // Regenerate sitemap when product is updated
       debouncedRegenerateSitemap();

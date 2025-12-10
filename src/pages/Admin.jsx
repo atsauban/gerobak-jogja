@@ -1198,7 +1198,7 @@ function TestimonialManager() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleTestimonialSubmit = async (e) => {
     e.preventDefault();
     
     try {
@@ -1264,7 +1264,7 @@ function TestimonialManager() {
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="mb-6 p-6 bg-gray-50 rounded-lg">
+        <form onSubmit={handleTestimonialSubmit} className="mb-6 p-6 bg-gray-50 rounded-lg">
           <div className="grid md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium mb-2">Nama Pelanggan *</label>
@@ -1430,7 +1430,7 @@ function BlogManager() {
 
   // Use the main generateSlug function defined at the top
 
-  const handleSubmit = async (e) => {
+  const handleBlogSubmit = async (e) => {
     e.preventDefault();
     
     // Validate featured articles (max 1)
@@ -1535,7 +1535,7 @@ function BlogManager() {
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="mb-6 p-6 bg-gray-50 rounded-lg">
+        <form onSubmit={handleBlogSubmit} className="mb-6 p-6 bg-gray-50 rounded-lg">
           <div className="grid md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium mb-2">Judul *</label>
@@ -1762,7 +1762,7 @@ function FAQManager() {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleFAQSubmit = async (e) => {
     e.preventDefault();
     
     try {
@@ -1820,7 +1820,7 @@ function FAQManager() {
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="mb-6 p-6 bg-gray-50 rounded-lg">
+        <form onSubmit={handleFAQSubmit} className="mb-6 p-6 bg-gray-50 rounded-lg">
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Pertanyaan *</label>
             <input
