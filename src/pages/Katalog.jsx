@@ -169,7 +169,7 @@ export default function Katalog() {
                   </div>
                   <div className="flex gap-2">
                     <Link 
-                      to={`/produk/${product.id}`}
+                      to={`/produk/${product.slug || product.id}`}
                       className="flex-1 btn-primary justify-center text-sm py-2"
                     >
                       <Eye size={18} />

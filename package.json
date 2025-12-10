@@ -3,13 +3,16 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "dev": "vite",
     "dev:vite": "vite",
     "dev:netlify": "netlify dev",
     "build": "vite build",
-    "build:sitemap": "node scripts/generate-sitemap.js && vite build",
-    "generate:sitemap": "node scripts/generate-sitemap.js",
+    "build:sitemap": "node --no-deprecation scripts/generate-sitemap.js && vite build",
+    "generate:sitemap": "node --no-deprecation scripts/generate-sitemap.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },

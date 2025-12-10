@@ -149,6 +149,15 @@ export const ProductProvider = ({ children }) => {
     return products.find(p => p.id === id || p.id === parseInt(id) || String(p.id) === String(id));
   };
 
+  const getProductBySlug = (slug) => {
+    // First try to find by slug
+    const productBySlug = products.find(p => p.slug === slug);
+    if (productBySlug) return productBySlug;
+    
+    // Fallback: try to find by ID (for backward compatibility)
+    return products.find(p => p.id === slug || String(p.id) === String(slug));
+  };
+
   const getProductsByCategory = (category) => {
     if (category === 'semua') return products;
     return products.filter(p => p.category === category);
@@ -166,6 +175,7 @@ export const ProductProvider = ({ children }) => {
         updateProduct,
         deleteProduct,
         getProductById,
+        getProductBySlug,
         getProductsByCategory,
         refreshProducts: loadProducts
       }}

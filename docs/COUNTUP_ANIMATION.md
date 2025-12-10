@@ -34,9 +34,9 @@ import CountUpNumber from '../components/CountUpNumber';
 
 ```jsx
 const stats = [
-  { value: 500, suffix: '+', label: 'Pelanggan Puas', duration: 2000 },
+  { value: 100, suffix: '+', label: 'Pelanggan Puas', duration: 2000 },
   { value: 10, suffix: '+', label: 'Tahun Pengalaman', duration: 1500 },
-  { value: 1000, suffix: '+', label: 'Gerobak Terjual', duration: 2500 },
+  { value: 100, suffix: '+', label: 'Gerobak Terjual', duration: 2500 },
 ];
 
 {stats.map((stat, index) => (

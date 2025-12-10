@@ -67,7 +67,7 @@ export default function Testimonials() {
               
               <div className="flex items-center gap-4 mb-6">
                 <img 
-                  src={testimonial.image} 
+                  src={testimonial.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.name)}&background=0284c7&color=fff`} 
                   alt={testimonial.name}
                   className="w-16 h-16 rounded-full"
                 />

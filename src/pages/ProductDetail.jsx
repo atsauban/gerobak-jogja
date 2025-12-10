@@ -7,12 +7,12 @@ import LazyImage from '../components/LazyImage';
 import { useProducts } from '../context/ProductContext';
 
 export default function ProductDetail() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
-  const { getProductById, loading } = useProducts();
+  const { getProductBySlug, loading } = useProducts();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
-  const product = getProductById(id);
+  const product = getProductBySlug(slug);
 
   // Loading state
   if (loading) {

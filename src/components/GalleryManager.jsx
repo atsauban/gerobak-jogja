@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, X, Image as ImageIcon } from 'lucide-react';
 import ImageUpload from './ImageUpload';
+import { useToast } from './Toast';
 import {
   getGalleryImages,
   createGalleryImage,
@@ -10,6 +11,7 @@ import {
 } from '../services/firebaseService';
 
 export default function GalleryManager() {
+  const toast = useToast();
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -48,7 +50,7 @@ export default function GalleryManager() {
     e.preventDefault();
 
     if (!formData.url) {
-      alert('Upload gambar terlebih dahulu!');
+      toast.error('Upload gambar terlebih dahulu!');
       return;
     }
 
@@ -65,7 +67,7 @@ export default function GalleryManager() {
       setEditingId(null);
     } catch (error) {
       console.error('Error saving gallery image:', error);
-      alert('Gagal menyimpan gambar: ' + error.message);
+      toast.error('Gagal menyimpan gambar: ' + error.message);
     }
   };
 
@@ -95,7 +97,7 @@ export default function GalleryManager() {
         await loadImages();
       } catch (error) {
         console.error('Error deleting gallery image:', error);
-        alert('Gagal menghapus gambar: ' + error.message);
+        toast.error('Gagal menghapus gambar: ' + error.message);
       }
     }
   };

@@ -8,8 +8,15 @@
   publish = "dist"
   functions = "netlify/functions"
 
+[build.environment]
+  NODE_VERSION = "18.19.0"
+  NODE_OPTIONS = "--no-deprecation"
+
 [dev]
   framework = "#custom"
   command = "npm run dev:vite"
   targetPort = 5173
   publish = "dist"
+
+[functions]
+  node_bundler = "esbuild"

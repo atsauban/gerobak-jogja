@@ -1,4 +1,6 @@
-const cloudinary = require('cloudinary').v2;
+const { v2: cloudinary } = require('cloudinary');
+const { readFileSync, existsSync } = require('fs');
+const { resolve } = require('path');
 
 exports.handler = async (event) => {
   // Only allow POST requests
@@ -29,12 +31,25 @@ exports.handler = async (event) => {
       console.log('⚠️ Environment variables not found, trying to load from .env file...');
       
       try {
-        const fs = require('fs');
-        const path = require('path');
-        const envPath = path.resolve(__dirname, '../../.env');
+        // Try multiple possible .env locations
+        const envPaths = [
+          resolve(process.cwd(), '.env'),
+          resolve(process.cwd(), '.env.development'),
+          resolve(__dirname, '../../.env'),
+          resolve(__dirname, '../../.env.development')
+        ];
         
-        if (fs.existsSync(envPath)) {
-          const envContent = fs.readFileSync(envPath, 'utf8');
+        let envPath = null;
+        for (const path of envPaths) {
+          if (existsSync(path)) {
+            envPath = path;
+            break;
+          }
+        }
+        
+        if (envPath) {
+          console.log(`📄 Loading env from: ${envPath}`);
+          const envContent = readFileSync(envPath, 'utf8');
           const envLines = envContent.split('\n');
           
           envLines.forEach(line => {

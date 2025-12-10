@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ProductProvider } from './context/ProductContext';
 import { AuthProvider } from './context/AuthContext';
+import { ToastProvider } from './components/Toast';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import FloatingActionButton from './components/FloatingActionButton';
@@ -55,7 +56,8 @@ function App() {
   return (
     <AuthProvider>
       <ProductProvider>
-        <Router>
+        <ToastProvider>
+          <Router>
         <ProgressBar />
         <ScrollToTopOnMount />
         <div className="flex flex-col min-h-screen">
@@ -64,7 +66,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/katalog" element={<Katalog />} />
-              <Route path="/produk/:id" element={<ProductDetail />} />
+              <Route path="/produk/:slug" element={<ProductDetail />} />
               <Route path="/galeri" element={<Galeri />} />
               <Route path="/tentang" element={<Tentang />} />
               <Route path="/kontak" element={<Kontak />} />
@@ -76,8 +78,9 @@ function App() {
           <Footer />
           <FloatingActionButton />
         </div>
-      </Router>
-    </ProductProvider>
+          </Router>
+        </ToastProvider>
+      </ProductProvider>
     </AuthProvider>
   );
 }

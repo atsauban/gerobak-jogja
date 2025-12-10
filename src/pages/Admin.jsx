@@ -3,6 +3,7 @@ import { Plus, Edit, Trash2, Eye, X, LogOut, Star } from 'lucide-react';
 import { Link, Navigate } from 'react-router-dom';
 import { useProducts } from '../context/ProductContext';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../components/Toast';
 import ImageUpload from '../components/ImageUpload';
 import GalleryManager from '../components/GalleryManager';
 import { 
@@ -25,6 +26,7 @@ import { logProductAction } from '../utils/auditLog';
 export default function Admin() {
   const { products, addProduct, updateProduct, deleteProduct } = useProducts();
   const { user, loading: authLoading, login, logout } = useAuth();
+  const toast = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
@@ -33,6 +35,7 @@ export default function Admin() {
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
+    slug: '',
     category: '',
     price: '',
     shortDesc: '',
@@ -49,6 +52,16 @@ export default function Admin() {
   const [specValue, setSpecValue] = useState('');
   const [featureInput, setFeatureInput] = useState('');
   const [includeInput, setIncludeInput] = useState('');
+
+  // Generate slug from product name
+  const generateSlug = (name) => {
+    return name
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '') // Remove special characters except spaces and hyphens
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
+      .replace(/(^-|-$)/g, ''); // Remove leading/trailing hyphens
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -87,13 +100,14 @@ export default function Admin() {
     
     // Validate images
     if (!formData.images || formData.images.length === 0) {
-      alert('Minimal upload 1 gambar produk!');
+      toast.error('Minimal upload 1 gambar produk!');
       return;
     }
 
     // Sanitize all inputs
     const productData = {
       name: sanitizeText(formData.name, 100),
+      slug: formData.slug || generateSlug(formData.name),
       category: formData.category, // Already validated by select
       price: sanitizePrice(formData.price),
       shortDesc: sanitizeText(formData.shortDesc, 200),
@@ -112,7 +126,7 @@ export default function Admin() {
 
     // Validate sanitized data
     if (!productData.name || !productData.shortDesc || productData.images.length === 0) {
-      alert('Data tidak valid setelah sanitasi. Periksa input Anda.');
+      toast.error('Data tidak valid setelah sanitasi. Periksa input Anda.');
       return;
     }
 
@@ -131,7 +145,7 @@ export default function Admin() {
           });
         } else {
           // LocalStorage ID (number) - create new instead
-          alert('Produk ini dari localStorage. Akan dibuat sebagai produk baru di Firebase.');
+          toast.warning('Produk ini dari localStorage. Akan dibuat sebagai produk baru di Firebase.');
           const newId = await addProduct(productData);
           
           // Log create action
@@ -153,6 +167,7 @@ export default function Admin() {
       
       setFormData({ 
         name: '', 
+        slug: '',
         category: '', 
         price: '', 
         shortDesc: '', 
@@ -164,16 +179,17 @@ export default function Admin() {
         includes: []
       });
       setShowForm(false);
-      alert('Produk berhasil disimpan!');
+      toast.success('Produk berhasil disimpan!');
     } catch (error) {
       console.error('Full error:', error);
-      alert('Gagal menyimpan produk: ' + error.message);
+      toast.error('Gagal menyimpan produk: ' + error.message);
     }
   };
 
   const handleEdit = (product) => {
     setFormData({
       name: product.name,
+      slug: product.slug || generateSlug(product.name),
       category: product.category,
       price: product.price,
       shortDesc: product.shortDesc || '',
@@ -203,10 +219,10 @@ export default function Admin() {
           category: product.category
         });
         
-        alert('Produk berhasil dihapus!');
+        toast.success('Produk berhasil dihapus!');
       } catch (error) {
         console.error('Delete error:', error);
-        alert('Gagal menghapus produk: ' + error.message);
+        toast.error('Gagal menghapus produk: ' + error.message);
       }
     }
   };
@@ -216,7 +232,7 @@ export default function Admin() {
     
     // Jika mau set featured tapi sudah ada 3
     if (!currentFeatured && featuredCount >= 3) {
-      alert('Maksimal 3 produk unggulan! Hapus salah satu produk unggulan terlebih dahulu.');
+      toast.warning('Maksimal 3 produk unggulan! Hapus salah satu produk unggulan terlebih dahulu.');
       return;
     }
 
@@ -224,7 +240,7 @@ export default function Admin() {
       await updateProduct(id, { featured: !currentFeatured });
     } catch (error) {
       console.error('Error toggling featured:', error);
-      alert('Gagal mengubah status unggulan: ' + error.message);
+      toast.error('Gagal mengubah status unggulan: ' + error.message);
     }
   };
 
@@ -233,6 +249,7 @@ export default function Admin() {
     setEditingId(null);
     setFormData({ 
       name: '', 
+      slug: '',
       category: '', 
       price: '', 
       shortDesc: '', 
@@ -415,6 +432,7 @@ export default function Admin() {
                 setShowForm(!showForm);
                 setFormData({ 
                   name: '', 
+                  slug: '',
                   category: '', 
                   price: '', 
                   shortDesc: '', 
@@ -440,18 +458,36 @@ export default function Admin() {
 
           {showForm && (
             <form onSubmit={handleSubmit} className="mb-6 p-6 bg-gray-50 rounded-lg">
-              <div className="grid md:grid-cols-2 gap-4 mb-4">
+              <div className="space-y-4 mb-4">
+                {/* Row 1: Nama & Slug */}
+                <div className="grid md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Nama Produk *</label>
                   <input
                     type="text"
                     placeholder="Gerobak Aluminium Premium"
                     value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value, slug: generateSlug(e.target.value) })}
                     className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                     required
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Slug (auto-generate)</label>
+                  <input
+                    type="text"
+                    placeholder="gerobak-aluminium-premium"
+                    value={formData.slug}
+                    onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                    className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-100"
+                    readOnly
+                  />
+                  <p className="text-xs text-gray-500 mt-1">URL: /produk/{formData.slug}</p>
+                </div>
+                </div>
+                
+                {/* Row 2: Kategori, Harga, Badge */}
+                <div className="grid md:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Kategori *</label>
                   <select
@@ -487,6 +523,7 @@ export default function Admin() {
                     onChange={(e) => setFormData({ ...formData, badge: e.target.value })}
                     className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
+                </div>
                 </div>
               </div>
               <div className="mb-4">
@@ -725,7 +762,7 @@ export default function Admin() {
                     <td className="px-4 py-3">
                       <div className="flex justify-center gap-2">
                         <Link
-                          to={`/produk/${product.id}`}
+                          to={`/produk/${product.slug || product.id}`}
                           target="_blank"
                           className="text-blue-600 hover:text-blue-800"
                           title="Lihat Detail"
@@ -1069,6 +1106,15 @@ function BlogManager() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Validate featured articles (max 1)
+    if (formData.featured) {
+      const currentFeatured = blogs.filter(b => b.featured && b.id !== editingId);
+      if (currentFeatured.length >= 1) {
+        toast.warning('Hanya boleh ada 1 artikel featured! Hapus featured dari artikel lain terlebih dahulu.');
+        return;
+      }
+    }
+    
     const blogData = {
       ...formData,
       slug: formData.slug || generateSlug(formData.title),
@@ -1243,6 +1289,12 @@ function BlogManager() {
               />
               <span className="text-sm font-medium">Featured Article</span>
             </label>
+            <div className="mt-2 text-xs text-gray-600 bg-yellow-50 p-3 rounded border border-yellow-200">
+              <strong>Info Featured Article:</strong><br/>
+              • Hanya boleh ada <strong>1 artikel featured</strong> dalam satu waktu<br/>
+              • Artikel featured akan ditampilkan di bagian atas halaman blog<br/>
+              • Jika ingin mengubah featured, hapus featured dari artikel lain terlebih dahulu
+            </div>
           </div>
           <div className="flex gap-2">
             <button type="submit" className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">

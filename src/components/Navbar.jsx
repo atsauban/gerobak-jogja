@@ -29,7 +29,7 @@ export default function Navbar() {
                 <img 
                   src="/images/logo.webp" 
                   alt="Gerobak Jogja Logo" 
-                  className="h-8 w-8 sm:h-10 sm:w-10 object-contain transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3"
+                  className="h-8 w-8 sm:h-10 sm:w-10 object-contain transition-transform duration-300 group-hover:scale-105"
                   onError={(e) => e.target.style.display = 'none'}
                 />
                 <div className="absolute inset-0 bg-primary-400 rounded-full blur-lg opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
