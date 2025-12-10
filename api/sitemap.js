@@ -126,13 +126,11 @@ async function generateSitemapXML() {
 
   try {
     // Get products from Firebase
-    console.log('📦 Fetching products from Firebase...');
     const productsSnapshot = await getDocs(collection(db, 'products'));
     const products = [];
     productsSnapshot.forEach((doc) => {
       products.push({ id: doc.id, ...doc.data() });
     });
-    console.log(`📦 Found ${products.length} products`);
 
     // Add product pages
     products.forEach((product) => {
@@ -161,13 +159,11 @@ async function generateSitemapXML() {
     });
 
     // Get blog posts from Firebase
-    console.log('📝 Fetching blog posts from Firebase...');
     const blogSnapshot = await getDocs(collection(db, 'blogPosts'));
     const blogPosts = [];
     blogSnapshot.forEach((doc) => {
       blogPosts.push({ id: doc.id, ...doc.data() });
     });
-    console.log(`📝 Found ${blogPosts.length} blog posts`);
 
     // Add blog post pages
     blogPosts.forEach((post) => {
@@ -211,10 +207,6 @@ export default async function handler(req, res) {
     const timestamp = new Date().toISOString();
     const isFresh = req.query.fresh === 'true';
     
-    console.log('🚀 Generating dynamic sitemap at:', timestamp);
-    console.log('🔍 Request query params:', req.query);
-    console.log('🔄 Fresh request:', isFresh);
-    
     // Generate sitemap XML
     const sitemapXML = await generateSitemapXML();
     
@@ -228,14 +220,10 @@ export default async function handler(req, res) {
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
       res.setHeader('Pragma', 'no-cache');
       res.setHeader('Expires', '0');
-      console.log('🚫 Cache disabled for fresh request');
     } else {
       // Minimal cache for normal requests
       res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=60');
-      console.log('⏱️ Cache set to 1 minute');
     }
-    
-    console.log('✅ Dynamic sitemap generated successfully at:', timestamp);
     
     // Return XML directly
     return res.status(200).send(sitemapXML);

@@ -32,7 +32,6 @@ function escapeXml(unsafe) {
 
 // Generate sitemap XML
 export const generateSitemapXML = async () => {
-  console.log('🗺️ Generating sitemap...');
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -113,7 +112,6 @@ export const generateSitemapXML = async () => {
 
   try {
     // Get products from Firebase
-    console.log('📦 Fetching products...');
     const productsSnapshot = await getDocs(collection(db, 'products'));
     const products = [];
     productsSnapshot.forEach((doc) => {
@@ -147,7 +145,6 @@ export const generateSitemapXML = async () => {
     });
 
     // Get blog posts from Firebase
-    console.log('📝 Fetching blog posts...');
     const blogSnapshot = await getDocs(collection(db, 'blogPosts'));
     const blogPosts = [];
     blogSnapshot.forEach((doc) => {
@@ -179,8 +176,6 @@ export const generateSitemapXML = async () => {
   </url>`;
     });
 
-    console.log(`✅ Generated sitemap with ${products.length} products and ${blogPosts.length} blog posts`);
-
   } catch (error) {
     console.error('❌ Error fetching data from Firebase:', error);
   }
@@ -200,31 +195,18 @@ export const submitSitemapToSearchEngines = async () => {
   const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   
   if (isDevelopment) {
-    console.log('🔧 Development mode: Skipping search engine submission (CORS restrictions)');
-    console.log(`📋 Sitemap URL: ${sitemapUrl}`);
-    console.log('💡 In production, sitemap will be automatically submitted via Netlify function');
-    console.log('   • Google: https://www.google.com/ping');
-    console.log('   • Bing: https://www.bing.com/ping');
     return;
   }
-  
-  // In production, search engine submission is handled by the Netlify function
-  // to avoid CORS issues. This function just logs the info.
-  console.log('🔧 Production mode: Search engine submission handled by Netlify function');
-  console.log(`📋 Sitemap URL: ${sitemapUrl}`);
 };
 
 // Main function to regenerate and submit sitemap
 export const regenerateSitemap = async () => {
   try {
-    console.log('🚀 Starting sitemap regeneration...');
-    
     // Check if we're in development or production
     const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     
     if (isDevelopment) {
       // In development, regenerate sitemap but skip search engine submission
-      console.log('🔧 Development mode: Regenerating sitemap locally');
       
       try {
         // Call the Netlify function to regenerate sitemap
@@ -237,7 +219,6 @@ export const regenerateSitemap = async () => {
         
         if (response.ok) {
           const result = await response.json();
-          console.log('✅ Development: Sitemap regenerated successfully', result);
         } else {
           console.warn('⚠️ Development: Sitemap regeneration failed, falling back to logging only');
         }
@@ -247,7 +228,6 @@ export const regenerateSitemap = async () => {
       
       // Always try to submit to search engines (will fail due to CORS but logs the attempt)
       await submitSitemapToSearchEngines();
-      console.log('✅ Development: Sitemap change processed');
       return true;
     }
     
@@ -256,10 +236,6 @@ export const regenerateSitemap = async () => {
     const functionUrl = isVercel 
       ? '/api/regenerate-sitemap'  // Vercel Function
       : '/.netlify/functions/regenerate-sitemap';  // Netlify Function
-    
-    console.log(`🔧 Detected platform: ${isVercel ? 'Vercel' : 'Netlify'}`);
-    console.log(`📡 Calling function: ${functionUrl}`);
-    console.log(`🌐 Current hostname: ${window.location.hostname}`);
     
     try {
       const response = await fetch(functionUrl, {
@@ -275,7 +251,6 @@ export const regenerateSitemap = async () => {
       
       if (response.ok) {
         const result = await response.json();
-        console.log('✅ Production: Sitemap regeneration completed!', result);
         return true;
       } else {
         console.error('❌ Production: Sitemap regeneration failed:', response.status, response.statusText);
@@ -293,23 +268,12 @@ export const regenerateSitemap = async () => {
         const platform = isVercel ? 'Vercel' : 'Netlify';
         const functionPath = isVercel ? '/api/regenerate-sitemap' : '/.netlify/functions/regenerate-sitemap';
         
-        if (response.status === 405) {
-          console.log(`💡 Method Not Allowed - The ${platform} function might not be deployed correctly`);
-          console.log(`💡 Check if the function exists at: ${functionPath}`);
-        } else if (response.status === 404) {
-          console.log(`💡 Function Not Found - The ${platform} function might not be deployed`);
-          console.log('💡 Try redeploying the site or check function configuration');
-        }
-        
         // Fallback: just log the attempt
-        console.log('💡 Fallback: Sitemap exists at public/sitemap.xml');
         await submitSitemapToSearchEngines();
         return false;
       }
     } catch (fetchError) {
       console.error('❌ Network error calling Netlify function:', fetchError.message);
-      console.log('💡 This might be a deployment or routing issue');
-      console.log('💡 Fallback: Sitemap exists at public/sitemap.xml');
       await submitSitemapToSearchEngines();
       return false;
     }
@@ -320,10 +284,8 @@ export const regenerateSitemap = async () => {
     // Fallback: try to submit existing sitemap to search engines
     try {
       await submitSitemapToSearchEngines();
-      console.log('✅ Fallback: Submitted existing sitemap to search engines');
     } catch (submitError) {
       console.warn('⚠️ Fallback submission also failed:', submitError.message);
-      console.log('💡 This is normal in development mode due to CORS restrictions');
     }
     
     return false;

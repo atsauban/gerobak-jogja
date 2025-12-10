@@ -21,14 +21,11 @@ exports.handler = async (event) => {
     let apiKey = process.env.CLOUDINARY_API_KEY;
     let apiSecret = process.env.CLOUDINARY_API_SECRET;
 
-    console.log('🔍 Environment check:');
-    console.log('  CLOUDINARY_CLOUD_NAME:', cloudName ? '✅ Set' : '❌ Missing');
-    console.log('  CLOUDINARY_API_KEY:', apiKey ? '✅ Set' : '❌ Missing');
-    console.log('  CLOUDINARY_API_SECRET:', apiSecret ? '✅ Set' : '❌ Missing');
+
 
     // Fallback for local development (read from .env manually)
     if (!cloudName || !apiKey || !apiSecret) {
-      console.log('⚠️ Environment variables not found, trying to load from .env file...');
+
       
       try {
         // Try multiple possible .env locations
@@ -48,7 +45,7 @@ exports.handler = async (event) => {
         }
         
         if (envPath) {
-          console.log(`📄 Loading env from: ${envPath}`);
+
           const envContent = readFileSync(envPath, 'utf8');
           const envLines = envContent.split('\n');
           
@@ -64,10 +61,7 @@ exports.handler = async (event) => {
             }
           });
           
-          console.log('✅ Loaded from .env file');
-          console.log('  CLOUDINARY_CLOUD_NAME:', cloudName ? '✅ Set' : '❌ Missing');
-          console.log('  CLOUDINARY_API_KEY:', apiKey ? '✅ Set' : '❌ Missing');
-          console.log('  CLOUDINARY_API_SECRET:', apiSecret ? '✅ Set' : '❌ Missing');
+
         }
       } catch (err) {
         console.error('Error loading .env file:', err.message);
@@ -109,14 +103,10 @@ exports.handler = async (event) => {
       };
     }
 
-    console.log('🗑️ Deleting from Cloudinary:', publicId);
-
     // Delete image from Cloudinary
     const result = await cloudinary.uploader.destroy(publicId, {
       invalidate: true // Also invalidate CDN cache
     });
-
-    console.log('✅ Cloudinary delete result:', result);
 
     if (result.result === 'ok' || result.result === 'not found') {
       return {

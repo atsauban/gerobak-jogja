@@ -121,29 +121,7 @@ export const logSitemapChange = (action, itemType, itemData) => {
     'faq': '❓'
   };
   
-  console.group(`🗺️ SITEMAP CHANGE LOG ${actionEmoji[action] || '📝'}`);
-  console.log(`${typeEmoji[itemType] || '📄'} Type: ${itemType.toUpperCase()}`);
-  console.log(`🆔 ID: ${changeId}`);
-  console.log(`⏰ Time: ${timestamp.readable}`);
-  console.log(`🎯 Action: ${action.toUpperCase()}`);
-  console.log(`📛 Name: ${logEntry.itemName}`);
-  console.log(`🔗 URL: https://gerobakjogja.vercel.app${url}`);
-  console.log(`⭐ Priority: ${priority}`);
-  console.log(`🔄 Change Freq: ${changefreq}`);
-  
-  if (imageUrl) {
-    console.log(`🖼️ Image: ${imageUrl}`);
-  }
-  
-  if (logEntry.sitemapEntry) {
-    console.log(`📋 Sitemap Entry:`);
-    console.log(logEntry.sitemapEntry);
-  }
-  
-  console.groupEnd();
-  
-  // Show summary
-  console.log(`📊 Total sitemap changes logged: ${sitemapChanges.length}`);
+
   
   return logEntry;
 };
@@ -174,7 +152,6 @@ export const getRecentChanges = (limit = 10) => {
 export const clearSitemapChanges = () => {
   const count = sitemapChanges.length;
   sitemapChanges = [];
-  console.log(`🧹 Cleared ${count} sitemap changes from log`);
   return count;
 };
 
@@ -198,12 +175,7 @@ export const generateSitemapReport = () => {
     newestChange: sitemapChanges.length > 0 ? sitemapChanges[sitemapChanges.length - 1] : null
   };
   
-  console.group('📊 SITEMAP CHANGES REPORT');
-  console.log(`📈 Total Changes: ${total}`);
-  console.log('📋 By Type:', byType);
-  console.log('🎯 By Action:', byAction);
-  console.log('🕐 Recent Changes:', report.recent.map(c => `${c.action} ${c.itemType}: ${c.itemName}`));
-  console.groupEnd();
+
   
   return report;
 };

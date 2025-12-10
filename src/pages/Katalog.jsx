@@ -167,10 +167,10 @@ export default function Katalog() {
                       Rp {parseInt(product.price).toLocaleString('id-ID')}
                     </p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-stretch">
                     <Link 
                       to={`/produk/${product.slug || product.id}`}
-                      className="flex-1 btn-primary justify-center text-sm py-2"
+                      className="flex-1 btn-primary justify-center items-center text-sm py-3 h-11"
                     >
                       <Eye size={18} />
                       Detail
@@ -178,7 +178,7 @@ export default function Katalog() {
                     <WhatsAppButton 
                       productName={product.name}
                       productPrice={product.price}
-                      className="flex-1 btn-whatsapp justify-center text-sm py-2"
+                      className="flex-1 btn-whatsapp justify-center items-center text-sm py-3 h-11"
                     >
                       Pesan
                     </WhatsAppButton>

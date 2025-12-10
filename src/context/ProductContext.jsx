@@ -44,12 +44,6 @@ export const ProductProvider = ({ children }) => {
       
       setProducts(firebaseProducts);
       
-      // Debug: Check if products have slugs
-      console.log('📦 Loaded products:', firebaseProducts.length);
-      firebaseProducts.forEach(product => {
-        console.log(`📦 Product "${product.name}": slug="${product.slug}", id="${product.id}"`);
-      });
-      
       // Clear old localStorage data
       localStorage.removeItem('gerobak_products');
     } catch (err) {

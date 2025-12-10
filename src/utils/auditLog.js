@@ -42,8 +42,6 @@ export async function logAction(user, action, details) {
       // Note: IP address cannot be obtained on client-side
       // Use Firebase Functions for server-side logging if IP is needed
     });
-    
-    console.log(`[Audit] ${action} on ${details.collection}:`, details.name || details.id);
   } catch (error) {
     console.error('Failed to log action:', error);
     // Don't throw error - logging failure shouldn't break the app

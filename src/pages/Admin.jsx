@@ -67,7 +67,6 @@ export default function Admin() {
       .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
       .replace(/(^-|-$)/g, ''); // Remove leading/trailing hyphens
     
-    console.log(`🔗 Generated slug: "${name}" → "${slug}"`);
     return slug;
   };
 
@@ -180,12 +179,7 @@ export default function Admin() {
         }
         setEditingId(null);
       } else {
-        console.log('🆕 Creating new product with data:', productData);
-        console.log('🔗 Product slug being saved:', productData.slug);
-        
         const newProduct = await addProduct(productData);
-        console.log('✅ Product created:', newProduct);
-        console.log('🔗 Created product slug:', newProduct.slug);
         
         // Log create action
         await logProductAction(user, 'create', { 
@@ -1079,7 +1073,6 @@ export default function Admin() {
                 }
                 
                 toast.info(`Testing ${platform} function...`);
-                console.log(`🔧 Testing function at: ${testUrl}`);
                 
                 try {
                   const response = await fetch(testUrl);
@@ -1090,7 +1083,6 @@ export default function Admin() {
                   
                   const result = await response.json();
                   toast.success(`✅ ${result.platform || platform} function working!`);
-                  console.log('Function test result:', result);
                 } catch (error) {
                   toast.error(`❌ Function not available: ${error.message}`);
                   console.error('Function test error:', error);
@@ -1121,7 +1113,6 @@ export default function Admin() {
                 }
                 
                 toast.info(`Testing Cloudinary on ${platform}...`);
-                console.log(`🔧 Testing Cloudinary at: ${testUrl}`);
                 
                 try {
                   const response = await fetch(testUrl);
@@ -1132,7 +1123,6 @@ export default function Admin() {
                   
                   const result = await response.json();
                   toast.success(`✅ Cloudinary working on ${result.platform || platform}!`);
-                  console.log('Cloudinary test result:', result);
                 } catch (error) {
                   toast.error(`❌ Cloudinary function not available: ${error.message}`);
                   console.error('Cloudinary test error:', error);
@@ -1441,7 +1431,6 @@ function BlogManager() {
       .replace(/-+/g, '-') // Replace multiple hyphens with single hyphen
       .replace(/(^-|-$)/g, ''); // Remove leading/trailing hyphens
     
-    console.log(`🔗 Generated blog slug: "${title}" → "${slug}"`);
     return slug;
   };
   
@@ -1464,10 +1453,7 @@ function BlogManager() {
   const loadBlogs = async () => {
     try {
       setLoading(true);
-      console.log('📚 Loading blogs from Firebase...');
       const data = await getBlogPosts();
-      console.log('📚 Loaded blogs:', data.length, 'posts');
-      console.log('📚 Blog data:', data);
       setBlogs(data);
     } catch (error) {
       console.error('❌ Error loading blogs:', error);
@@ -1497,22 +1483,13 @@ function BlogManager() {
     };
 
     try {
-      console.log('📝 Blog submit data:', blogData);
-      console.log('👤 Current user:', user?.email);
-      console.log('🔐 User authenticated:', !!user);
-      
       let resultBlog;
       if (editingId) {
-        console.log('✏️ Updating blog with ID:', editingId);
         await updateBlogPost(editingId, blogData);
         resultBlog = { ...blogData, id: editingId };
         logSitemapChange('updated', 'blog', resultBlog);
       } else {
-        console.log('➕ Creating new blog post...');
-        console.log('📝 Blog data being sent to Firebase:', blogData);
         resultBlog = await createBlogPost(blogData);
-        console.log('✅ Blog created successfully:', resultBlog);
-        console.log('🆔 Created blog ID:', resultBlog?.id);
         logSitemapChange('added', 'blog', resultBlog);
       }
       

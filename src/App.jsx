@@ -16,6 +16,7 @@ import Kontak from './pages/Kontak';
 import Blog from './pages/Blog';
 import BlogDetail from './pages/BlogDetail';
 import Admin from './pages/Admin';
+import NotFound from './pages/NotFound';
 import { 
   createProduct, 
   createTestimonial, 
@@ -73,6 +74,7 @@ function App() {
               <Route path="/blog" element={<Blog />} />
               <Route path="/blog/:slug" element={<BlogDetail />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </main>
           <Footer />

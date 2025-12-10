@@ -125,13 +125,11 @@ async function generateSitemapXML() {
 
   try {
     // Get products from Firebase
-    console.log('📦 Fetching products from Firebase...');
     const productsSnapshot = await getDocs(collection(db, 'products'));
     const products = [];
     productsSnapshot.forEach((doc) => {
       products.push({ id: doc.id, ...doc.data() });
     });
-    console.log(`📦 Found ${products.length} products`);
 
     // Add product pages
     products.forEach((product) => {
@@ -160,13 +158,11 @@ async function generateSitemapXML() {
     });
 
     // Get blog posts from Firebase
-    console.log('📝 Fetching blog posts from Firebase...');
     const blogSnapshot = await getDocs(collection(db, 'blogPosts'));
     const blogPosts = [];
     blogSnapshot.forEach((doc) => {
       blogPosts.push({ id: doc.id, ...doc.data() });
     });
-    console.log(`📝 Found ${blogPosts.length} blog posts`);
 
     // Add blog post pages
     blogPosts.forEach((post) => {
@@ -225,12 +221,8 @@ export const handler = async (event, context) => {
   }
 
   try {
-    console.log('🚀 Generating dynamic sitemap...');
-    
     // Generate sitemap XML
     const sitemapXML = await generateSitemapXML();
-    
-    console.log('✅ Dynamic sitemap generated successfully');
     
     // Return XML directly
     return {

@@ -198,16 +198,16 @@ export default function Home() {
                   <p className="text-primary-600 font-bold text-2xl mb-6">
                     Mulai Rp {parseInt(product.price).toLocaleString('id-ID')}
                   </p>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-stretch">
                     <Link 
                       to={`/produk/${product.slug || product.id}`}
-                      className="flex-1 btn-primary justify-center"
+                      className="flex-1 btn-primary justify-center items-center h-11"
                     >
                       Lihat Detail
                     </Link>
                     <WhatsAppButton 
                       productName={product.name}
-                      className="flex-1 btn-whatsapp justify-center"
+                      className="flex-1 btn-whatsapp justify-center items-center h-11"
                     >
                       Pesan
                     </WhatsAppButton>

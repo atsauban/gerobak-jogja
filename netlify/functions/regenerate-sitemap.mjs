@@ -125,13 +125,11 @@ async function generateSitemapXML() {
 
   try {
     // Get products from Firebase
-    console.log('📦 Fetching products from Firebase...');
     const productsSnapshot = await getDocs(collection(db, 'products'));
     const products = [];
     productsSnapshot.forEach((doc) => {
       products.push({ id: doc.id, ...doc.data() });
     });
-    console.log(`📦 Found ${products.length} products`);
 
     // Add product pages
     products.forEach((product) => {
@@ -160,13 +158,11 @@ async function generateSitemapXML() {
     });
 
     // Get blog posts from Firebase
-    console.log('📝 Fetching blog posts from Firebase...');
     const blogSnapshot = await getDocs(collection(db, 'blogPosts'));
     const blogPosts = [];
     blogSnapshot.forEach((doc) => {
       blogPosts.push({ id: doc.id, ...doc.data() });
     });
-    console.log(`📝 Found ${blogPosts.length} blog posts`);
 
     // Add blog post pages
     blogPosts.forEach((post) => {
@@ -251,8 +247,6 @@ export const handler = async (event, context) => {
   }
 
   try {
-    console.log('🚀 Regenerating sitemap...');
-    
     // Generate new sitemap
     const sitemapXML = await generateSitemapXML();
     
@@ -262,7 +256,6 @@ export const handler = async (event, context) => {
     
     // Get the project root directory - in Netlify dev, we need to find the actual project root
     const currentDir = process.cwd();
-    console.log('📁 Current working directory:', currentDir);
     
     // Find the project root by looking for package.json
     let projectRoot = currentDir;
@@ -282,20 +275,15 @@ export const handler = async (event, context) => {
     projectRoot = findProjectRoot(currentDir);
     const sitemapPath = path.join(projectRoot, 'public', 'sitemap.xml');
     
-    console.log('📁 Writing sitemap to:', sitemapPath);
-    
     try {
       fs.writeFileSync(sitemapPath, sitemapXML, 'utf8');
-      console.log('✅ Sitemap file written successfully');
     } catch (writeError) {
-      console.error('❌ Error writing sitemap file:', writeError);
+      console.error('Error writing sitemap file:', writeError);
       // Continue with search engine submission even if file write fails
     }
     
     // Submit to search engines
     await submitToSearchEngines();
-    
-    console.log('✅ Sitemap regenerated and submitted');
     
     // Count products and blogs for response
     const productsSnapshot = await getDocs(collection(db, 'products'));

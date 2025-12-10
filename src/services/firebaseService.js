@@ -224,9 +224,6 @@ export const deleteImageFromCloudinary = async (imageUrl) => {
       platform = 'Netlify';
     }
 
-    console.log(`🔧 Using ${platform} function for Cloudinary delete`);
-    console.log(`📡 Function URL: ${functionUrl}`);
-
     // Call appropriate function to delete from Cloudinary
     const response = await fetch(functionUrl, {
       method: 'POST',
@@ -253,7 +250,6 @@ export const deleteImageFromCloudinary = async (imageUrl) => {
       return false;
     }
 
-    console.log(`✅ ${platform} Cloudinary delete successful:`, result);
     return true;
     
   } catch (error) {
@@ -310,27 +306,16 @@ export const getBlogPost = async (id) => {
 // Create blog post
 export const createBlogPost = async (postData) => {
   try {
-    console.log('🔥 Firebase createBlogPost called with:', postData);
     const postsRef = collection(db, 'blogPosts');
-    console.log('📚 Collection reference created for blogPosts');
-    
     const docRef = await addDoc(postsRef, {
       ...postData,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     });
     
-    console.log('✅ Blog post added to Firebase with ID:', docRef.id);
-    const result = { id: docRef.id, ...postData };
-    console.log('📝 Returning blog post:', result);
-    return result;
+    return { id: docRef.id, ...postData };
   } catch (error) {
-    console.error('❌ Error creating blog post:', error);
-    console.error('❌ Error details:', {
-      code: error.code,
-      message: error.message,
-      stack: error.stack
-    });
+    console.error('Error creating blog post:', error);
     throw error;
   }
 };

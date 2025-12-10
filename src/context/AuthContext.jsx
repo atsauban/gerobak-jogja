@@ -102,7 +102,6 @@ export const AuthProvider = ({ children }) => {
       
       if (!isAutoLogout) {
         // Only show message for manual logout
-        console.log('Logged out successfully');
       }
     } catch (error) {
       console.error('Logout error:', error);

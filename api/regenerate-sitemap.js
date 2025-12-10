@@ -189,7 +189,7 @@ async function generateSitemapXML() {
   </url>`;
     });
 
-    console.log(`✅ Generated sitemap with ${products.length} products and ${blogPosts.length} blog posts`);
+
 
   } catch (error) {
     console.error('❌ Error fetching data from Firebase:', error);
@@ -210,12 +210,9 @@ async function submitToSearchEngines() {
     // Ping Google
     const googlePingUrl = `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`;
     const googleResponse = await fetch(googlePingUrl, { method: 'GET' });
-    console.log('✅ Sitemap submitted to Google:', googleResponse.status);
-
     // Ping Bing
     const bingPingUrl = `https://www.bing.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`;
     const bingResponse = await fetch(bingPingUrl, { method: 'GET' });
-    console.log('✅ Sitemap submitted to Bing:', bingResponse.status);
 
     return { google: googleResponse.status, bing: bingResponse.status };
 
@@ -246,8 +243,6 @@ export default async function handler(req, res) {
   }
 
   try {
-    console.log('🚀 Vercel Function: Regenerating sitemap...');
-    
     // Generate new sitemap
     const sitemapXML = await generateSitemapXML();
     
@@ -257,12 +252,9 @@ export default async function handler(req, res) {
     // 1. Vercel Blob Storage
     // 2. External storage (S3, Cloudinary)
     // 3. Database storage with API endpoint
-    console.log('📝 Sitemap XML generated (not saved to file in Vercel)');
     
     // Submit to search engines
     const submissionResult = await submitToSearchEngines();
-    
-    console.log('✅ Vercel Function: Sitemap regenerated and submitted');
     
     // Count products and blogs for response
     const productsSnapshot = await getDocs(collection(db, 'products'));
