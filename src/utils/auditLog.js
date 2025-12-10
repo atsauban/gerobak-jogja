@@ -76,10 +76,10 @@ export async function logLogout(user) {
 export async function logProductAction(user, action, product) {
   await logAction(user, action, {
     collection: 'products',
-    id: product.id,
-    name: product.name,
-    category: product.category,
-    price: product.price
+    id: product.id || null,
+    name: product.name || 'Unknown Product',
+    category: product.category || 'Unknown Category',
+    price: product.price || null  // Allow null instead of undefined
   });
 }
 
@@ -89,8 +89,8 @@ export async function logProductAction(user, action, product) {
 export async function logTestimonialAction(user, action, testimonial) {
   await logAction(user, action, {
     collection: 'testimonials',
-    id: testimonial.id,
-    name: testimonial.name
+    id: testimonial.id || null,
+    name: testimonial.name || 'Unknown Testimonial'
   });
 }
 
@@ -100,8 +100,8 @@ export async function logTestimonialAction(user, action, testimonial) {
 export async function logBlogAction(user, action, post) {
   await logAction(user, action, {
     collection: 'blog',
-    id: post.id,
-    name: post.title
+    id: post.id || null,
+    name: post.title || 'Unknown Post'
   });
 }
 
@@ -111,8 +111,8 @@ export async function logBlogAction(user, action, post) {
 export async function logFAQAction(user, action, faq) {
   await logAction(user, action, {
     collection: 'faqs',
-    id: faq.id,
-    name: faq.question
+    id: faq.id || null,
+    name: faq.question || 'Unknown Question'
   });
 }
 
@@ -122,7 +122,7 @@ export async function logFAQAction(user, action, faq) {
 export async function logGalleryAction(user, action, image) {
   await logAction(user, action, {
     collection: 'gallery',
-    id: image.id,
+    id: image.id || null,
     name: image.title || 'Gallery image'
   });
 }

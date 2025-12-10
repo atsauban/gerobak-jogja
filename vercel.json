@@ -57,9 +57,14 @@
       ]
     }
   ],
+  "functions": {
+    "api/regenerate-sitemap.js": {
+      "maxDuration": 30
+    }
+  },
   "rewrites": [
     {
-      "source": "/((?!sitemap\\.xml|robots\\.txt|images/).*)",
+      "source": "/((?!sitemap\\.xml|robots\\.txt|images/|api/).*)",
       "destination": "/index.html"
     }
   ]

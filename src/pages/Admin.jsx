@@ -1051,6 +1051,38 @@ export default function Admin() {
               <span className="hidden xs:inline">Regenerate Sitemap</span>
               <span className="xs:hidden">Sitemap</span>
             </button>
+            
+            {/* Debug Button for Testing Functions */}
+            <button
+              onClick={async () => {
+                const isVercel = window.location.hostname.includes('vercel.app');
+                const testUrl = isVercel ? '/api/test' : '/.netlify/functions/test';
+                
+                toast.info(`Testing ${isVercel ? 'Vercel' : 'Netlify'} function...`);
+                
+                try {
+                  const response = await fetch(testUrl);
+                  const result = await response.json();
+                  
+                  if (response.ok) {
+                    toast.success(`✅ ${result.platform} function working!`);
+                    console.log('Function test result:', result);
+                  } else {
+                    toast.error(`❌ Function test failed: ${response.status}`);
+                  }
+                } catch (error) {
+                  toast.error(`❌ Function not available: ${error.message}`);
+                  console.error('Function test error:', error);
+                }
+              }}
+              className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl text-sm sm:text-base"
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="hidden xs:inline">Test Function</span>
+              <span className="xs:hidden">Test</span>
+            </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm sm:text-base text-gray-600">
             <div className="space-y-2">

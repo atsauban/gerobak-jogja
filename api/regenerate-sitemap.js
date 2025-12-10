@@ -1,6 +1,6 @@
 /**
- * Netlify Function: Regenerate Sitemap
- * Triggered when content changes to regenerate sitemap.xml
+ * Vercel Function: Regenerate Sitemap
+ * Compatible with Vercel deployment
  */
 
 import { initializeApp } from 'firebase/app';
@@ -189,8 +189,10 @@ async function generateSitemapXML() {
   </url>`;
     });
 
+    console.log(`✅ Generated sitemap with ${products.length} products and ${blogPosts.length} blog posts`);
+
   } catch (error) {
-    console.error('Error fetching data from Firebase:', error);
+    console.error('❌ Error fetching data from Firebase:', error);
   }
 
   xml += `
@@ -200,88 +202,77 @@ async function generateSitemapXML() {
   return xml;
 }
 
-// Submit sitemap to search engines
+// Submit sitemap to search engines (server-side)
 async function submitToSearchEngines() {
   const sitemapUrl = `${SITE_URL}/sitemap.xml`;
   
   try {
     // Ping Google
     const googlePingUrl = `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`;
-    await fetch(googlePingUrl, { method: 'GET' });
+    const googleResponse = await fetch(googlePingUrl, { method: 'GET' });
+    console.log('✅ Sitemap submitted to Google:', googleResponse.status);
 
     // Ping Bing
     const bingPingUrl = `https://www.bing.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`;
-    await fetch(bingPingUrl, { method: 'GET' });
+    const bingResponse = await fetch(bingPingUrl, { method: 'GET' });
+    console.log('✅ Sitemap submitted to Bing:', bingResponse.status);
+
+    return { google: googleResponse.status, bing: bingResponse.status };
 
   } catch (error) {
-    console.error('Error submitting sitemap:', error);
+    console.error('❌ Error submitting sitemap:', error);
+    return { error: error.message };
   }
 }
 
-// Main handler
-export const handler = async (event, context) => {
+// Vercel Function Handler
+export default async function handler(req, res) {
   // Add CORS headers
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Content-Type': 'application/json',
-  };
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   // Handle preflight requests
-  if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 200,
-      headers,
-      body: ''
-    };
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
   }
 
   // Only allow POST requests
-  if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 405,
-      headers,
-      body: JSON.stringify({ error: 'Method not allowed. Use POST.' })
-    };
+  if (req.method !== 'POST') {
+    return res.status(405).json({ 
+      error: 'Method not allowed. Use POST.',
+      allowedMethods: ['POST']
+    });
   }
 
   try {
-    console.log('🚀 Regenerating sitemap...');
+    console.log('🚀 Vercel Function: Regenerating sitemap...');
     
     // Generate new sitemap
     const sitemapXML = await generateSitemapXML();
     
-    // In a real implementation, you would save this to a file or CDN
-    // For now, we'll return the XML and submit to search engines
-    
     // Submit to search engines
-    await submitToSearchEngines();
+    const submissionResult = await submitToSearchEngines();
     
-    console.log('✅ Sitemap regenerated and submitted');
+    console.log('✅ Vercel Function: Sitemap regenerated and submitted');
     
-    return {
-      statusCode: 200,
-      headers,
-      body: JSON.stringify({
-        success: true,
-        message: 'Sitemap regenerated successfully',
-        timestamp: new Date().toISOString(),
-        sitemapUrl: `${SITE_URL}/sitemap.xml`
-      })
-    };
+    return res.status(200).json({
+      success: true,
+      message: 'Sitemap regenerated successfully via Vercel Function',
+      timestamp: new Date().toISOString(),
+      sitemapUrl: `${SITE_URL}/sitemap.xml`,
+      searchEngineSubmission: submissionResult,
+      platform: 'vercel'
+    });
     
   } catch (error) {
-    console.error('Error regenerating sitemap:', error);
+    console.error('❌ Vercel Function error:', error);
     
-    return {
-      statusCode: 500,
-      headers,
-      body: JSON.stringify({
-        success: false,
-        error: error.message,
-        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
-      })
-    };
+    return res.status(500).json({
+      success: false,
+      error: error.message,
+      platform: 'vercel',
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
-};
+}
