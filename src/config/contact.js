@@ -3,6 +3,7 @@ export const CONTACT_INFO = {
   phone: '+62 823-2722-0077',
   email: 'info@gerobakjogja.com',
   address: 'Yogyakarta, Indonesia',
+  mapsUrl: 'https://maps.app.goo.gl/WUB7D3Qo4HNX37PZ9',
   
   // Social Media
   instagram: 'https://instagram.com/gerobak.jogja_gerojog',

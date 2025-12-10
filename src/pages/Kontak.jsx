@@ -52,7 +52,14 @@ export default function Kontak() {
                 </div>
                 <div>
                   <h3 className="font-semibold text-lg mb-1 text-gray-900">Alamat</h3>
-                  <p className="text-gray-600">{CONTACT_INFO.address}</p>
+                  <a 
+                    href={CONTACT_INFO.mapsUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-gray-600 hover:text-primary-600 transition-colors cursor-pointer"
+                  >
+                    {CONTACT_INFO.address}
+                  </a>
                 </div>
               </div>
 

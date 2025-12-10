@@ -101,12 +101,17 @@ export default function Footer() {
                 </div>
                 <span>{CONTACT_INFO.email}</span>
               </a>
-              <div className="flex items-start gap-3 text-gray-400">
+              <a 
+                href={CONTACT_INFO.mapsUrl} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors"
+              >
                 <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center flex-shrink-0">
                   <MapPin size={18} />
                 </div>
                 <span>{CONTACT_INFO.address}</span>
-              </div>
+              </a>
             </div>
           </div>
           
