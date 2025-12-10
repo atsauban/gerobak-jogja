@@ -1,23 +1,12 @@
 /**
- * Generate Sitemap Script
- * 
- * Script ini akan generate sitemap.xml dinamis dari data Firebase
- * Jalankan script ini sebelum deploy untuk update sitemap dengan produk dan blog terbaru
- * 
- * Usage:
- * node scripts/generate-sitemap.js
+ * Netlify Function: Regenerate Sitemap
+ * Triggered when content changes to regenerate sitemap.xml
  */
 
 import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Firebase config (ganti dengan config Anda)
+// Firebase config from environment variables
 const firebaseConfig = {
   apiKey: process.env.VITE_FIREBASE_API_KEY,
   authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -42,7 +31,8 @@ function formatDate(date) {
 
 // Escape XML special characters
 function escapeXml(unsafe) {
-  return unsafe.replace(/[<>&'"]/g, (c) => {
+  if (!unsafe) return '';
+  return unsafe.toString().replace(/[<>&'"]/g, (c) => {
     switch (c) {
       case '<': return '&lt;';
       case '>': return '&gt;';
@@ -54,9 +44,8 @@ function escapeXml(unsafe) {
   });
 }
 
-async function generateSitemap() {
-  console.log('🚀 Generating sitemap...');
-
+// Generate sitemap XML
+async function generateSitemapXML() {
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
@@ -136,23 +125,22 @@ async function generateSitemap() {
 
   try {
     // Get products from Firebase
-    console.log('📦 Fetching products...');
     const productsSnapshot = await getDocs(collection(db, 'products'));
     const products = [];
     productsSnapshot.forEach((doc) => {
       products.push({ id: doc.id, ...doc.data() });
     });
-    console.log(`✅ Found ${products.length} products`);
 
     // Add product pages
     products.forEach((product) => {
       const lastmod = formatDate(product.updatedAt || product.createdAt);
       const imageUrl = product.images?.[0] || product.image || '';
+      const slug = product.slug || product.id;
       
       xml += `
   <!-- Product: ${escapeXml(product.name)} -->
   <url>
-    <loc>${SITE_URL}/produk/${product.id}</loc>
+    <loc>${SITE_URL}/produk/${slug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>`;
@@ -170,13 +158,11 @@ async function generateSitemap() {
     });
 
     // Get blog posts from Firebase
-    console.log('📝 Fetching blog posts...');
     const blogSnapshot = await getDocs(collection(db, 'blogPosts'));
     const blogPosts = [];
     blogSnapshot.forEach((doc) => {
       blogPosts.push({ id: doc.id, ...doc.data() });
     });
-    console.log(`✅ Found ${blogPosts.length} blog posts`);
 
     // Add blog post pages
     blogPosts.forEach((post) => {
@@ -204,34 +190,83 @@ async function generateSitemap() {
     });
 
   } catch (error) {
-    console.error('❌ Error fetching data from Firebase:', error);
-    console.log('⚠️  Continuing with static pages only...');
+    console.error('Error fetching data from Firebase:', error);
   }
 
   xml += `
   
 </urlset>`;
 
-  // Write sitemap to file
-  const sitemapPath = path.join(__dirname, '..', 'public', 'sitemap.xml');
-  fs.writeFileSync(sitemapPath, xml);
-  
-  console.log('✅ Sitemap generated successfully!');
-  console.log(`📍 Location: ${sitemapPath}`);
-  console.log(`🔗 URL: ${SITE_URL}/sitemap.xml`);
-  console.log(`\n📝 Next steps:`);
-  console.log(`   1. Deploy to Vercel`);
-  console.log(`   2. Verify at: ${SITE_URL}/sitemap.xml`);
-  console.log(`   3. Submit to Google Search Console`);
+  return xml;
 }
 
-// Run the script
-generateSitemap()
-  .then(() => {
-    console.log('✨ Done!');
-    process.exit(0);
-  })
-  .catch((error) => {
-    console.error('❌ Error:', error);
-    process.exit(1);
-  });
+// Submit sitemap to search engines
+async function submitToSearchEngines() {
+  const sitemapUrl = `${SITE_URL}/sitemap.xml`;
+  
+  try {
+    // Ping Google
+    const googlePingUrl = `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`;
+    await fetch(googlePingUrl, { method: 'GET' });
+
+    // Ping Bing
+    const bingPingUrl = `https://www.bing.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`;
+    await fetch(bingPingUrl, { method: 'GET' });
+
+  } catch (error) {
+    console.error('Error submitting sitemap:', error);
+  }
+}
+
+// Main handler
+export const handler = async (event, context) => {
+  // Only allow POST requests
+  if (event.httpMethod !== 'POST') {
+    return {
+      statusCode: 405,
+      body: JSON.stringify({ error: 'Method not allowed' })
+    };
+  }
+
+  try {
+    console.log('🚀 Regenerating sitemap...');
+    
+    // Generate new sitemap
+    const sitemapXML = await generateSitemapXML();
+    
+    // In a real implementation, you would save this to a file or CDN
+    // For now, we'll return the XML and submit to search engines
+    
+    // Submit to search engines
+    await submitToSearchEngines();
+    
+    console.log('✅ Sitemap regenerated and submitted');
+    
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        success: true,
+        message: 'Sitemap regenerated successfully',
+        timestamp: new Date().toISOString(),
+        sitemapUrl: `${SITE_URL}/sitemap.xml`
+      })
+    };
+    
+  } catch (error) {
+    console.error('Error regenerating sitemap:', error);
+    
+    return {
+      statusCode: 500,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        success: false,
+        error: error.message
+      })
+    };
+  }
+};

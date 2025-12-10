@@ -6,6 +6,8 @@ import {
   deleteProduct as deleteProductFirebase,
   deleteImageFromCloudinary
 } from '../services/firebaseService';
+import { debouncedRegenerateSitemap } from '../services/sitemapService';
+import { logSitemapChange } from '../utils/sitemapUpdater';
 
 const ProductContext = createContext();
 
@@ -82,6 +84,13 @@ export const ProductProvider = ({ children }) => {
       
       const createdProduct = await createProduct(newProduct);
       setProducts([createdProduct, ...products]);
+      
+      // Log sitemap change
+      logSitemapChange('added', 'product', createdProduct);
+      
+      // Regenerate sitemap when new product is added
+      debouncedRegenerateSitemap();
+      
       return createdProduct;
     } catch (err) {
       console.error('Error adding product:', err);
@@ -110,9 +119,17 @@ export const ProductProvider = ({ children }) => {
       await updateProductFirebase(id, productData);
       
       // Update local state - merge with existing product data
-      setProducts(products.map(p => 
+      const updatedProducts = products.map(p => 
         p.id === id ? { ...p, ...productData } : p
-      ));
+      );
+      setProducts(updatedProducts);
+      
+      // Log sitemap change
+      const updatedProduct = updatedProducts.find(p => p.id === id);
+      logSitemapChange('updated', 'product', updatedProduct);
+      
+      // Regenerate sitemap when product is updated
+      debouncedRegenerateSitemap();
     } catch (err) {
       console.error('Error updating product:', err);
       setError(err.message);
@@ -124,6 +141,11 @@ export const ProductProvider = ({ children }) => {
     try {
       // Find product to get images
       const product = products.find(p => p.id === id);
+      
+      // Log sitemap change before deletion
+      if (product) {
+        logSitemapChange('deleted', 'product', product);
+      }
       
       // Delete images from Cloudinary
       if (product && product.images && Array.isArray(product.images)) {
@@ -137,6 +159,9 @@ export const ProductProvider = ({ children }) => {
       // Delete from Firebase
       await deleteProductFirebase(id);
       setProducts(products.filter(p => p.id !== id));
+      
+      // Regenerate sitemap when product is deleted
+      debouncedRegenerateSitemap();
     } catch (err) {
       console.error('Error deleting product:', err);
       setError(err.message);

@@ -1,35 +1,10 @@
 /**
- * Generate Sitemap Script
- * 
- * Script ini akan generate sitemap.xml dinamis dari data Firebase
- * Jalankan script ini sebelum deploy untuk update sitemap dengan produk dan blog terbaru
- * 
- * Usage:
- * node scripts/generate-sitemap.js
+ * Sitemap Service
+ * Auto-generate sitemap when content changes
  */
 
-import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Firebase config (ganti dengan config Anda)
-const firebaseConfig = {
-  apiKey: process.env.VITE_FIREBASE_API_KEY,
-  authDomain: process.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.VITE_FIREBASE_APP_ID
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../config/firebase';
 
 const SITE_URL = 'https://gerobakjogja.vercel.app';
 
@@ -42,7 +17,8 @@ function formatDate(date) {
 
 // Escape XML special characters
 function escapeXml(unsafe) {
-  return unsafe.replace(/[<>&'"]/g, (c) => {
+  if (!unsafe) return '';
+  return unsafe.toString().replace(/[<>&'"]/g, (c) => {
     switch (c) {
       case '<': return '&lt;';
       case '>': return '&gt;';
@@ -54,8 +30,9 @@ function escapeXml(unsafe) {
   });
 }
 
-async function generateSitemap() {
-  console.log('🚀 Generating sitemap...');
+// Generate sitemap XML
+export const generateSitemapXML = async () => {
+  console.log('🗺️ Generating sitemap...');
 
   let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
@@ -142,17 +119,17 @@ async function generateSitemap() {
     productsSnapshot.forEach((doc) => {
       products.push({ id: doc.id, ...doc.data() });
     });
-    console.log(`✅ Found ${products.length} products`);
 
     // Add product pages
     products.forEach((product) => {
       const lastmod = formatDate(product.updatedAt || product.createdAt);
       const imageUrl = product.images?.[0] || product.image || '';
+      const slug = product.slug || product.id;
       
       xml += `
   <!-- Product: ${escapeXml(product.name)} -->
   <url>
-    <loc>${SITE_URL}/produk/${product.id}</loc>
+    <loc>${SITE_URL}/produk/${slug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>`;
@@ -176,7 +153,6 @@ async function generateSitemap() {
     blogSnapshot.forEach((doc) => {
       blogPosts.push({ id: doc.id, ...doc.data() });
     });
-    console.log(`✅ Found ${blogPosts.length} blog posts`);
 
     // Add blog post pages
     blogPosts.forEach((post) => {
@@ -203,35 +179,112 @@ async function generateSitemap() {
   </url>`;
     });
 
+    console.log(`✅ Generated sitemap with ${products.length} products and ${blogPosts.length} blog posts`);
+
   } catch (error) {
     console.error('❌ Error fetching data from Firebase:', error);
-    console.log('⚠️  Continuing with static pages only...');
   }
 
   xml += `
   
 </urlset>`;
 
-  // Write sitemap to file
-  const sitemapPath = path.join(__dirname, '..', 'public', 'sitemap.xml');
-  fs.writeFileSync(sitemapPath, xml);
-  
-  console.log('✅ Sitemap generated successfully!');
-  console.log(`📍 Location: ${sitemapPath}`);
-  console.log(`🔗 URL: ${SITE_URL}/sitemap.xml`);
-  console.log(`\n📝 Next steps:`);
-  console.log(`   1. Deploy to Vercel`);
-  console.log(`   2. Verify at: ${SITE_URL}/sitemap.xml`);
-  console.log(`   3. Submit to Google Search Console`);
-}
+  return xml;
+};
 
-// Run the script
-generateSitemap()
-  .then(() => {
-    console.log('✨ Done!');
-    process.exit(0);
-  })
-  .catch((error) => {
-    console.error('❌ Error:', error);
-    process.exit(1);
-  });
+// Submit sitemap to search engines
+export const submitSitemapToSearchEngines = async () => {
+  const sitemapUrl = `${SITE_URL}/sitemap.xml`;
+  
+  // Check if we're in development mode
+  const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  
+  if (isDevelopment) {
+    console.log('🔧 Development mode: Skipping search engine submission (CORS restrictions)');
+    console.log(`📋 Sitemap URL: ${sitemapUrl}`);
+    console.log('💡 In production, sitemap will be automatically submitted to:');
+    console.log('   • Google: https://www.google.com/ping');
+    console.log('   • Bing: https://www.bing.com/ping');
+    return;
+  }
+  
+  try {
+    // Ping Google
+    const googlePingUrl = `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`;
+    await fetch(googlePingUrl, { method: 'GET' });
+    console.log('✅ Sitemap submitted to Google');
+
+    // Ping Bing
+    const bingPingUrl = `https://www.bing.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`;
+    await fetch(bingPingUrl, { method: 'GET' });
+    console.log('✅ Sitemap submitted to Bing');
+
+  } catch (error) {
+    console.warn('⚠️ Could not submit sitemap to search engines:', error.message);
+    console.log('💡 This is normal in development. Sitemap submission works in production.');
+  }
+};
+
+// Main function to regenerate and submit sitemap
+export const regenerateSitemap = async () => {
+  try {
+    console.log('🚀 Starting sitemap regeneration...');
+    
+    // Check if we're in development or production
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    if (isDevelopment) {
+      // In development, just log the change and skip actual submission
+      console.log('🔧 Development mode: Logging sitemap change');
+      await submitSitemapToSearchEngines();
+      console.log('✅ Development: Sitemap change logged successfully');
+      return true;
+    }
+    
+    // In production, call Netlify function to regenerate sitemap
+    const response = await fetch('/.netlify/functions/regenerate-sitemap', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        trigger: 'content_change',
+        timestamp: new Date().toISOString()
+      })
+    });
+    
+    if (response.ok) {
+      const result = await response.json();
+      console.log('✅ Production: Sitemap regeneration completed!', result);
+      return true;
+    } else {
+      console.error('❌ Production: Sitemap regeneration failed:', response.statusText);
+      // Fallback to search engine submission
+      await submitSitemapToSearchEngines();
+      return false;
+    }
+    
+  } catch (error) {
+    console.error('❌ Sitemap regeneration failed:', error);
+    
+    // Fallback: try to submit existing sitemap to search engines
+    try {
+      await submitSitemapToSearchEngines();
+      console.log('✅ Fallback: Submitted existing sitemap to search engines');
+    } catch (submitError) {
+      console.warn('⚠️ Fallback submission also failed:', submitError.message);
+      console.log('💡 This is normal in development mode due to CORS restrictions');
+    }
+    
+    return false;
+  }
+};
+
+// Debounced regeneration to avoid too frequent updates
+let regenerationTimeout;
+export const debouncedRegenerateSitemap = () => {
+  clearTimeout(regenerationTimeout);
+  regenerationTimeout = setTimeout(() => {
+    regenerateSitemap();
+  }, 5000); // Wait 5 seconds after last change
+};

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, X, Image as ImageIcon } from 'lucide-react';
 import ImageUpload from './ImageUpload';
 import { useToast } from './Toast';
+import { logSitemapChange } from '../utils/sitemapUpdater';
+import { debouncedRegenerateSitemap } from '../services/sitemapService';
 import {
   getGalleryImages,
   createGalleryImage,
@@ -55,16 +57,37 @@ export default function GalleryManager() {
     }
 
     try {
+      let result;
       if (editingId) {
         await updateGalleryImage(editingId, formData);
+        result = { id: editingId, ...formData };
+        
+        // Log sitemap change for updated gallery image
+        logSitemapChange('updated', 'gallery', {
+          id: editingId,
+          title: formData.title,
+          url: formData.url
+        });
       } else {
-        await createGalleryImage(formData);
+        result = await createGalleryImage(formData);
+        
+        // Log sitemap change for new gallery image
+        logSitemapChange('added', 'gallery', {
+          id: result.id || 'new',
+          title: formData.title,
+          url: formData.url
+        });
       }
+
+      // Regenerate sitemap when gallery is updated
+      debouncedRegenerateSitemap();
 
       await loadImages();
       setFormData({ url: '', title: '', category: 'aluminium' });
       setShowForm(false);
       setEditingId(null);
+      
+      toast.success('Gambar berhasil disimpan!');
     } catch (error) {
       console.error('Error saving gallery image:', error);
       toast.error('Gagal menyimpan gambar: ' + error.message);
@@ -94,7 +117,21 @@ export default function GalleryManager() {
         
         // Then delete from Firebase
         await deleteGalleryImage(id);
+        
+        // Log sitemap change for deleted gallery image
+        if (image) {
+          logSitemapChange('deleted', 'gallery', {
+            id: id,
+            title: image.title,
+            url: image.url
+          });
+        }
+        
+        // Regenerate sitemap when gallery image is deleted
+        debouncedRegenerateSitemap();
+        
         await loadImages();
+        toast.success('Gambar berhasil dihapus!');
       } catch (error) {
         console.error('Error deleting gallery image:', error);
         toast.error('Gagal menghapus gambar: ' + error.message);

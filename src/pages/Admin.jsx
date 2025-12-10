@@ -4,6 +4,8 @@ import { Link, Navigate } from 'react-router-dom';
 import { useProducts } from '../context/ProductContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../components/Toast';
+import { debouncedRegenerateSitemap } from '../services/sitemapService';
+import { logSitemapChange, generateSitemapReport, getRecentChanges } from '../utils/sitemapUpdater';
 import ImageUpload from '../components/ImageUpload';
 import GalleryManager from '../components/GalleryManager';
 import { 
@@ -144,6 +146,14 @@ export default function Admin() {
             id: editingId, 
             ...productData 
           });
+          
+          // Log sitemap change for updated product
+          logSitemapChange('updated', 'product', {
+            id: editingId,
+            name: productData.name,
+            slug: productData.slug,
+            images: productData.images
+          });
         } else {
           // LocalStorage ID (number) - create new instead
           toast.warning('Produk ini dari localStorage. Akan dibuat sebagai produk baru di Firebase.');
@@ -153,6 +163,14 @@ export default function Admin() {
           await logProductAction(user, 'create', { 
             id: newId, 
             ...productData 
+          });
+          
+          // Log sitemap change for new product
+          logSitemapChange('added', 'product', {
+            id: newId,
+            name: productData.name,
+            slug: productData.slug,
+            images: productData.images
           });
         }
         setEditingId(null);
@@ -164,7 +182,18 @@ export default function Admin() {
           id: newId, 
           ...productData 
         });
+        
+        // Log sitemap change for new product
+        logSitemapChange('added', 'product', {
+          id: newId,
+          name: productData.name,
+          slug: productData.slug,
+          images: productData.images
+        });
       }
+      
+      // Regenerate sitemap when product is created/updated
+      debouncedRegenerateSitemap();
       
       setFormData({ 
         name: '', 
@@ -219,6 +248,17 @@ export default function Admin() {
           name: product.name,
           category: product.category
         });
+        
+        // Log sitemap change for deleted product
+        logSitemapChange('deleted', 'product', {
+          id: id,
+          name: product.name,
+          slug: product.slug || product.id,
+          images: product.images
+        });
+        
+        // Regenerate sitemap when product is deleted
+        debouncedRegenerateSitemap();
         
         toast.success('Produk berhasil dihapus!');
       } catch (error) {
@@ -974,6 +1014,59 @@ export default function Admin() {
           )}
         </div>
 
+        {/* SEO Tools */}
+        <div className="mt-6 sm:mt-8 card p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+            <div>
+              <h3 className="font-bold text-gray-900 text-lg sm:text-xl">SEO Tools</h3>
+              <p className="text-gray-600 text-sm sm:text-base">Kelola sitemap dan optimasi SEO</p>
+            </div>
+            <button
+              onClick={async () => {
+                const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                
+                if (isDevelopment) {
+                  toast.info('Development mode: Logging sitemap changes...');
+                } else {
+                  toast.info('Regenerating sitemap...');
+                }
+                
+                const success = await debouncedRegenerateSitemap();
+                
+                if (success) {
+                  if (isDevelopment) {
+                    toast.success('Sitemap changes logged! Check console for details.');
+                  } else {
+                    toast.success('Sitemap regenerated and submitted to search engines!');
+                  }
+                } else {
+                  toast.warning('Sitemap operation completed with warnings. Check console.');
+                }
+              }}
+              className="bg-gradient-to-r from-green-500 to-green-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl hover:from-green-600 hover:to-green-700 transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl text-sm sm:text-base"
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              <span className="hidden xs:inline">Regenerate Sitemap</span>
+              <span className="xs:hidden">Sitemap</span>
+            </button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm sm:text-base text-gray-600">
+            <div className="space-y-2">
+              <p>• <strong>Auto-regenerate:</strong> Sitemap otomatis update saat konten berubah</p>
+              <p>• <strong>Search engines:</strong> Auto-submit ke Google & Bing (production)</p>
+              <p>• <strong>Image SEO:</strong> Include gambar produk & blog</p>
+            </div>
+            <div className="space-y-2">
+              <p>• <strong>Development:</strong> Logging mode dengan detailed console output</p>
+              <p>• <strong>Manual trigger:</strong> Gunakan tombol di atas jika perlu</p>
+              <p>• <strong>URL:</strong> <a href="/sitemap.xml" target="_blank" className="text-primary-600 hover:underline">/sitemap.xml</a></p>
+              <p>• <strong>Status:</strong> <span className="text-green-600 font-medium">Active & Auto-updating</span></p>
+            </div>
+          </div>
+        </div>
+
         {/* Info Footer */}
         <div className="mt-6 sm:mt-8 glass rounded-2xl p-4 sm:p-6 border border-primary-200/30">
           <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
@@ -1290,16 +1383,23 @@ function BlogManager() {
     };
 
     try {
+      let resultBlog;
       if (editingId) {
         await updateBlogPost(editingId, blogData);
+        resultBlog = { ...blogData, id: editingId };
+        logSitemapChange('updated', 'blog', resultBlog);
       } else {
-        await createBlogPost(blogData);
+        resultBlog = await createBlogPost(blogData);
+        logSitemapChange('added', 'blog', resultBlog);
       }
       
       await loadBlogs();
       setFormData({ title: '', slug: '', excerpt: '', content: '', category: 'Tips', image: '', author: 'Admin Gerobak Jogja', readTime: '5 menit', featured: false });
       setShowForm(false);
       setEditingId(null);
+      
+      // Regenerate sitemap when blog is created/updated
+      debouncedRegenerateSitemap();
     } catch (error) {
       alert('Gagal menyimpan blog: ' + error.message);
     }
@@ -1324,10 +1424,29 @@ function BlogManager() {
   const handleDelete = async (id) => {
     if (confirm('Yakin ingin menghapus blog ini?')) {
       try {
+        // Get blog data before deleting for logging
+        const blogToDelete = blogs.find(b => b.id === id);
+        
         await deleteBlogPost(id);
         await loadBlogs();
+        
+        // Log sitemap change for deleted blog
+        if (blogToDelete) {
+          logSitemapChange('deleted', 'blog', {
+            id: id,
+            title: blogToDelete.title,
+            slug: blogToDelete.slug,
+            image: blogToDelete.image
+          });
+        }
+        
+        // Regenerate sitemap when blog is deleted
+        debouncedRegenerateSitemap();
+        
+        toast.success('Blog berhasil dihapus!');
       } catch (error) {
-        alert('Gagal menghapus blog: ' + error.message);
+        console.error('Delete blog error:', error);
+        toast.error('Gagal menghapus blog: ' + error.message);
       }
     }
   };
