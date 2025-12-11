@@ -85,6 +85,17 @@
       <image:title>td</image:title>
     </image:image>
   </url>
+  <!-- Product: s -->
+  <url>
+    <loc>https://gerobakjogja.vercel.app/produk/s</loc>
+    <lastmod>2025-12-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765414846/gerobak-jogja/products/baadn6e7pyox21axfyqr.webp</image:loc>
+      <image:title>s</image:title>
+    </image:image>
+  </url>
   <!-- Product: adad -->
   <url>
     <loc>https://gerobakjogja.vercel.app/produk/adad</loc>

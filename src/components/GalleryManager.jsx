@@ -13,7 +13,7 @@ import {
   deleteImageFromCloudinary
 } from '../services/firebaseService';
 
-export default function GalleryManager() {
+export default function GalleryManager({ showDeleteConfirmation }) {
   const toast = useToast();
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -104,38 +104,43 @@ export default function GalleryManager() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id) => {
-    if (confirm('Yakin ingin menghapus gambar ini? Gambar akan dihapus dari Cloudinary dan Firebase.')) {
-      try {
-        // Find the image to get its URL
-        const image = images.find(img => img.id === id);
-        
-        if (image && image.url) {
-          // Delete from Cloudinary first
-          await deleteImageFromCloudinary(image.url);
+  const handleDelete = (id) => {
+    // Find the image to get its details
+    const image = images.find(img => img.id === id);
+    
+    showDeleteConfirmation(
+      'gallery',
+      id,
+      image?.title || 'gambar ini',
+      async () => {
+        try {
+          if (image && image.url) {
+            // Delete from Cloudinary first
+            await deleteImageFromCloudinary(image.url);
+          }
+          
+          // Then delete from Firebase
+          await deleteGalleryImage(id);
+          
+          // Log sitemap change for deleted gallery image
+          if (image) {
+            logSitemapChange('deleted', 'gallery', {
+              id: id,
+              title: image.title,
+              url: image.url
+            });
+          }
+          
+          // Regenerate sitemap when gallery image is deleted
+          debouncedRegenerateSitemap();
+          
+          await loadImages();
+          toast.success('Gambar berhasil dihapus!');
+        } catch (error) {
+          handleError(error, 'Gagal menghapus gambar. Silakan coba lagi.', toast);
         }
-        
-        // Then delete from Firebase
-        await deleteGalleryImage(id);
-        
-        // Log sitemap change for deleted gallery image
-        if (image) {
-          logSitemapChange('deleted', 'gallery', {
-            id: id,
-            title: image.title,
-            url: image.url
-          });
-        }
-        
-        // Regenerate sitemap when gallery image is deleted
-        debouncedRegenerateSitemap();
-        
-        await loadImages();
-        toast.success('Gambar berhasil dihapus!');
-      } catch (error) {
-        handleError(error, 'Gagal menghapus gambar. Silakan coba lagi.', toast);
       }
-    }
+    );
   };
 
   const handleCancel = () => {

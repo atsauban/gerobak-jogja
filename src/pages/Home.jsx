@@ -35,83 +35,97 @@ export default function Home() {
   return (
     <div className="pt-16">
       {/* Hero Section */}
-      <section className="relative gradient-primary text-white section-padding overflow-hidden">
-        {/* Optional Hero Image - Uncomment to use photo background */}
-        {/* 
+      <section className="relative text-white section-padding overflow-hidden">
+        {/* Blurred Background Image */}
         <div className="absolute inset-0">
-          <img 
-            src="/images/hero/workshop-gerobak.jpg" 
+          <LazyImage 
+            src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
             alt="Workshop Gerobak Jogja"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover filter blur-sm scale-110"
+            loading="eager"
           />
-          <div className="absolute inset-0 bg-primary-900/80"></div>
+          {/* Gradient overlay for better text readability */}
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-900/85 via-primary-800/80 to-primary-900/90"></div>
         </div>
-        */}
         
-        {/* Subtle Background Effects */}
-        <div className="absolute inset-0 opacity-10">
+        {/* Enhanced Background Effects */}
+        <div className="absolute inset-0 opacity-20">
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-accent-400 rounded-full mix-blend-multiply filter blur-3xl"></div>
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-primary-400 rounded-full mix-blend-multiply filter blur-3xl"></div>
         </div>
         
-        {/* Geometric Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-10 right-10 w-32 h-32 border-2 border-white rotate-45"></div>
-          <div className="absolute bottom-20 left-20 w-24 h-24 border border-white/50 rotate-12"></div>
-          <div className="absolute top-1/2 left-10 w-16 h-16 bg-white/10 rounded-full"></div>
+        {/* Subtle Geometric Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-10 right-10 w-32 h-32 border-2 border-white/30 rotate-45 animate-pulse"></div>
+          <div className="absolute bottom-20 left-20 w-24 h-24 border border-white/20 rotate-12"></div>
+          <div className="absolute top-1/2 left-10 w-16 h-16 bg-white/10 rounded-full animate-bounce"></div>
+          <div className="absolute top-1/4 right-1/4 w-20 h-20 border border-accent-300/20 rounded-full"></div>
         </div>
         
         <div className="max-w-7xl mx-auto container-padding relative z-10">
           <div className="text-center">
-            <div className="inline-block mb-6 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm font-semibold">
-              ✨ Dipercaya oleh 100+ Pelanggan
-            </div>
-            <h1 className="hero-title mb-6">
-              <span className="block">Gerobak Premium</span>
-              <span className="text-accent-300 block">Bisnis Sukses</span>
-            </h1>
-            <p className="hero-subtitle mb-8 text-blue-100">
-              Dari <span className="font-bold text-accent-300">Rp 2.5 juta</span> sudah bisa punya gerobak berkualitas tinggi
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md sm:max-w-none mx-auto">
-              <Link 
-                to="/katalog" 
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-primary-600 font-semibold rounded-xl hover:bg-gray-50 shadow-xl hover:shadow-2xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/50"
-              >
-                Lihat Katalog
-                <ArrowRight size={20} />
-              </Link>
-              <WhatsAppButton 
-                message={CONTACT_INFO.messages.consultation}
-                className="btn-whatsapp justify-center"
-              >
-                Konsultasi Gratis
-              </WhatsAppButton>
-            </div>
+            <ScrollReveal animation="fade-up" delay={200}>
+              <div className="inline-block mb-6 px-4 py-2 bg-white/15 backdrop-blur-md rounded-full text-sm font-semibold border border-white/20 shadow-lg">
+                ✨ Dipercaya oleh 100+ Pelanggan
+              </div>
+            </ScrollReveal>
+            
+            <ScrollReveal animation="fade-up" delay={400}>
+              <h1 className="hero-title mb-6">
+                <span className="block">Gerobak Premium</span>
+                <span className="text-accent-300 block bg-gradient-to-r from-accent-300 to-accent-200 bg-clip-text text-transparent">Bisnis Sukses</span>
+              </h1>
+            </ScrollReveal>
+            
+            <ScrollReveal animation="fade-up" delay={600}>
+              <p className="hero-subtitle mb-8 text-blue-100 drop-shadow-sm">
+                Dari <span className="font-bold text-accent-300">Rp 2.5 juta</span> sudah bisa punya gerobak berkualitas tinggi
+              </p>
+            </ScrollReveal>
+            
+            <ScrollReveal animation="fade-up" delay={800}>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md sm:max-w-none mx-auto">
+                <Link 
+                  to="/katalog" 
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-primary-600 font-semibold rounded-xl hover:bg-gray-50 shadow-xl hover:shadow-2xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/50 hover:scale-105 active:scale-95"
+                >
+                  Lihat Katalog
+                  <ArrowRight size={20} />
+                </Link>
+                <WhatsAppButton 
+                  message={CONTACT_INFO.messages.consultation}
+                  className="btn-whatsapp justify-center hover:scale-105 active:scale-95 transition-transform duration-200"
+                >
+                  Konsultasi Gratis
+                </WhatsAppButton>
+              </div>
+            </ScrollReveal>
           </div>
         </div>
 
-        {/* Stats with Glassmorphism */}
+        {/* Stats with Enhanced Glassmorphism */}
         <div className="max-w-7xl mx-auto container-padding mt-16">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {stats.map((stat, index) => (
-              <div 
-                key={index} 
-                className="text-center glass rounded-2xl p-6 hover:bg-white/20 transition-all duration-300 group"
-              >
-                <div className="flex justify-center mb-3 text-accent-300 group-hover:scale-105 transition-all duration-300">
-                  {stat.icon}
+          <ScrollReveal animation="fade-up" delay={1000}>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {stats.map((stat, index) => (
+                <div 
+                  key={index} 
+                  className="text-center glass rounded-2xl p-6 hover:bg-white/25 transition-all duration-300 group border border-white/20 backdrop-blur-lg shadow-xl hover:shadow-2xl hover:scale-105"
+                >
+                  <div className="flex justify-center mb-3 text-accent-300 group-hover:scale-105 transition-all duration-300">
+                    {stat.icon}
+                  </div>
+                  <CountUpNumber
+                    end={stat.value}
+                    suffix={stat.suffix}
+                    duration={stat.duration}
+                    className="text-4xl font-display font-bold mb-2"
+                  />
+                  <div className="text-blue-100">{stat.label}</div>
                 </div>
-                <CountUpNumber
-                  end={stat.value}
-                  suffix={stat.suffix}
-                  duration={stat.duration}
-                  className="text-4xl font-display font-bold mb-2"
-                />
-                <div className="text-blue-100">{stat.label}</div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </ScrollReveal>
         </div>
       </section>
 

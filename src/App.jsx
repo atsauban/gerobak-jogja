@@ -58,11 +58,11 @@ if (typeof window !== 'undefined') {
 
 function App() {
   return (
-    <ErrorBoundary>
-      <AuthProvider>
-        <ProductProvider>
-          <ToastProvider>
-            <Router>
+    <AuthProvider>
+      <ProductProvider>
+        <ToastProvider>
+          <Router>
+            <ErrorBoundary>
               <SkipToContent />
               <AriaLiveRegion message="" priority="polite" />
               <AriaLiveRegion message="" priority="assertive" />
@@ -88,11 +88,11 @@ function App() {
                 <Footer />
                 <FloatingActionButton />
               </div>
-            </Router>
-          </ToastProvider>
-        </ProductProvider>
-      </AuthProvider>
-    </ErrorBoundary>
+            </ErrorBoundary>
+          </Router>
+        </ToastProvider>
+      </ProductProvider>
+    </AuthProvider>
   );
 }
 

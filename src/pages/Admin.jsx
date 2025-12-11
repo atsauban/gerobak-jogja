@@ -8,6 +8,10 @@ import { debouncedRegenerateSitemap } from '../services/sitemapService';
 import { logSitemapChange, generateSitemapReport, getRecentChanges } from '../utils/sitemapUpdater';
 import ImageUpload from '../components/ImageUpload';
 import GalleryManager from '../components/GalleryManager';
+import ProductCard from '../components/ProductCard';
+import BlogCard from '../components/BlogCard';
+import ConfirmModal from '../components/ConfirmModal';
+import { useAutoSave, loadDraft, clearDraft } from '../hooks/useAutoSave';
 import { 
   getTestimonials, 
   createTestimonial, 
@@ -55,6 +59,70 @@ export default function Admin() {
   const [specValue, setSpecValue] = useState('');
   const [featureInput, setFeatureInput] = useState('');
   const [includeInput, setIncludeInput] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const [deletedProduct, setDeletedProduct] = useState(null); // For undo
+  const [deleteConfirmState, setDeleteConfirmState] = useState({
+    isOpen: false,
+    type: '', // 'product', 'blog', 'testimonial', 'faq', 'gallery'
+    id: null,
+    name: '',
+    onConfirm: null
+  });
+
+  // Universal delete confirmation handler
+  const showDeleteConfirmation = (type, id, name, onConfirm) => {
+    setDeleteConfirmState({
+      isOpen: true,
+      type,
+      id,
+      name,
+      onConfirm
+    });
+  };
+
+  const handleDeleteConfirmation = async () => {
+    if (deleteConfirmState.onConfirm) {
+      await deleteConfirmState.onConfirm();
+    }
+    setDeleteConfirmState({
+      isOpen: false,
+      type: '',
+      id: null,
+      name: '',
+      onConfirm: null
+    });
+  };
+
+  const closeDeleteConfirmation = () => {
+    setDeleteConfirmState({
+      isOpen: false,
+      type: '',
+      id: null,
+      name: '',
+      onConfirm: null
+    });
+  };
+
+  // Auto-save draft
+  useAutoSave(formData, 'admin_product_draft', 1000);
+
+  // Load draft on mount
+  useEffect(() => {
+    if (!showForm && !editingId) {
+      const draft = loadDraft('admin_product_draft');
+      if (draft && Object.keys(draft).length > 0) {
+        // Ask user if they want to restore draft
+        const restore = window.confirm('Ada draft yang tersimpan. Ingin melanjutkan?');
+        if (restore) {
+          setFormData(draft);
+          setShowForm(true);
+        } else {
+          clearDraft('admin_product_draft');
+        }
+      }
+    }
+  }, []);
 
   // Generate slug from product name
   const generateSlug = (name) => {
@@ -213,10 +281,12 @@ export default function Admin() {
         includes: []
       });
       setShowForm(false);
+      // Clear draft after successful save
+      clearDraft('admin_product_draft');
+      
       toast.success('Produk berhasil disimpan!');
     } catch (error) {
-      console.error('Full error:', error);
-      toast.error('Gagal menyimpan produk: ' + error.message);
+      handleError(error, 'Gagal menyimpan produk. Silakan coba lagi.', toast);
     }
   };
 
@@ -238,37 +308,59 @@ export default function Admin() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleDeleteClick = (id) => {
     const product = products.find(p => p.id === id);
     if (!product) return;
+    setProductToDelete({ id, product });
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!productToDelete) return;
     
-    if (confirm(`Yakin ingin menghapus produk "${product.name}"?`)) {
-      try {
-        await deleteProduct(id);
-        
-        // Log delete action
-        await logProductAction(user, 'delete', { 
-          id: id, 
-          name: product.name,
-          category: product.category
-        });
-        
-        // Log sitemap change for deleted product
-        logSitemapChange('deleted', 'product', {
-          id: id,
-          name: product.name,
-          slug: product.slug || product.id,
-          images: product.images
-        });
-        
-        // Regenerate sitemap when product is deleted
-        debouncedRegenerateSitemap();
-        
-        toast.success('Produk berhasil dihapus!');
-      } catch (error) {
-        console.error('Delete error:', error);
-        toast.error('Gagal menghapus produk: ' + error.message);
-      }
+    const { id, product } = productToDelete;
+    
+    try {
+      // Store deleted product for undo
+      setDeletedProduct({ id, product, timestamp: Date.now() });
+      
+      await deleteProduct(id);
+      
+      // Log delete action
+      await logProductAction(user, 'delete', { 
+        id: id, 
+        name: product.name,
+        category: product.category
+      });
+      
+      // Log sitemap change for deleted product
+      logSitemapChange('deleted', 'product', {
+        id: id,
+        name: product.name,
+        slug: product.slug || product.id,
+        images: product.images
+      });
+      
+      // Regenerate sitemap when product is deleted
+      debouncedRegenerateSitemap();
+      
+      toast.success('Produk berhasil dihapus!', 5000, {
+        onUndo: async () => {
+          try {
+            // Restore product
+            await addProduct(deletedProduct.product);
+            setDeletedProduct(null);
+            toast.success('Produk berhasil dikembalikan!');
+          } catch (error) {
+            toast.error('Gagal mengembalikan produk: ' + error.message);
+          }
+        }
+      });
+    } catch (error) {
+      handleError(error, 'Gagal menghapus produk. Silakan coba lagi.', toast);
+    } finally {
+      setShowDeleteConfirm(false);
+      setProductToDelete(null);
     }
   };
 
@@ -309,6 +401,8 @@ export default function Admin() {
     setSpecValue('');
     setFeatureInput('');
     setIncludeInput('');
+    // Clear draft when form is cancelled
+    clearDraft('admin_product_draft');
   };
 
   // Helper functions for dynamic fields
@@ -860,13 +954,13 @@ export default function Admin() {
                 />
               </div>
               <div className="flex gap-2">
-                <button type="submit" className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">
+                <button type="submit" className="bg-green-500 text-white px-6 py-3 rounded hover:bg-green-600 min-h-[44px] transition-colors focus:outline-none focus:ring-2 focus:ring-green-300">
                   {editingId ? 'Update Produk' : 'Simpan Produk'}
                 </button>
                 <button
                   type="button"
                   onClick={handleCancel}
-                  className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600"
+                  className="bg-gray-500 text-white px-6 py-3 rounded hover:bg-gray-600 min-h-[44px] transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
                 >
                   Batal
                 </button>
@@ -893,7 +987,8 @@ export default function Admin() {
             </div>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-100">
                 <tr>
@@ -922,12 +1017,13 @@ export default function Admin() {
                       <div className="flex justify-center">
                         <button
                           onClick={() => handleToggleFeatured(product.id, product.featured)}
-                          className={`p-2 rounded-full transition-colors ${
+                          className={`p-2 rounded-full transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center ${
                             product.featured 
                               ? 'text-yellow-500 hover:text-yellow-600' 
                               : 'text-gray-300 hover:text-gray-400'
                           }`}
                           title={product.featured ? 'Hapus dari unggulan' : 'Jadikan unggulan'}
+                          aria-label={product.featured ? 'Hapus dari unggulan' : 'Jadikan unggulan'}
                         >
                           <Star size={20} fill={product.featured ? 'currentColor' : 'none'} />
                         </button>
@@ -938,22 +1034,25 @@ export default function Admin() {
                         <Link
                           to={`/produk/${product.slug || product.id}`}
                           target="_blank"
-                          className="text-blue-600 hover:text-blue-800"
+                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
                           title="Lihat Detail"
+                          aria-label="Lihat detail produk"
                         >
                           <Eye size={18} />
                         </Link>
                         <button
                           onClick={() => handleEdit(product)}
-                          className="text-green-600 hover:text-green-800"
+                          className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
                           title="Edit"
+                          aria-label="Edit produk"
                         >
                           <Edit size={18} />
                         </button>
                         <button
-                          onClick={() => handleDelete(product.id)}
-                          className="text-red-600 hover:text-red-800"
+                          onClick={() => handleDeleteClick(product.id)}
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
                           title="Hapus"
+                          aria-label="Hapus produk"
                         >
                           <Trash2 size={18} />
                         </button>
@@ -965,13 +1064,63 @@ export default function Admin() {
             </table>
           </div>
 
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {products.map(product => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onEdit={handleEdit}
+                onDelete={handleDeleteClick}
+                onToggleFeatured={handleToggleFeatured}
+              />
+            ))}
+          </div>
+
           {products.length === 0 && (
             <div className="text-center py-12 text-gray-500">
               <p>Belum ada produk. Klik "Tambah Produk" untuk menambahkan produk baru.</p>
             </div>
           )}
+
+          {/* Delete Confirmation Modal */}
+          <ConfirmModal
+            isOpen={showDeleteConfirm}
+            onClose={() => {
+              setShowDeleteConfirm(false);
+              setProductToDelete(null);
+            }}
+            onConfirm={handleDeleteConfirm}
+            title="Hapus Produk"
+            message={
+              productToDelete
+                ? `Apakah Anda yakin ingin menghapus produk "${productToDelete.product.name}"? Tindakan ini tidak dapat dibatalkan.`
+                : 'Apakah Anda yakin?'
+            }
+            confirmText="Ya, Hapus"
+            cancelText="Batal"
+            type="danger"
+          />
             </>
           )}
+
+        {/* Universal Delete Confirmation Modal */}
+        <ConfirmModal
+          isOpen={deleteConfirmState.isOpen}
+          onClose={closeDeleteConfirmation}
+          onConfirm={handleDeleteConfirmation}
+          title={`Hapus ${deleteConfirmState.type === 'testimonial' ? 'Testimoni' : 
+                          deleteConfirmState.type === 'blog' ? 'Blog' : 
+                          deleteConfirmState.type === 'faq' ? 'FAQ' : 
+                          deleteConfirmState.type === 'gallery' ? 'Gambar' : 'Item'}`}
+          message={`Apakah Anda yakin ingin menghapus ${deleteConfirmState.type === 'testimonial' ? 'testimoni dari' : 
+                                                        deleteConfirmState.type === 'blog' ? 'blog' : 
+                                                        deleteConfirmState.type === 'faq' ? 'FAQ' : 
+                                                        deleteConfirmState.type === 'gallery' ? 'gambar' : 'item'} "${deleteConfirmState.name}"? Tindakan ini tidak dapat dibatalkan.`}
+          confirmText="Ya, Hapus"
+          cancelText="Batal"
+          type="danger"
+        />
 
           {/* Gallery Tab */}
           {activeTab === 'gallery' && (
@@ -980,7 +1129,7 @@ export default function Admin() {
                 <h2 className="text-2xl font-bold text-gray-900">Kelola Galeri</h2>
                 <p className="text-gray-600 mt-1">Upload dan kelola foto galeri gerobak</p>
               </div>
-              <GalleryManager />
+              <GalleryManager showDeleteConfirmation={showDeleteConfirmation} />
             </>
           )}
 
@@ -991,7 +1140,7 @@ export default function Admin() {
                 <h2 className="text-2xl font-bold text-gray-900">Kelola Testimoni</h2>
                 <p className="text-gray-600 mt-1">Tambah dan kelola testimoni pelanggan</p>
               </div>
-              <TestimonialManager />
+              <TestimonialManager showDeleteConfirmation={showDeleteConfirmation} />
             </>
           )}
 
@@ -1002,7 +1151,7 @@ export default function Admin() {
                 <h2 className="text-2xl font-bold text-gray-900">Kelola Blog</h2>
                 <p className="text-gray-600 mt-1">Tulis dan kelola artikel blog</p>
               </div>
-              <BlogManager />
+              <BlogManager showDeleteConfirmation={showDeleteConfirmation} />
             </>
           )}
 
@@ -1013,7 +1162,7 @@ export default function Admin() {
                 <h2 className="text-2xl font-bold text-gray-900">Kelola FAQ</h2>
                 <p className="text-gray-600 mt-1">Tambah dan kelola pertanyaan yang sering diajukan</p>
               </div>
-              <FAQManager />
+              <FAQManager showDeleteConfirmation={showDeleteConfirmation} />
             </>
           )}
         </div>
@@ -1184,7 +1333,7 @@ export default function Admin() {
 }
 
 // Testimonial Manager Component
-function TestimonialManager() {
+function TestimonialManager({ showDeleteConfirmation }) {
   const { user } = useAuth();
   const toast = useToast();
   const [testimonials, setTestimonials] = useState([]);
@@ -1246,15 +1395,22 @@ function TestimonialManager() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id) => {
-    if (confirm('Yakin ingin menghapus testimoni ini?')) {
-      try {
-        await deleteTestimonial(id);
-        await loadTestimonials();
-      } catch (error) {
-        toast.error('Gagal menghapus testimoni: ' + error.message);
+  const handleDelete = (id) => {
+    const testimonial = testimonials.find(t => t.id === id);
+    showDeleteConfirmation(
+      'testimonial',
+      id,
+      testimonial?.name || 'pengguna ini',
+      async () => {
+        try {
+          await deleteTestimonial(id);
+          await loadTestimonials();
+          toast.success('Testimoni berhasil dihapus!');
+        } catch (error) {
+          toast.error('Gagal menghapus testimoni: ' + error.message);
+        }
       }
-    }
+    );
   };
 
   const generateAvatar = (name) => {
@@ -1340,7 +1496,7 @@ function TestimonialManager() {
             ></textarea>
           </div>
           <div className="flex gap-2">
-            <button type="submit" className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">
+            <button type="submit" className="bg-green-500 text-white px-6 py-3 rounded hover:bg-green-600 min-h-[44px] transition-colors focus:outline-none focus:ring-2 focus:ring-green-300">
               {editingId ? 'Update Testimoni' : 'Simpan Testimoni'}
             </button>
             <button
@@ -1350,7 +1506,7 @@ function TestimonialManager() {
                 setEditingId(null);
                 setFormData({ name: '', business: '', rating: 5, text: '', image: '' });
               }}
-              className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600"
+              className="bg-gray-500 text-white px-6 py-3 rounded hover:bg-gray-600 min-h-[44px] transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
             >
               Batal
             </button>
@@ -1412,7 +1568,7 @@ function TestimonialManager() {
 }
 
 // Blog Manager Component
-function BlogManager() {
+function BlogManager({ showDeleteConfirmation }) {
   const { user } = useAuth();
   const toast = useToast();
   const [blogs, setBlogs] = useState([]);
@@ -1530,34 +1686,38 @@ function BlogManager() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id) => {
-    if (confirm('Yakin ingin menghapus blog ini?')) {
-      try {
-        // Get blog data before deleting for logging
-        const blogToDelete = blogs.find(b => b.id === id);
-        
-        await deleteBlogPost(id);
-        await loadBlogs();
-        
-        // Log sitemap change for deleted blog
-        if (blogToDelete) {
-          logSitemapChange('deleted', 'blog', {
-            id: id,
-            title: blogToDelete.title,
-            slug: blogToDelete.slug,
-            image: blogToDelete.image
-          });
+  const handleDelete = (id) => {
+    // Get blog data before deleting for logging
+    const blogToDelete = blogs.find(b => b.id === id);
+    showDeleteConfirmation(
+      'blog',
+      id,
+      blogToDelete?.title || 'ini',
+      async () => {
+        try {
+          await deleteBlogPost(id);
+          await loadBlogs();
+          
+          // Log sitemap change for deleted blog
+          if (blogToDelete) {
+            logSitemapChange('deleted', 'blog', {
+              id: id,
+              title: blogToDelete.title,
+              slug: blogToDelete.slug,
+              image: blogToDelete.image
+            });
+          }
+          
+          // Regenerate sitemap when blog is deleted
+          debouncedRegenerateSitemap();
+          
+          toast.success('Blog berhasil dihapus!');
+        } catch (error) {
+          console.error('Delete blog error:', error);
+          toast.error('Gagal menghapus blog: ' + error.message);
         }
-        
-        // Regenerate sitemap when blog is deleted
-        debouncedRegenerateSitemap();
-        
-        toast.success('Blog berhasil dihapus!');
-      } catch (error) {
-        console.error('Delete blog error:', error);
-        toast.error('Gagal menghapus blog: ' + error.message);
       }
-    }
+    );
   };
 
   return (
@@ -1693,7 +1853,7 @@ function BlogManager() {
             </div>
           </div>
           <div className="flex gap-2">
-            <button type="submit" className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">
+            <button type="submit" className="bg-green-500 text-white px-6 py-3 rounded hover:bg-green-600 min-h-[44px] transition-colors focus:outline-none focus:ring-2 focus:ring-green-300">
               {editingId ? 'Update Blog' : 'Simpan Blog'}
             </button>
             <button
@@ -1703,7 +1863,7 @@ function BlogManager() {
                 setEditingId(null);
                 setFormData({ title: '', slug: '', excerpt: '', content: '', category: 'Tips', image: '', author: 'Admin Gerobak Jogja', readTime: '5 menit', featured: false });
               }}
-              className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600"
+              className="bg-gray-500 text-white px-6 py-3 rounded hover:bg-gray-600 min-h-[44px] transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
             >
               Batal
             </button>
@@ -1716,7 +1876,9 @@ function BlogManager() {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
         </div>
       ) : (
-        <div className="overflow-x-auto">
+        <>
+          {/* Desktop Table View */}
+          <div className="hidden md:block overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-100">
               <tr>
@@ -1736,26 +1898,29 @@ function BlogManager() {
                     </span>
                   </td>
                   <td className="px-4 py-3">
-                    {blog.featured && <span className="text-yellow-500">⭐</span>}
+                    {blog.featured && <span className="text-yellow-500" aria-label="Featured">⭐</span>}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex justify-center gap-2">
                       <Link
                         to={`/blog/${blog.slug}`}
                         target="_blank"
-                        className="text-blue-600 hover:text-blue-800"
+                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                        aria-label="Lihat blog"
                       >
                         <Eye size={18} />
                       </Link>
                       <button
                         onClick={() => handleEdit(blog)}
-                        className="text-green-600 hover:text-green-800"
+                        className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                        aria-label="Edit blog"
                       >
                         <Edit size={18} />
                       </button>
                       <button
                         onClick={() => handleDelete(blog.id)}
-                        className="text-red-600 hover:text-red-800"
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
+                        aria-label="Hapus blog"
                       >
                         <Trash2 size={18} />
                       </button>
@@ -1765,7 +1930,20 @@ function BlogManager() {
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {blogs.map(blog => (
+              <BlogCard
+                key={blog.id}
+                blog={blog}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            ))}
+          </div>
+        </>
       )}
 
       {!loading && blogs.length === 0 && (
@@ -1778,7 +1956,7 @@ function BlogManager() {
 }
 
 // FAQ Manager Component
-function FAQManager() {
+function FAQManager({ showDeleteConfirmation }) {
   const { user } = useAuth();
   const toast = useToast();
   const [faqs, setFaqs] = useState([]);
@@ -1836,15 +2014,22 @@ function FAQManager() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id) => {
-    if (confirm('Yakin ingin menghapus FAQ ini?')) {
-      try {
-        await deleteFAQ(id);
-        await loadFAQs();
-      } catch (error) {
-        toast.error('Gagal menghapus FAQ: ' + error.message);
+  const handleDelete = (id) => {
+    const faq = faqs.find(f => f.id === id);
+    showDeleteConfirmation(
+      'faq',
+      id,
+      faq?.question || 'ini',
+      async () => {
+        try {
+          await deleteFAQ(id);
+          await loadFAQs();
+          toast.success('FAQ berhasil dihapus!');
+        } catch (error) {
+          toast.error('Gagal menghapus FAQ: ' + error.message);
+        }
       }
-    }
+    );
   };
 
   return (
@@ -1899,7 +2084,7 @@ function FAQManager() {
             />
           </div>
           <div className="flex gap-2">
-            <button type="submit" className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">
+            <button type="submit" className="bg-green-500 text-white px-6 py-3 rounded hover:bg-green-600 min-h-[44px] transition-colors focus:outline-none focus:ring-2 focus:ring-green-300">
               {editingId ? 'Update FAQ' : 'Simpan FAQ'}
             </button>
             <button
@@ -1909,7 +2094,7 @@ function FAQManager() {
                 setEditingId(null);
                 setFormData({ question: '', answer: '', order: 0 });
               }}
-              className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600"
+              className="bg-gray-500 text-white px-6 py-3 rounded hover:bg-gray-600 min-h-[44px] transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
             >
               Batal
             </button>
@@ -1960,6 +2145,8 @@ function FAQManager() {
           <p>Belum ada FAQ. Klik "Tambah FAQ" untuk menambahkan.</p>
         </div>
       )}
+
+
     </div>
   );
 }

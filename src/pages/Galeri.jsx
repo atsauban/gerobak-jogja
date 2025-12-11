@@ -72,11 +72,12 @@ export default function Galeri() {
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`px-5 py-2 rounded-full font-medium transition-all duration-300 ${
+              className={`px-5 py-3 rounded-full font-medium transition-all duration-300 min-h-[44px] min-w-[44px] ${
                 selectedCategory === cat.id
                   ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg scale-105'
                   : 'bg-white text-gray-700 hover:bg-gray-50 shadow-md hover:shadow-lg'
               }`}
+              aria-pressed={selectedCategory === cat.id}
             >
               {cat.name}
             </button>
