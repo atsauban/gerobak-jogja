@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar, User, Tag, ArrowRight, Search } from 'lucide-react';
 import { getBlogPosts } from '../services/firebaseService';
+import { handleError } from '../utils/errorHandler';
+import { BlogGridSkeleton, FeaturedArticleSkeleton, PageSkeleton } from '../components/LoadingSkeleton';
 
 export default function Blog() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,7 +21,7 @@ export default function Blog() {
       const data = await getBlogPosts();
       setArticles(data || []);
     } catch (error) {
-      console.error('Error loading blogs:', error);
+      handleError(error, 'Gagal memuat artikel blog. Silakan refresh halaman.');
       setArticles([]);
     } finally {
       setLoading(false);
@@ -42,6 +44,30 @@ export default function Blog() {
 
   // Get featured article (first one with featured: true)
   const featuredArticle = articles.find(article => article.featured === true);
+
+  if (loading) {
+    return (
+      <div className="pt-16 min-h-screen bg-gradient-to-b from-gray-50 to-white">
+        {/* Hero */}
+        <div className="bg-white py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-4xl md:text-5xl font-display font-bold mb-4 text-gray-900 animate-fade-in">Blog Gerobak Jogja</h1>
+            <p className="text-lg text-gray-600 max-w-3xl mx-auto animate-slide-up">
+              Tips, panduan, dan inspirasi seputar bisnis gerobak
+            </p>
+          </div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <FeaturedArticleSkeleton />
+          <div className="mt-12">
+            <div className="h-8 bg-gray-200 rounded w-48 mb-8 animate-pulse"></div>
+            <BlogGridSkeleton count={6} />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pt-16 min-h-screen bg-gradient-to-b from-gray-50 to-white">

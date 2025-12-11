@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronDown, HelpCircle } from 'lucide-react';
 import { getFAQs } from '../services/firebaseService';
+import { handleError } from '../utils/errorHandler';
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(null);
@@ -16,7 +17,7 @@ export default function FAQ() {
       const data = await getFAQs();
       setFaqs(data);
     } catch (error) {
-      console.error('Error loading FAQs:', error);
+      handleError(error, 'Gagal memuat FAQ. Menampilkan data default.');
       // Fallback to default FAQs
       setFaqs([
         {

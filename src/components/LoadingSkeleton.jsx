@@ -63,3 +63,72 @@ export function HeroSkeleton() {
     </div>
   );
 }
+
+export function BlogCardSkeleton() {
+  return (
+    <div className="card overflow-hidden animate-pulse">
+      <div className="h-48 bg-gray-200"></div>
+      <div className="p-6 space-y-4">
+        <div className="h-4 bg-gray-200 rounded w-20"></div>
+        <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+        <div className="h-4 bg-gray-200 rounded w-full"></div>
+        <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+        <div className="flex items-center gap-4 mt-4">
+          <div className="h-4 bg-gray-200 rounded w-24"></div>
+          <div className="h-4 bg-gray-200 rounded w-24"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function BlogGridSkeleton({ count = 6 }) {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {Array.from({ length: count }).map((_, i) => (
+        <BlogCardSkeleton key={i} />
+      ))}
+    </div>
+  );
+}
+
+export function FeaturedArticleSkeleton() {
+  return (
+    <div className="card overflow-hidden animate-pulse">
+      <div className="md:flex">
+        <div className="md:w-1/2 h-64 md:h-auto bg-gray-200"></div>
+        <div className="md:w-1/2 p-8 space-y-4">
+          <div className="h-4 bg-gray-200 rounded w-20"></div>
+          <div className="h-8 bg-gray-200 rounded w-3/4"></div>
+          <div className="h-4 bg-gray-200 rounded w-full"></div>
+          <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+          <div className="h-4 bg-gray-200 rounded w-4/6"></div>
+          <div className="flex items-center gap-4 mt-6">
+            <div className="h-4 bg-gray-200 rounded w-24"></div>
+            <div className="h-4 bg-gray-200 rounded w-24"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function PageSkeleton() {
+  return (
+    <div className="pt-16 min-h-screen bg-gradient-to-b from-gray-50 to-white">
+      <div className="bg-white py-16 animate-pulse">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="h-12 bg-gray-200 rounded w-64 mx-auto mb-4"></div>
+          <div className="h-6 bg-gray-200 rounded w-96 mx-auto"></div>
+        </div>
+      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="space-y-8">
+          <div className="h-64 bg-gray-200 rounded-lg"></div>
+          <div className="h-32 bg-gray-200 rounded-lg"></div>
+          <div className="h-48 bg-gray-200 rounded-lg"></div>
+        </div>
+      </div>
+    </div>
+  );
+}

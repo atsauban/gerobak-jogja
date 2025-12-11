@@ -4,6 +4,7 @@ import ImageUpload from './ImageUpload';
 import { useToast } from './Toast';
 import { logSitemapChange } from '../utils/sitemapUpdater';
 import { debouncedRegenerateSitemap } from '../services/sitemapService';
+import { handleError, getErrorMessage } from '../utils/errorHandler';
 import {
   getGalleryImages,
   createGalleryImage,
@@ -42,7 +43,7 @@ export default function GalleryManager() {
       const data = await getGalleryImages();
       setImages(data);
     } catch (error) {
-      console.error('Error loading gallery images:', error);
+      handleError(error, 'Gagal memuat gambar galeri. Silakan refresh halaman.', toast);
     } finally {
       setLoading(false);
     }
@@ -89,8 +90,7 @@ export default function GalleryManager() {
       
       toast.success('Gambar berhasil disimpan!');
     } catch (error) {
-      console.error('Error saving gallery image:', error);
-      toast.error('Gagal menyimpan gambar: ' + error.message);
+      handleError(error, 'Gagal menyimpan gambar. Silakan coba lagi.', toast);
     }
   };
 
@@ -133,8 +133,7 @@ export default function GalleryManager() {
         await loadImages();
         toast.success('Gambar berhasil dihapus!');
       } catch (error) {
-        console.error('Error deleting gallery image:', error);
-        toast.error('Gagal menghapus gambar: ' + error.message);
+        handleError(error, 'Gagal menghapus gambar. Silakan coba lagi.', toast);
       }
     }
   };

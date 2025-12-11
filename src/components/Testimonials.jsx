@@ -1,6 +1,7 @@
 import { Star, Quote } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { getTestimonials } from '../services/firebaseService';
+import { handleError } from '../utils/errorHandler';
 
 export default function Testimonials() {
   const [testimonials, setTestimonials] = useState([]);
@@ -15,7 +16,7 @@ export default function Testimonials() {
       const data = await getTestimonials();
       setTestimonials(data);
     } catch (error) {
-      console.error('Error loading testimonials:', error);
+      handleError(error, 'Gagal memuat testimoni. Menampilkan data default.');
       // Fallback to default testimonials
       setTestimonials([
         {
