@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
-import { X, ZoomIn, Image as ImageIcon } from 'lucide-react';
+import { ZoomIn, Image as ImageIcon } from 'lucide-react';
 import { getGalleryImages } from '../services/firebaseService';
+import { handleError } from '../utils/errorHandler';
+import ImageGallery from '../components/ImageGallery';
 
 export default function Galeri() {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -18,7 +20,7 @@ export default function Galeri() {
       const data = await getGalleryImages();
       setImages(data);
     } catch (error) {
-      console.error('Error loading gallery images:', error);
+      handleError(error, 'Gagal memuat gambar galeri. Silakan refresh halaman.');
       setImages([]);
     } finally {
       setLoading(false);
@@ -122,32 +124,16 @@ export default function Galeri() {
         )}
       </div>
 
-      {/* Modal */}
+      {/* Image Gallery Modal */}
       {selectedImage && (
-        <div 
-          className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in"
-          onClick={() => setSelectedImage(null)}
-        >
-          <button 
-            className="absolute top-6 right-6 text-white hover:text-gray-300 transition-colors bg-white/10 backdrop-blur-sm rounded-full p-3 hover:bg-white/20"
-            onClick={() => setSelectedImage(null)}
-          >
-            <X size={28} />
-          </button>
-          <div className="max-w-5xl w-full animate-scale-in">
-            <img 
-              src={selectedImage.url} 
-              alt={selectedImage.title}
-              className="w-full h-auto rounded-2xl shadow-2xl"
-            />
-            <div className="text-center mt-6">
-              <p className="text-white text-2xl font-bold mb-2">{selectedImage.title}</p>
-              <span className="inline-block bg-white/20 backdrop-blur-sm text-white px-4 py-1 rounded-full text-sm">
-                {categories.find(c => c.id === selectedImage.category)?.name}
-              </span>
-            </div>
-          </div>
-        </div>
+        <ImageGallery
+          images={filteredImages.map(img => img.url)}
+          initialIndex={filteredImages.findIndex(img => img.id === selectedImage.id)}
+          onClose={() => setSelectedImage(null)}
+          title={selectedImage.title}
+          showCounter={true}
+          enableZoom={true}
+        />
       )}
     </div>
   );

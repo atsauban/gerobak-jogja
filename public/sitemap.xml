@@ -5,42 +5,42 @@
   <!-- Static Pages -->
   <url>
     <loc>https://gerobakjogja.vercel.app/</loc>
-    <lastmod>2025-12-10</lastmod>
+    <lastmod>2025-12-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <url>
     <loc>https://gerobakjogja.vercel.app/katalog</loc>
-    <lastmod>2025-12-10</lastmod>
+    <lastmod>2025-12-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   
   <url>
     <loc>https://gerobakjogja.vercel.app/galeri</loc>
-    <lastmod>2025-12-10</lastmod>
+    <lastmod>2025-12-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>https://gerobakjogja.vercel.app/tentang</loc>
-    <lastmod>2025-12-10</lastmod>
+    <lastmod>2025-12-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>https://gerobakjogja.vercel.app/kontak</loc>
-    <lastmod>2025-12-10</lastmod>
+    <lastmod>2025-12-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>https://gerobakjogja.vercel.app/blog</loc>
-    <lastmod>2025-12-10</lastmod>
+    <lastmod>2025-12-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -48,28 +48,28 @@
   <!-- Product Categories -->
   <url>
     <loc>https://gerobakjogja.vercel.app/katalog?category=aluminium</loc>
-    <lastmod>2025-12-10</lastmod>
+    <lastmod>2025-12-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>https://gerobakjogja.vercel.app/katalog?category=kayu</loc>
-    <lastmod>2025-12-10</lastmod>
+    <lastmod>2025-12-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>https://gerobakjogja.vercel.app/katalog?category=stainless</loc>
-    <lastmod>2025-12-10</lastmod>
+    <lastmod>2025-12-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>https://gerobakjogja.vercel.app/katalog?category=kombinasi</loc>
-    <lastmod>2025-12-10</lastmod>
+    <lastmod>2025-12-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -77,23 +77,34 @@
   <!-- Product: td -->
   <url>
     <loc>https://gerobakjogja.vercel.app/produk/td</loc>
-    <lastmod>2025-12-10</lastmod>
+    <lastmod>2025-12-11</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
-      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765373044/gerobak-jogja/products/qpls9t0irtcvq1vs3tyy.png</image:loc>
+      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765412764/gerobak-jogja/products/qfj98xbqgz1bezhdihmg.webp</image:loc>
       <image:title>td</image:title>
     </image:image>
   </url>
   <!-- Product: adad -->
   <url>
     <loc>https://gerobakjogja.vercel.app/produk/adad</loc>
+    <lastmod>2025-12-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765412738/gerobak-jogja/products/xwcalt99fyse8i6euede.webp</image:loc>
+      <image:title>adad</image:title>
+    </image:image>
+  </url>
+  <!-- Product: test -->
+  <url>
+    <loc>https://gerobakjogja.vercel.app/produk/test</loc>
     <lastmod>2025-12-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
-      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765373118/gerobak-jogja/products/oyukvr2okrllt6uo10o6.webp</image:loc>
-      <image:title>adad</image:title>
+      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765380799/gerobak-jogja/products/wkqa8nzf98qbfzn7yaex.webp</image:loc>
+      <image:title>test</image:title>
     </image:image>
   </url>
   <!-- Blog: Inspirasi Desain Gerobak untuk Berbagai Jenis Usaha -->
@@ -106,13 +117,6 @@
       <image:loc>https://images.unsplash.com/photo-1565123409695-7b5ef63a2efb?w=800&amp;q=80</image:loc>
       <image:title>Inspirasi Desain Gerobak untuk Berbagai Jenis Usaha</image:title>
     </image:image>
-  </url>
-  <!-- Blog: testd -->
-  <url>
-    <loc>https://gerobakjogja.vercel.app/blog/testd</loc>
-    <lastmod>2025-12-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
   </url>
   <!-- Blog: Tips Memilih Gerobak yang Tepat untuk Bisnis Anda -->
   <url>

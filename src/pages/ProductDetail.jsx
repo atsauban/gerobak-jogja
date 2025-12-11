@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Star, Check, Package, Truck, Shield, Ruler, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Star, Check, Package, Truck, Shield, Ruler, ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import WhatsAppButton from '../components/WhatsAppButton';
 import Breadcrumbs from '../components/Breadcrumbs';
 import LazyImage from '../components/LazyImage';
+import ImageGallery from '../components/ImageGallery';
 import { useProducts } from '../context/ProductContext';
 
 export default function ProductDetail() {
@@ -11,6 +12,7 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const { getProductBySlug, loading } = useProducts();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showGallery, setShowGallery] = useState(false);
 
   const product = getProductBySlug(slug);
 
@@ -36,12 +38,24 @@ export default function ProductDetail() {
                 <div className="h-20 bg-gray-200 rounded"></div>
                 <div className="h-32 bg-gray-200 rounded"></div>
               </div>
-            </div>
           </div>
         </div>
       </div>
-    );
-  }
+
+      {/* Image Gallery Modal */}
+      {showGallery && product.images && (
+        <ImageGallery
+          images={product.images}
+          initialIndex={currentImageIndex}
+          onClose={() => setShowGallery(false)}
+          title={product.name}
+          showCounter={true}
+          enableZoom={true}
+        />
+      )}
+    </div>
+  );
+}
 
   /* Removed hardcoded products array - now using context
   const allProducts = [
@@ -247,23 +261,48 @@ export default function ProductDetail() {
                 </div>
               )}
               
+              {/* Image Counter */}
+              {product.images.length > 1 && (
+                <div className="absolute top-4 right-4 z-10 bg-black/50 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
+                  {currentImageIndex + 1} / {product.images.length}
+                </div>
+              )}
+
+              {/* Zoom Button */}
+              <button
+                onClick={() => setShowGallery(true)}
+                className="absolute bottom-4 right-4 z-10 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                aria-label="Open image gallery"
+              >
+                <ZoomIn size={24} className="text-primary-600" />
+              </button>
+              
               <LazyImage
                 src={product.images[currentImageIndex]}
                 alt={`${product.name} - Gambar ${currentImageIndex + 1}`}
-                className="w-full h-96 object-cover rounded-2xl shadow-xl"
+                className="w-full h-96 object-cover rounded-2xl shadow-xl cursor-pointer"
+                onClick={() => setShowGallery(true)}
               />
 
               {product.images.length > 1 && (
                 <>
                   <button
-                    onClick={prevImage}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all opacity-0 group-hover:opacity-100"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      prevImage();
+                    }}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    aria-label="Previous image"
                   >
                     <ChevronLeft size={24} />
                   </button>
                   <button
-                    onClick={nextImage}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all opacity-0 group-hover:opacity-100"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      nextImage();
+                    }}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:bg-white transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    aria-label="Next image"
                   >
                     <ChevronRight size={24} />
                   </button>

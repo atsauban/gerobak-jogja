@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
-import { CheckCircle, XCircle, AlertCircle, Info, X } from 'lucide-react';
+import { CheckCircle, XCircle, AlertCircle, Info, X, RotateCcw, RefreshCw } from 'lucide-react';
 
 // Toast Context
 const ToastContext = createContext();
@@ -15,17 +15,24 @@ export const useToast = () => {
 // Toast Provider
 export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
+  const MAX_TOASTS = 3; // Maximum number of toasts to show
 
-  const addToast = (message, type = 'info', duration = 4000) => {
+  const addToast = (message, type = 'info', duration = 4000, action = null) => {
     const id = Date.now() + Math.random();
-    const toast = { id, message, type, duration };
+    const toast = { id, message, type, duration, action };
     
-    setToasts(prev => [...prev, toast]);
+    setToasts(prev => {
+      // Keep only last MAX_TOASTS toasts
+      const newToasts = [...prev, toast];
+      return newToasts.slice(-MAX_TOASTS);
+    });
     
-    // Auto remove toast
-    setTimeout(() => {
-      removeToast(id);
-    }, duration);
+    // Auto remove toast if duration > 0
+    if (duration > 0) {
+      setTimeout(() => {
+        removeToast(id);
+      }, duration);
+    }
     
     return id;
   };
@@ -35,10 +42,10 @@ export const ToastProvider = ({ children }) => {
   };
 
   const toast = {
-    success: (message, duration) => addToast(message, 'success', duration),
-    error: (message, duration) => addToast(message, 'error', duration),
-    warning: (message, duration) => addToast(message, 'warning', duration),
-    info: (message, duration) => addToast(message, 'info', duration),
+    success: (message, duration, action) => addToast(message, 'success', duration, action),
+    error: (message, duration, action) => addToast(message, 'error', duration, action),
+    warning: (message, duration, action) => addToast(message, 'warning', duration, action),
+    info: (message, duration, action) => addToast(message, 'info', duration, action),
   };
 
   return (
@@ -49,12 +56,29 @@ export const ToastProvider = ({ children }) => {
   );
 };
 
-// Toast Container
+// Toast Container with responsive positioning
 const ToastContainer = ({ toasts, removeToast }) => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   if (toasts.length === 0) return null;
 
+  // Position: bottom on mobile, top-right on desktop
+  const containerClass = isMobile
+    ? 'fixed bottom-4 left-4 right-4 z-50 space-y-2'
+    : 'fixed top-4 right-4 z-50 space-y-2 max-w-sm';
+
   return (
-    <div className="fixed top-4 right-4 z-50 space-y-2">
+    <div className={containerClass}>
       {toasts.map(toast => (
         <ToastItem key={toast.id} toast={toast} onRemove={removeToast} />
       ))}
@@ -65,19 +89,50 @@ const ToastContainer = ({ toasts, removeToast }) => {
 // Individual Toast Item
 const ToastItem = ({ toast, onRemove }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const timeoutRef = React.useRef(null);
 
   useEffect(() => {
     // Trigger animation
     setTimeout(() => setIsVisible(true), 10);
-  }, []);
+
+    // Auto remove if duration > 0 and not paused
+    if (toast.duration > 0 && !isPaused) {
+      timeoutRef.current = setTimeout(() => {
+        handleRemove();
+      }, toast.duration);
+    }
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [toast.duration, isPaused]);
 
   const handleRemove = () => {
     setIsVisible(false);
     setTimeout(() => onRemove(toast.id), 300);
   };
 
+  const handlePause = () => {
+    setIsPaused(true);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+  };
+
+  const handleResume = () => {
+    setIsPaused(false);
+    if (toast.duration > 0) {
+      timeoutRef.current = setTimeout(() => {
+        handleRemove();
+      }, toast.duration);
+    }
+  };
+
   const getToastStyles = () => {
-    const baseStyles = "flex items-center gap-3 p-4 rounded-lg shadow-lg border transition-all duration-300 transform max-w-sm";
+    const baseStyles = "flex items-start gap-3 p-4 rounded-lg shadow-lg border transition-all duration-300 transform w-full";
     
     if (!isVisible) {
       return `${baseStyles} translate-x-full opacity-0`;
@@ -96,27 +151,75 @@ const ToastItem = ({ toast, onRemove }) => {
   };
 
   const getIcon = () => {
-    const iconProps = { size: 20 };
+    const iconProps = { size: 20, className: 'flex-shrink-0 mt-0.5' };
     
     switch (toast.type) {
       case 'success':
-        return <CheckCircle {...iconProps} className="text-green-600" />;
+        return <CheckCircle {...iconProps} className={`${iconProps.className} text-green-600`} />;
       case 'error':
-        return <XCircle {...iconProps} className="text-red-600" />;
+        return <XCircle {...iconProps} className={`${iconProps.className} text-red-600`} />;
       case 'warning':
-        return <AlertCircle {...iconProps} className="text-yellow-600" />;
+        return <AlertCircle {...iconProps} className={`${iconProps.className} text-yellow-600`} />;
       default:
-        return <Info {...iconProps} className="text-blue-600" />;
+        return <Info {...iconProps} className={`${iconProps.className} text-blue-600`} />;
     }
   };
 
   return (
-    <div className={getToastStyles()}>
+    <div 
+      className={getToastStyles()}
+      onMouseEnter={handlePause}
+      onMouseLeave={handleResume}
+      role="alert"
+      aria-live={toast.type === 'error' ? 'assertive' : 'polite'}
+    >
       {getIcon()}
-      <p className="flex-1 text-sm font-medium">{toast.message}</p>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium break-words">{toast.message}</p>
+        {toast.action && (
+          <div className="mt-2 flex gap-2">
+            {toast.action.onUndo && (
+              <button
+                onClick={() => {
+                  toast.action.onUndo();
+                  handleRemove();
+                }}
+                className="text-xs font-semibold px-3 py-1.5 rounded-md bg-white/50 hover:bg-white/80 transition-colors flex items-center gap-1.5"
+              >
+                <RotateCcw size={12} />
+                Undo
+              </button>
+            )}
+            {toast.action.onRetry && (
+              <button
+                onClick={() => {
+                  toast.action.onRetry();
+                  handleRemove();
+                }}
+                className="text-xs font-semibold px-3 py-1.5 rounded-md bg-white/50 hover:bg-white/80 transition-colors flex items-center gap-1.5"
+              >
+                <RefreshCw size={12} />
+                Retry
+              </button>
+            )}
+            {toast.action.onAction && (
+              <button
+                onClick={() => {
+                  toast.action.onAction();
+                  handleRemove();
+                }}
+                className="text-xs font-semibold px-3 py-1.5 rounded-md bg-white/50 hover:bg-white/80 transition-colors"
+              >
+                {toast.action.label || 'Action'}
+              </button>
+            )}
+          </div>
+        )}
+      </div>
       <button
         onClick={handleRemove}
-        className="text-gray-400 hover:text-gray-600 transition-colors"
+        className="text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0 p-1 rounded hover:bg-white/50"
+        aria-label="Close notification"
       >
         <X size={16} />
       </button>

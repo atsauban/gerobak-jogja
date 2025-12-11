@@ -1,11 +1,17 @@
 import { X, Eye, Star, Package, Truck, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import WhatsAppButton from './WhatsAppButton';
 import LazyImage from './LazyImage';
+import { useFocusTrap } from '../hooks/useFocusTrap';
 
 export default function QuickViewModal({ product, onClose }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const modalRef = useRef(null);
+  const closeButtonRef = useRef(null);
+
+  // Focus trap for accessibility
+  useFocusTrap(true, modalRef);
 
   useEffect(() => {
     // Prevent body scroll when modal is open
@@ -13,9 +19,16 @@ export default function QuickViewModal({ product, onClose }) {
     
     // Close on Escape key
     const handleEscape = (e) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        onClose();
+      }
     };
     window.addEventListener('keydown', handleEscape);
+    
+    // Focus close button when modal opens
+    if (closeButtonRef.current) {
+      closeButtonRef.current.focus();
+    }
     
     return () => {
       document.body.style.overflow = 'unset';
@@ -31,23 +44,29 @@ export default function QuickViewModal({ product, onClose }) {
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in"
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="quick-view-title"
+      aria-describedby="quick-view-description"
     >
       <div 
+        ref={modalRef}
         className="bg-white rounded-3xl max-w-5xl w-full max-h-[90vh] overflow-hidden shadow-2xl animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header with Glassmorphism */}
         <div className="sticky top-0 glass-dark bg-gradient-to-r from-primary-600 to-primary-700 px-6 py-4 flex items-center justify-between z-10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center" aria-hidden="true">
               <Eye size={20} className="text-white" />
             </div>
-            <h3 className="text-xl font-bold text-white">Quick View</h3>
+            <h3 id="quick-view-title" className="text-xl font-bold text-white">Quick View</h3>
           </div>
           <button
+            ref={closeButtonRef}
             onClick={onClose}
-            className="p-2 hover:bg-white/20 rounded-full transition-all duration-300 group"
-            aria-label="Close modal"
+            className="p-2 hover:bg-white/20 rounded-full transition-all duration-300 group focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-600"
+            aria-label="Close quick view modal"
           >
             <X size={24} className="text-white group-hover:rotate-90 transition-transform duration-300" />
           </button>
@@ -55,6 +74,9 @@ export default function QuickViewModal({ product, onClose }) {
 
         {/* Content */}
         <div className="overflow-y-auto max-h-[calc(90vh-80px)]">
+          <div id="quick-view-description" className="sr-only">
+            Quick view of {product.name}. {product.shortDesc || product.description || ''}
+          </div>
           <div className="grid md:grid-cols-2 gap-8 p-6 md:p-8">
             {/* Image Gallery */}
             <div className="space-y-4">
@@ -95,11 +117,13 @@ export default function QuickViewModal({ product, onClose }) {
                     <button
                       key={index}
                       onClick={() => setCurrentImageIndex(index)}
-                      className={`relative rounded-lg overflow-hidden border-2 transition-all duration-300 ${
+                      className={`relative rounded-lg overflow-hidden border-2 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 ${
                         currentImageIndex === index
                           ? 'border-primary-600 scale-105 shadow-lg'
                           : 'border-gray-200 hover:border-gray-300 hover:scale-105'
                       }`}
+                      aria-label={`View image ${index + 1} of ${images.length}`}
+                      aria-pressed={currentImageIndex === index}
                     >
                       <img
                         src={image}

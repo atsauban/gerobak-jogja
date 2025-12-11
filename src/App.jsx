@@ -3,6 +3,8 @@ import { ProductProvider } from './context/ProductContext';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './components/Toast';
 import ErrorBoundary from './components/ErrorBoundary';
+import SkipToContent from './components/SkipToContent';
+import AriaLiveRegion from './components/AriaLiveRegion';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import FloatingActionButton from './components/FloatingActionButton';
@@ -61,11 +63,14 @@ function App() {
         <ProductProvider>
           <ToastProvider>
             <Router>
+              <SkipToContent />
+              <AriaLiveRegion message="" priority="polite" />
+              <AriaLiveRegion message="" priority="assertive" />
               <ProgressBar />
               <ScrollToTopOnMount />
               <div className="flex flex-col min-h-screen">
                 <Navbar />
-                <main className="flex-grow">
+                <main id="main-content" className="flex-grow" tabIndex={-1}>
                   <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/katalog" element={<Katalog />} />

@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Star, Filter, Eye, Zap } from 'lucide-react';
+import { Star, Filter, Eye, Zap, X } from 'lucide-react';
 import WhatsAppButton from '../components/WhatsAppButton';
 import SearchBar from '../components/SearchBar';
 import EmptyState from '../components/EmptyState';
@@ -65,10 +65,57 @@ export default function Katalog() {
           <SearchBar
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            onSearch={(query) => setSearchQuery(query)}
             placeholder="Cari gerobak berdasarkan nama, kategori, atau deskripsi..."
             className="mb-4"
+            showSuggestions={true}
           />
         </div>
+        
+        {/* Active Filters Chips */}
+        {(selectedCategory !== 'semua' || searchQuery.trim()) && (
+          <div className="mb-6 animate-slide-up">
+            <div className="flex flex-wrap items-center gap-2 justify-center">
+              <span className="text-sm text-gray-600 font-medium">Filter Aktif:</span>
+              {selectedCategory !== 'semua' && (
+                <div className="inline-flex items-center gap-2 bg-primary-100 text-primary-700 px-4 py-2 rounded-full text-sm font-semibold">
+                  <Filter size={14} />
+                  {categories.find(c => c.id === selectedCategory)?.name}
+                  <button
+                    onClick={() => setSelectedCategory('semua')}
+                    className="ml-1 hover:bg-primary-200 rounded-full p-0.5 transition-colors"
+                    aria-label="Remove category filter"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
+              {searchQuery.trim() && (
+                <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold">
+                  <span>"{searchQuery}"</span>
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="ml-1 hover:bg-blue-200 rounded-full p-0.5 transition-colors"
+                    aria-label="Clear search"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              )}
+              {(selectedCategory !== 'semua' || searchQuery.trim()) && (
+                <button
+                  onClick={() => {
+                    setSelectedCategory('semua');
+                    setSearchQuery('');
+                  }}
+                  className="text-sm text-gray-600 hover:text-primary-600 font-medium underline"
+                >
+                  Hapus Semua Filter
+                </button>
+              )}
+            </div>
+          </div>
+        )}
         
         {/* Category Filter */}
         <div className="mb-12 animate-slide-up">
@@ -192,15 +239,30 @@ export default function Katalog() {
         {/* Empty State */}
         {!loading && filteredProducts.length === 0 && (
           <EmptyState
-            type={searchQuery ? 'search' : 'products'}
-            title={searchQuery ? 'Tidak Ada Hasil' : 'Belum Ada Produk'}
+            type={searchQuery || selectedCategory !== 'semua' ? 'search' : 'products'}
+            title={
+              searchQuery 
+                ? `Tidak Ada Hasil untuk "${searchQuery}"`
+                : selectedCategory !== 'semua'
+                ? `Tidak Ada Produk di Kategori ${categories.find(c => c.id === selectedCategory)?.name}`
+                : 'Belum Ada Produk'
+            }
             description={
               searchQuery 
-                ? `Tidak ditemukan produk untuk "${searchQuery}". Coba kata kunci lain.`
-                : 'Produk dalam kategori ini belum tersedia.'
+                ? `Tidak ditemukan produk yang sesuai. Coba kata kunci lain atau ubah filter.`
+                : selectedCategory !== 'semua'
+                ? 'Belum ada produk dalam kategori ini. Coba kategori lain atau lihat semua produk.'
+                : 'Produk akan muncul di sini setelah ditambahkan.'
             }
-            actionText={searchQuery ? 'Reset Pencarian' : 'Lihat Semua Produk'}
-            actionLink={searchQuery ? null : '/katalog'}
+            onClearFilters={() => {
+              setSearchQuery('');
+              setSelectedCategory('semua');
+            }}
+            suggestions={
+              searchQuery 
+                ? categories.filter(c => c.id !== selectedCategory).slice(0, 3).map(c => c.name)
+                : categories.filter(c => c.id !== 'semua' && c.id !== selectedCategory).slice(0, 3).map(c => c.name)
+            }
           />
         )}
 
