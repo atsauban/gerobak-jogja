@@ -5,42 +5,42 @@
   <!-- Static Pages -->
   <url>
     <loc>https://gerobakjogja.vercel.app/</loc>
-    <lastmod>2025-12-11</lastmod>
+    <lastmod>2025-12-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <url>
     <loc>https://gerobakjogja.vercel.app/katalog</loc>
-    <lastmod>2025-12-11</lastmod>
+    <lastmod>2025-12-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   
   <url>
     <loc>https://gerobakjogja.vercel.app/galeri</loc>
-    <lastmod>2025-12-11</lastmod>
+    <lastmod>2025-12-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>https://gerobakjogja.vercel.app/tentang</loc>
-    <lastmod>2025-12-11</lastmod>
+    <lastmod>2025-12-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>https://gerobakjogja.vercel.app/kontak</loc>
-    <lastmod>2025-12-11</lastmod>
+    <lastmod>2025-12-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>https://gerobakjogja.vercel.app/blog</loc>
-    <lastmod>2025-12-11</lastmod>
+    <lastmod>2025-12-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -48,54 +48,32 @@
   <!-- Product Categories -->
   <url>
     <loc>https://gerobakjogja.vercel.app/katalog?category=aluminium</loc>
-    <lastmod>2025-12-11</lastmod>
+    <lastmod>2025-12-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>https://gerobakjogja.vercel.app/katalog?category=kayu</loc>
-    <lastmod>2025-12-11</lastmod>
+    <lastmod>2025-12-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>https://gerobakjogja.vercel.app/katalog?category=stainless</loc>
-    <lastmod>2025-12-11</lastmod>
+    <lastmod>2025-12-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
     <loc>https://gerobakjogja.vercel.app/katalog?category=kombinasi</loc>
-    <lastmod>2025-12-11</lastmod>
+    <lastmod>2025-12-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 
-  <!-- Product: &quot;&gt;alert(1)&quot;&gt; -->
-  <url>
-    <loc>https://gerobakjogja.vercel.app/produk/alert1</loc>
-    <lastmod>2025-12-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765427924/gerobak-jogja/products/vw17iyrsjpwmffvqrqqo.webp</image:loc>
-      <image:title>&quot;&gt;alert(1)&quot;&gt;</image:title>
-    </image:image>
-  </url>
-  <!-- Product: &quot;&gt; -->
-  <url>
-    <loc>https://gerobakjogja.vercel.app/produk/img-srcx-onerroralert1</loc>
-    <lastmod>2025-12-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765428947/gerobak-jogja/products/pesys9ydwidv4mfpj3w4.webp</image:loc>
-      <image:title>&quot;&gt;</image:title>
-    </image:image>
-  </url>
   <!-- Product: td -->
   <url>
     <loc>https://gerobakjogja.vercel.app/produk/td</loc>
@@ -127,17 +105,6 @@
     <image:image>
       <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765412738/gerobak-jogja/products/xwcalt99fyse8i6euede.webp</image:loc>
       <image:title>adad</image:title>
-    </image:image>
-  </url>
-  <!-- Product: &quot;&gt;alert(1) -->
-  <url>
-    <loc>https://gerobakjogja.vercel.app/produk/scriptalert1script</loc>
-    <lastmod>2025-12-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765427924/gerobak-jogja/products/vw17iyrsjpwmffvqrqqo.webp</image:loc>
-      <image:title>&quot;&gt;alert(1)</image:title>
     </image:image>
   </url>
   <!-- Product: test -->

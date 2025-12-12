@@ -1,12 +1,13 @@
 import { MessageCircle } from 'lucide-react';
 import { getWhatsAppUrl, CONTACT_INFO } from '../config/contact';
 
-export default function WhatsAppButton({ 
-  message, 
-  productName, 
+export default function WhatsAppButton({
+  message,
+  productName,
   productPrice,
   className = "btn-whatsapp",
-  children 
+  showIcon = true,
+  children
 }) {
   const getMessage = () => {
     if (message) return message;
@@ -17,13 +18,13 @@ export default function WhatsAppButton({
   };
 
   return (
-    <a 
-      href={getWhatsAppUrl(getMessage())} 
-      target="_blank" 
+    <a
+      href={getWhatsAppUrl(getMessage())}
+      target="_blank"
       rel="noopener noreferrer"
       className={className}
     >
-      <MessageCircle size={18} />
+      {showIcon && <MessageCircle size={18} />}
       {children || 'WhatsApp'}
     </a>
   );
