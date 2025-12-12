@@ -45,7 +45,7 @@ export default function Tentang() {
             </div>
             <div className="order-1 md:order-2">
               <img 
-                src="https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765420885/logo_ncfpys.webp" 
+                src="https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765423271/pexels-watorious-2381463_tv3bk3.webp" 
                 alt="Workshop"
                 className="rounded-2xl shadow-2xl w-full"
               />

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Package, Search, ShoppingCart, Image as ImageIcon } from 'lucide-react';
+import { Package, Search, ShoppingCart, Image as ImageIcon, Filter, Home } from 'lucide-react';
 
 export default function EmptyState({ 
   type = 'products', 
@@ -7,7 +7,9 @@ export default function EmptyState({
   description, 
   actionText, 
   actionLink,
-  icon: CustomIcon 
+  icon: CustomIcon,
+  suggestions = [],
+  onClearFilters
 }) {
   const configs = {
     products: {
@@ -73,7 +75,7 @@ export default function EmptyState({
       </p>
 
       {/* Suggestions */}
-      {suggestions.length > 0 && (
+      {suggestions && suggestions.length > 0 && (
         <div className="mb-8 max-w-md mx-auto">
           <p className="text-sm text-gray-500 mb-3">Saran pencarian:</p>
           <div className="flex flex-wrap gap-2 justify-center">
