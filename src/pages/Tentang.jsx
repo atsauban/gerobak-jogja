@@ -1,4 +1,5 @@
 import { CheckCircle, Target, Eye, Award, Users, TrendingUp, Heart } from 'lucide-react';
+import PageHero from '../components/PageHero';
 
 export default function Tentang() {
   const values = [
@@ -10,15 +11,11 @@ export default function Tentang() {
 
   return (
     <div className="pt-16 min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      {/* Hero */}
-      <div className="bg-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-display font-bold mb-4 text-gray-900 animate-fade-in">Tentang Kami</h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto animate-slide-up">
-            Lebih dari sekedar pembuat gerobak, kami adalah mitra bisnis Anda
-          </p>
-        </div>
-      </div>
+      {/* Hero (PageHero) */}
+      <PageHero
+        title="Tentang Kami"
+        description="Lebih dari sekedar pembuat gerobak, kami adalah mitra bisnis Anda"
+      />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         {/* Company Profile */}
@@ -30,22 +27,22 @@ export default function Tentang() {
               </div>
               <h2 className="text-4xl font-display font-bold mb-6 text-gray-900">Gerobak Jogja</h2>
               <p className="text-gray-600 mb-4 text-lg leading-relaxed">
-                Gerobak Jogja adalah perusahaan yang bergerak di bidang pembuatan dan penjualan berbagai jenis gerobak berkualitas tinggi. 
-                Dengan pengalaman lebih dari <span className="font-bold text-primary-600">10 tahun</span>, kami telah melayani 
+                Gerobak Jogja adalah perusahaan yang bergerak di bidang pembuatan dan penjualan berbagai jenis gerobak berkualitas tinggi.
+                Dengan pengalaman lebih dari <span className="font-bold text-primary-600">10 tahun</span>, kami telah melayani
                 <span className="font-bold text-primary-600"> ratusan pelanggan</span> di seluruh Indonesia.
               </p>
               <p className="text-gray-600 mb-4 leading-relaxed">
-                Kami mengutamakan kualitas material, desain yang menarik, dan harga yang kompetitif. 
+                Kami mengutamakan kualitas material, desain yang menarik, dan harga yang kompetitif.
                 Setiap gerobak dibuat dengan teliti oleh tenaga ahli yang berpengalaman.
               </p>
               <p className="text-gray-600 leading-relaxed">
-                Kepuasan pelanggan adalah prioritas utama kami. Kami siap membantu mewujudkan bisnis impian Anda 
+                Kepuasan pelanggan adalah prioritas utama kami. Kami siap membantu mewujudkan bisnis impian Anda
                 dengan gerobak yang sesuai kebutuhan.
               </p>
             </div>
             <div className="order-1 md:order-2">
-              <img 
-                src="https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765423271/pexels-watorious-2381463_tv3bk3.webp" 
+              <img
+                src="https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765423271/pexels-watorious-2381463_tv3bk3.webp"
                 alt="Workshop"
                 className="rounded-2xl shadow-2xl w-full"
               />
@@ -63,7 +60,7 @@ export default function Tentang() {
               <h3 className="text-3xl font-display font-bold text-gray-900">Visi</h3>
             </div>
             <p className="text-gray-700 text-lg leading-relaxed">
-              Menjadi produsen gerobak <span className="font-bold">terpercaya dan terdepan</span> di Indonesia yang mengutamakan 
+              Menjadi produsen gerobak <span className="font-bold">terpercaya dan terdepan</span> di Indonesia yang mengutamakan
               kualitas, inovasi, dan kepuasan pelanggan.
             </p>
           </div>

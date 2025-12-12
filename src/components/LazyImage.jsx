@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
-export default function LazyImage({ 
-  src, 
-  alt, 
-  className = '', 
+export default function LazyImage({
+  src,
+  alt,
+  className = '',
   placeholderClassName = '',
   onLoad,
-  ...props 
+  ...props
 }) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
@@ -33,27 +33,27 @@ export default function LazyImage({
           </div>
         </div>
       )}
-      
+
       {/* Actual Image */}
       {!hasError ? (
         <img
           src={src}
           alt={alt}
           loading="lazy"
-          className={`${className} transition-all duration-500 ${
-            isLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-sm'
-          }`}
+          decoding="async"
+          className={`${className} transition-all duration-500 ${isLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-sm'
+            }`}
           onLoad={handleLoad}
           onError={handleError}
           {...props}
         />
       ) : (
-        <div className={`${className} bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center`}>
-          <div className="text-center text-gray-500">
-            <svg className="w-16 h-16 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className={`${className} bg-gray-100 flex items-center justify-center`}>
+          <div className="text-center text-gray-400">
+            <svg className="w-12 h-12 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
-            <p className="text-sm">Gambar tidak tersedia</p>
+            <span className="text-xs">Gagal memuat</span>
           </div>
         </div>
       )}

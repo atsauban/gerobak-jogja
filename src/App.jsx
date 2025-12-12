@@ -1,5 +1,6 @@
 import { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
 import { ProductProvider } from './context/ProductContext';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './components/Toast';
@@ -36,43 +37,45 @@ const PageLoading = () => (
 
 function App() {
   return (
-    <AuthProvider>
-      <ProductProvider>
-        <ToastProvider>
-          <Router>
-            <ErrorBoundary>
-              <SkipToContent />
-              <AriaLiveRegion message="" priority="polite" />
-              <AriaLiveRegion message="" priority="assertive" />
-              <ProgressBar />
-              <ScrollToTopOnMount />
-              <div className="flex flex-col min-h-screen">
-                <Navbar />
-                <main id="main-content" className="flex-grow" tabIndex={-1}>
-                  <Suspense fallback={<PageLoading />}>
-                    <Routes>
-                      <Route path="/" element={<Home />} />
-                      <Route path="/katalog" element={<Katalog />} />
-                      <Route path="/produk/:slug" element={<ProductDetail />} />
-                      <Route path="/galeri" element={<Galeri />} />
-                      <Route path="/tentang" element={<Tentang />} />
-                      <Route path="/kontak" element={<Kontak />} />
-                      <Route path="/blog" element={<Blog />} />
-                      <Route path="/blog/:slug" element={<BlogDetail />} />
-                      <Route path="/admin" element={<Admin />} />
-                      <Route path="/404-redirect" element={<NotFound />} />
-                      <Route path="*" element={<NotFound />} />
-                    </Routes>
-                  </Suspense>
-                </main>
-                <Footer />
-                <FloatingActionButton />
-              </div>
-            </ErrorBoundary>
-          </Router>
-        </ToastProvider>
-      </ProductProvider>
-    </AuthProvider>
+    <HelmetProvider>
+      <AuthProvider>
+        <ProductProvider>
+          <ToastProvider>
+            <Router>
+              <ErrorBoundary>
+                <SkipToContent />
+                <AriaLiveRegion message="" priority="polite" />
+                <AriaLiveRegion message="" priority="assertive" />
+                <ProgressBar />
+                <ScrollToTopOnMount />
+                <div className="flex flex-col min-h-screen">
+                  <Navbar />
+                  <main id="main-content" className="flex-grow" tabIndex={-1}>
+                    <Suspense fallback={<PageLoading />}>
+                      <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/katalog" element={<Katalog />} />
+                        <Route path="/produk/:slug" element={<ProductDetail />} />
+                        <Route path="/galeri" element={<Galeri />} />
+                        <Route path="/tentang" element={<Tentang />} />
+                        <Route path="/kontak" element={<Kontak />} />
+                        <Route path="/blog" element={<Blog />} />
+                        <Route path="/blog/:slug" element={<BlogDetail />} />
+                        <Route path="/admin" element={<Admin />} />
+                        <Route path="/404-redirect" element={<NotFound />} />
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </Suspense>
+                  </main>
+                  <Footer />
+                  <FloatingActionButton />
+                </div>
+              </ErrorBoundary>
+            </Router>
+          </ToastProvider>
+        </ProductProvider>
+      </AuthProvider>
+    </HelmetProvider>
   );
 }
 

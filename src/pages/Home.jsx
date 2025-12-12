@@ -38,8 +38,8 @@ export default function Home() {
       <section className="relative text-white section-padding overflow-hidden">
         {/* Blurred Background Image */}
         <div className="absolute inset-0">
-          <LazyImage 
-            src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" 
+          <LazyImage
+            src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
             alt="Workshop Gerobak Jogja"
             className="w-full h-full object-cover filter blur-sm scale-110"
             loading="eager"
@@ -47,13 +47,13 @@ export default function Home() {
           {/* Gradient overlay for better text readability */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary-900/85 via-primary-800/80 to-primary-900/90"></div>
         </div>
-        
+
         {/* Enhanced Background Effects */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-accent-400 rounded-full mix-blend-multiply filter blur-3xl"></div>
           <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-primary-400 rounded-full mix-blend-multiply filter blur-3xl"></div>
         </div>
-        
+
         {/* Subtle Geometric Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 right-10 w-32 h-32 border-2 border-white/30 rotate-45 animate-pulse"></div>
@@ -61,7 +61,7 @@ export default function Home() {
           <div className="absolute top-1/2 left-10 w-16 h-16 bg-white/10 rounded-full animate-bounce"></div>
           <div className="absolute top-1/4 right-1/4 w-20 h-20 border border-accent-300/20 rounded-full"></div>
         </div>
-        
+
         <div className="max-w-7xl mx-auto container-padding relative z-10">
           <div className="text-center">
             <ScrollReveal animation="fade-up" delay={200}>
@@ -69,30 +69,30 @@ export default function Home() {
                 ✨ Dipercaya oleh 100+ Pelanggan
               </div>
             </ScrollReveal>
-            
+
             <ScrollReveal animation="fade-up" delay={400}>
               <h1 className="hero-title mb-6">
                 <span className="block">Gerobak Premium</span>
                 <span className="text-accent-300 block bg-gradient-to-r from-accent-300 to-accent-200 bg-clip-text text-transparent">Bisnis Sukses</span>
               </h1>
             </ScrollReveal>
-            
+
             <ScrollReveal animation="fade-up" delay={600}>
               <p className="hero-subtitle mb-8 text-blue-100 drop-shadow-sm">
                 Dari <span className="font-bold text-accent-300">Rp 2.5 juta</span> sudah bisa punya gerobak berkualitas tinggi
               </p>
             </ScrollReveal>
-            
+
             <ScrollReveal animation="fade-up" delay={800}>
               <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md sm:max-w-none mx-auto">
-                <Link 
-                  to="/katalog" 
+                <Link
+                  to="/katalog"
                   className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-primary-600 font-semibold rounded-xl hover:bg-gray-50 shadow-xl hover:shadow-2xl transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-white/50 hover:scale-105 active:scale-95"
                 >
                   Lihat Katalog
                   <ArrowRight size={20} />
                 </Link>
-                <WhatsAppButton 
+                <WhatsAppButton
                   message={CONTACT_INFO.messages.consultation}
                   className="btn-whatsapp justify-center hover:scale-105 active:scale-95 transition-transform duration-200"
                 >
@@ -108,8 +108,8 @@ export default function Home() {
           <ScrollReveal animation="fade-up" delay={1000}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {stats.map((stat, index) => (
-                <div 
-                  key={index} 
+                <div
+                  key={index}
                   className="text-center glass rounded-2xl p-6 hover:bg-white/25 transition-all duration-300 group border border-white/20 backdrop-blur-lg shadow-xl hover:shadow-2xl hover:scale-105"
                 >
                   <div className="flex justify-center mb-3 text-accent-300 group-hover:scale-105 transition-all duration-300">
@@ -177,58 +177,58 @@ export default function Home() {
           {!loading && featuredProducts.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {featuredProducts.map((product, index) => (
-              <ScrollReveal key={product.id} animation="fade-up" delay={index * 150}>
-              <div 
-                className="card overflow-hidden group"
-              >
-                <div className="relative overflow-hidden">
-                  <LazyImage
-                    src={product.images?.[0] || product.image || 'https://via.placeholder.com/400x300?text=No+Image'} 
-                    alt={`Gerobak ${product.name} - Produk Unggulan`}
-                    className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300" 
-                  />
-                  {product.badge && (
-                    <div className="absolute top-4 right-4">
-                      <span className="bg-accent-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
-                        {product.badge}
-                      </span>
+                <ScrollReveal key={product.id} animation="fade-up" delay={index * 150}>
+                  <div
+                    className="card overflow-hidden group"
+                  >
+                    <div className="relative overflow-hidden">
+                      <LazyImage
+                        src={product.images?.[0] || product.image || 'https://via.placeholder.com/400x300?text=No+Image'}
+                        alt={`Gerobak ${product.name} - Produk Unggulan`}
+                        className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      {product.badge && (
+                        <div className="absolute top-4 right-4">
+                          <span className="bg-accent-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
+                            {product.badge}
+                          </span>
+                        </div>
+                      )}
+                      {/* Featured Badge */}
+                      <div className="absolute top-4 left-4">
+                        <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg flex items-center gap-1">
+                          <Star size={14} fill="currentColor" />
+                          <span>Unggulan</span>
+                        </div>
+                      </div>
                     </div>
-                  )}
-                  {/* Featured Badge */}
-                  <div className="absolute top-4 left-4">
-                    <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg flex items-center gap-1">
-                      <Star size={14} fill="currentColor" />
-                      <span>Unggulan</span>
+                    <div className="p-6">
+                      <h3 className="text-2xl font-bold mb-2 text-gray-900 group-hover:text-primary-600 transition-colors">
+                        {product.name}
+                      </h3>
+                      <p className="text-gray-600 mb-4 text-sm line-clamp-2">
+                        {product.shortDesc || product.description}
+                      </p>
+                      <p className="text-primary-600 font-bold text-2xl mb-6">
+                        Mulai Rp {parseInt(product.price).toLocaleString('id-ID')}
+                      </p>
+                      <div className="flex gap-2 items-stretch">
+                        <Link
+                          to={`/produk/${product.slug || product.id}`}
+                          className="flex-1 btn-primary justify-center items-center h-11"
+                        >
+                          Lihat Detail
+                        </Link>
+                        <WhatsAppButton
+                          productName={product.name}
+                          className="flex-1 btn-whatsapp justify-center items-center h-11"
+                        >
+                          Pesan
+                        </WhatsAppButton>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-2xl font-bold mb-2 text-gray-900 group-hover:text-primary-600 transition-colors">
-                    {product.name}
-                  </h3>
-                  <p className="text-gray-600 mb-4 text-sm line-clamp-2">
-                    {product.shortDesc || product.description}
-                  </p>
-                  <p className="text-primary-600 font-bold text-2xl mb-6">
-                    Mulai Rp {parseInt(product.price).toLocaleString('id-ID')}
-                  </p>
-                  <div className="flex gap-2 items-stretch">
-                    <Link 
-                      to={`/produk/${product.slug || product.id}`}
-                      className="flex-1 btn-primary justify-center items-center h-11"
-                    >
-                      Lihat Detail
-                    </Link>
-                    <WhatsAppButton 
-                      productName={product.name}
-                      className="flex-1 btn-whatsapp justify-center items-center h-11"
-                    >
-                      Pesan
-                    </WhatsAppButton>
-                  </div>
-                </div>
-              </div>
-              </ScrollReveal>
+                </ScrollReveal>
               ))}
             </div>
           )}
@@ -247,8 +247,8 @@ export default function Home() {
           {/* View All Link */}
           {!loading && featuredProducts.length > 0 && (
             <div className="text-center mt-12">
-              <Link 
-                to="/katalog" 
+              <Link
+                to="/katalog"
                 className="inline-flex items-center gap-2 text-primary-600 font-semibold text-lg hover:gap-4 transition-all"
               >
                 Lihat Semua Produk
@@ -274,7 +274,7 @@ export default function Home() {
           <p className="text-xl mb-8 text-blue-100">
             Konsultasikan kebutuhan Anda dengan tim kami sekarang juga!
           </p>
-          <WhatsAppButton 
+          <WhatsAppButton
             message={CONTACT_INFO.messages.consultation}
             className="btn-whatsapp inline-flex text-lg px-8 py-4"
           >

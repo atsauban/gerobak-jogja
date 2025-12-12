@@ -3,6 +3,7 @@ import { ZoomIn, Image as ImageIcon } from 'lucide-react';
 import { getGalleryImages } from '../services/firebaseService';
 import { handleError } from '../utils/errorHandler';
 import ImageGallery from '../components/ImageGallery';
+import PageHero from '../components/PageHero';
 
 export default function Galeri() {
   const [selectedImage, setSelectedImage] = useState(null);
@@ -36,8 +37,8 @@ export default function Galeri() {
     { id: 'custom', name: 'Custom' },
   ];
 
-  const filteredImages = selectedCategory === 'semua' 
-    ? images 
+  const filteredImages = selectedCategory === 'semua'
+    ? images
     : images.filter(img => img.category === selectedCategory);
 
   if (loading) {
@@ -53,18 +54,18 @@ export default function Galeri() {
 
   return (
     <div className="pt-16 min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        {/* Header */}
-        <div className="text-center mb-12 animate-fade-in">
-          <div className="inline-flex items-center gap-2 bg-primary-50 text-primary-600 px-4 py-2 rounded-full mb-4">
+      <PageHero
+        title="Galeri Produk"
+        description="Lihat berbagai hasil karya kami yang telah dipercaya oleh ratusan pelanggan"
+        badge={
+          <div className="inline-flex items-center gap-2 bg-primary-50 text-primary-600 px-4 py-2 rounded-full">
             <ImageIcon size={20} />
             <span className="font-semibold">Portfolio Kami</span>
           </div>
-          <h1 className="section-title">Galeri Produk</h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Lihat berbagai hasil karya kami yang telah dipercaya oleh ratusan pelanggan
-          </p>
-        </div>
+        }
+      />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
 
         {/* Category Filter */}
         <div className="flex flex-wrap justify-center gap-3 mb-12">
@@ -72,11 +73,10 @@ export default function Galeri() {
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
-              className={`px-5 py-3 rounded-full font-medium transition-all duration-300 min-h-[44px] min-w-[44px] ${
-                selectedCategory === cat.id
-                  ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg scale-105'
-                  : 'bg-white text-gray-700 hover:bg-gray-50 shadow-md hover:shadow-lg'
-              }`}
+              className={`px-5 py-3 rounded-full font-medium transition-all duration-300 min-h-[44px] min-w-[44px] ${selectedCategory === cat.id
+                ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg scale-105'
+                : 'bg-white text-gray-700 hover:bg-gray-50 shadow-md hover:shadow-lg'
+                }`}
               aria-pressed={selectedCategory === cat.id}
             >
               {cat.name}
@@ -87,14 +87,14 @@ export default function Galeri() {
         {/* Images Grid - Masonry Layout */}
         <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
           {filteredImages.map((image, index) => (
-            <div 
+            <div
               key={image.id}
               onClick={() => setSelectedImage(image)}
               className="relative overflow-hidden rounded-2xl shadow-lg cursor-pointer group break-inside-avoid animate-scale-in hover:shadow-2xl transition-all duration-300"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
-              <img 
-                src={image.url} 
+              <img
+                src={image.url}
                 alt={image.title}
                 className="w-full object-cover transition-transform duration-500 group-hover:scale-110"
                 onError={(e) => {
