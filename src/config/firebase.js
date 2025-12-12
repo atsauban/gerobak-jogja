@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { initializeFirestore, memoryLocalCache } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getAuth } from 'firebase/auth';
 
@@ -18,7 +18,10 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 
 // Initialize services
-export const db = getFirestore(app);
+// Gunakan memoryLocalCache untuk menghindari error corruption (BloomFilterError) pada IndexedDB
+export const db = initializeFirestore(app, {
+  localCache: memoryLocalCache()
+});
 export const storage = getStorage(app);
 export const auth = getAuth(app);
 

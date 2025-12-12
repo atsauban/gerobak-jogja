@@ -74,6 +74,17 @@
     <priority>0.8</priority>
   </url>
 
+  <!-- Product: adad -->
+  <url>
+    <loc>https://gerobakjogja.vercel.app/produk/adad</loc>
+    <lastmod>2025-12-12</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765412738/gerobak-jogja/products/xwcalt99fyse8i6euede.webp</image:loc>
+      <image:title>adad</image:title>
+    </image:image>
+  </url>
   <!-- Product: td -->
   <url>
     <loc>https://gerobakjogja.vercel.app/produk/td</loc>
@@ -83,39 +94,6 @@
     <image:image>
       <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765412764/gerobak-jogja/products/qfj98xbqgz1bezhdihmg.webp</image:loc>
       <image:title>td</image:title>
-    </image:image>
-  </url>
-  <!-- Product: s -->
-  <url>
-    <loc>https://gerobakjogja.vercel.app/produk/s</loc>
-    <lastmod>2025-12-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765414846/gerobak-jogja/products/baadn6e7pyox21axfyqr.webp</image:loc>
-      <image:title>s</image:title>
-    </image:image>
-  </url>
-  <!-- Product: adad -->
-  <url>
-    <loc>https://gerobakjogja.vercel.app/produk/adad</loc>
-    <lastmod>2025-12-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765412738/gerobak-jogja/products/xwcalt99fyse8i6euede.webp</image:loc>
-      <image:title>adad</image:title>
-    </image:image>
-  </url>
-  <!-- Product: test -->
-  <url>
-    <loc>https://gerobakjogja.vercel.app/produk/test</loc>
-    <lastmod>2025-12-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765380799/gerobak-jogja/products/wkqa8nzf98qbfzn7yaex.webp</image:loc>
-      <image:title>test</image:title>
     </image:image>
   </url>
   <!-- Blog: Inspirasi Desain Gerobak untuk Berbagai Jenis Usaha -->

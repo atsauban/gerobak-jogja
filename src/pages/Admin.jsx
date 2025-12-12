@@ -260,7 +260,6 @@ export default function Admin() {
               onClick={async () => {
                 // Better platform detection for development
                 const isVercel = window.location.hostname.includes('vercel.app');
-                const isNetlifyDev = window.location.port === '8888' || window.location.hostname === 'localhost';
 
                 let testUrl, platform;
                 if (isVercel) {

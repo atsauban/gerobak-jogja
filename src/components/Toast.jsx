@@ -20,20 +20,20 @@ export const ToastProvider = ({ children }) => {
   const addToast = (message, type = 'info', duration = 4000, action = null) => {
     const id = Date.now() + Math.random();
     const toast = { id, message, type, duration, action };
-    
+
     setToasts(prev => {
       // Keep only last MAX_TOASTS toasts
       const newToasts = [...prev, toast];
       return newToasts.slice(-MAX_TOASTS);
     });
-    
+
     // Auto remove toast if duration > 0
     if (duration > 0) {
       setTimeout(() => {
         removeToast(id);
       }, duration);
     }
-    
+
     return id;
   };
 
@@ -64,7 +64,7 @@ const ToastContainer = ({ toasts, removeToast }) => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
@@ -74,8 +74,8 @@ const ToastContainer = ({ toasts, removeToast }) => {
 
   // Position: bottom on mobile, top-right on desktop
   const containerClass = isMobile
-    ? 'fixed bottom-4 left-4 right-4 z-50 space-y-2'
-    : 'fixed top-4 right-4 z-50 space-y-2 max-w-sm';
+    ? 'fixed bottom-4 left-4 right-4 z-[9999] space-y-2'
+    : 'fixed top-20 right-4 z-[9999] space-y-2 max-w-sm';
 
   return (
     <div className={containerClass}>
@@ -133,7 +133,7 @@ const ToastItem = ({ toast, onRemove }) => {
 
   const getToastStyles = () => {
     const baseStyles = "flex items-start gap-3 p-4 rounded-lg shadow-lg border transition-all duration-300 transform w-full";
-    
+
     if (!isVisible) {
       return `${baseStyles} translate-x-full opacity-0`;
     }
@@ -152,7 +152,7 @@ const ToastItem = ({ toast, onRemove }) => {
 
   const getIcon = () => {
     const iconProps = { size: 20, className: 'flex-shrink-0 mt-0.5' };
-    
+
     switch (toast.type) {
       case 'success':
         return <CheckCircle {...iconProps} className={`${iconProps.className} text-green-600`} />;
@@ -166,7 +166,7 @@ const ToastItem = ({ toast, onRemove }) => {
   };
 
   return (
-    <div 
+    <div
       className={getToastStyles()}
       onMouseEnter={handlePause}
       onMouseLeave={handleResume}

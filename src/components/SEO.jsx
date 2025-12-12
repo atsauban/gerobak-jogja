@@ -6,11 +6,12 @@ export default function SEO({
     name = 'Gerobak Jogja',
     type = 'website',
     image,
-    url
+    url,
+    schema
 }) {
     const siteUrl = window.location.origin;
     const currentUrl = url || window.location.href;
-    const defaultImage = `${siteUrl}/images/hero/workshop-gerobak.jpg`; // Fallback image
+    const defaultImage = `${siteUrl}/images/logo.webp`; // Fallback image
     const metaImage = image || defaultImage;
 
     return (
@@ -33,6 +34,13 @@ export default function SEO({
             <meta name="twitter:title" content={title || name} />
             <meta name="twitter:description" content={description} />
             <meta name="twitter:image" content={metaImage} />
+
+            {/* JSON-LD Schema */}
+            {schema && (
+                <script type="application/ld+json">
+                    {JSON.stringify(schema)}
+                </script>
+            )}
         </Helmet>
     );
 }

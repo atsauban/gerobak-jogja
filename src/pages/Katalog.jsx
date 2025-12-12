@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Star, Filter, Eye, Zap, X } from 'lucide-react';
 import WhatsAppButton from '../components/WhatsAppButton';
 import SearchBar from '../components/SearchBar';
@@ -12,20 +12,47 @@ import { CONTACT_INFO } from '../config/contact';
 import { useProducts } from '../context/ProductContext';
 
 export default function Katalog() {
-  const [selectedCategory, setSelectedCategory] = useState('semua');
-  const [searchQuery, setSearchQuery] = useState('');
+  /* URL Sync Implementation */
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Get initial values from URL or defaults
+  const selectedCategory = searchParams.get('kategori') || 'semua';
+  const searchQuery = searchParams.get('cari') || '';
+
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const { getProductsByCategory, loading } = useProducts();
 
-  /* Removed hardcoded products - now using context
-  const products = [
-    { id: 1, name: 'Gerobak Aluminium Premium', category: 'aluminium', price: '3.500.000', image: 'https://via.placeholder.com/400x300?text=Aluminium+Premium', desc: 'Gerobak aluminium dengan finishing premium', rating: 4.9, badge: 'Best Seller' },
-    { id: 2, name: 'Gerobak Aluminium Standard', category: 'aluminium', price: '3.000.000', image: 'https://via.placeholder.com/400x300?text=Aluminium+Standard', desc: 'Gerobak aluminium kualitas standard', rating: 4.7, badge: null },
-    { id: 3, name: 'Gerobak Kayu Jati', category: 'kayu', price: '4.000.000', image: 'https://via.placeholder.com/400x300?text=Kayu+Jati', desc: 'Gerobak kayu jati solid dan tahan lama', rating: 4.8, badge: 'Premium' },
-    { id: 4, name: 'Gerobak Kayu Pinus', category: 'kayu', price: '2.500.000', image: 'https://via.placeholder.com/400x300?text=Kayu+Pinus', desc: 'Gerobak kayu pinus ekonomis', rating: 4.6, badge: 'Hemat' },
-    { id: 5, name: 'Gerobak Stainless Steel', category: 'stainless', price: '5.000.000', image: 'https://via.placeholder.com/400x300?text=Stainless+Steel', desc: 'Gerobak stainless steel food grade', rating: 5.0, badge: 'Premium' },
-    { id: 6, name: 'Gerobak Kombinasi', category: 'kombinasi', price: '3.800.000', image: 'https://via.placeholder.com/400x300?text=Kombinasi', desc: 'Kombinasi aluminium dan kayu', rating: 4.7, badge: 'Populer' },
-  ]; */
+  // Helper to update URL params
+  const updateParams = (newParams) => {
+    const nextParams = new URLSearchParams(searchParams);
+
+    Object.entries(newParams).forEach(([key, value]) => {
+      if (value) {
+        nextParams.set(key, value);
+      } else {
+        nextParams.delete(key);
+      }
+    });
+
+    // Reset page to 1 if we had pagination (future proofing)
+    // nextParams.delete('page');
+
+    setSearchParams(nextParams);
+  };
+
+  const handleCategoryChange = (category) => {
+    updateParams({ kategori: category === 'semua' ? '' : category });
+  };
+
+  const handleSearchChange = (query) => {
+    updateParams({ cari: query });
+  };
+
+  const clearFilters = () => {
+    setSearchParams({});
+  };
+
+  /* Removed hardcoded products - now using context */
 
   const categories = [
     { id: 'semua', name: 'Semua Produk', icon: '🏪' },
@@ -61,8 +88,8 @@ export default function Katalog() {
       >
         <SearchBar
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          onSearch={(query) => setSearchQuery(query)}
+          onChange={(e) => handleSearchChange(e.target.value)}
+          onSearch={(query) => handleSearchChange(query)}
           placeholder="Cari gerobak berdasarkan nama, kategori, atau deskripsi..."
           className="mb-4"
           showSuggestions={true}
@@ -80,7 +107,7 @@ export default function Katalog() {
                   <Filter size={14} />
                   {categories.find(c => c.id === selectedCategory)?.name}
                   <button
-                    onClick={() => setSelectedCategory('semua')}
+                    onClick={() => handleCategoryChange('semua')}
                     className="ml-1 hover:bg-primary-200 rounded-full p-0.5 transition-colors"
                     aria-label="Remove category filter"
                   >
@@ -92,7 +119,7 @@ export default function Katalog() {
                 <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full text-sm font-semibold">
                   <span>"{searchQuery}"</span>
                   <button
-                    onClick={() => setSearchQuery('')}
+                    onClick={() => handleSearchChange('')}
                     className="ml-1 hover:bg-blue-200 rounded-full p-0.5 transition-colors"
                     aria-label="Clear search"
                   >
@@ -102,10 +129,7 @@ export default function Katalog() {
               )}
               {(selectedCategory !== 'semua' || searchQuery.trim()) && (
                 <button
-                  onClick={() => {
-                    setSelectedCategory('semua');
-                    setSearchQuery('');
-                  }}
+                  onClick={clearFilters}
                   className="text-sm text-gray-600 hover:text-primary-600 font-medium underline"
                 >
                   Hapus Semua Filter
@@ -125,7 +149,7 @@ export default function Katalog() {
             {categories.map(cat => (
               <button
                 key={cat.id}
-                onClick={() => setSelectedCategory(cat.id)}
+                onClick={() => handleCategoryChange(cat.id)}
                 className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${selectedCategory === cat.id
                   ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg'
                   : 'bg-white text-gray-700 hover:bg-gray-50 shadow-md'
@@ -251,10 +275,7 @@ export default function Katalog() {
                   ? 'Belum ada produk dalam kategori ini. Coba kategori lain atau lihat semua produk.'
                   : 'Produk akan muncul di sini setelah ditambahkan.'
             }
-            onClearFilters={() => {
-              setSearchQuery('');
-              setSelectedCategory('semua');
-            }}
+            onClearFilters={clearFilters}
             suggestions={
               searchQuery
                 ? categories.filter(c => c.id !== selectedCategory).slice(0, 3).map(c => c.name)

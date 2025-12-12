@@ -68,20 +68,20 @@ export class XSSProtection {
 
   static detect(input) {
     if (!input || typeof input !== 'string') return false;
-    
+
     return this.patterns.some(pattern => pattern.test(input));
   }
 
   static sanitize(input) {
     if (!input || typeof input !== 'string') return '';
-    
+
     let sanitized = input;
-    
+
     // Remove dangerous patterns
     this.patterns.forEach(pattern => {
       sanitized = sanitized.replace(pattern, '');
     });
-    
+
     // Encode HTML entities
     sanitized = sanitized
       .replace(/&/g, '&amp;')
@@ -90,7 +90,7 @@ export class XSSProtection {
       .replace(/"/g, '&quot;')
       .replace(/'/g, '&#x27;')
       .replace(/\//g, '&#x2F;');
-    
+
     return sanitized;
   }
 }
@@ -163,7 +163,7 @@ export class SecureValidator {
 export class FileUploadSecurity {
   static allowedTypes = [
     'image/jpeg',
-    'image/jpg', 
+    'image/jpg',
     'image/png',
     'image/webp',
     'image/gif'
@@ -219,7 +219,7 @@ export class SessionSecurity {
       timestamp: Date.now(),
       expiration: expirationMinutes * 60 * 1000
     };
-    
+
     try {
       sessionStorage.setItem(key, JSON.stringify(item));
     } catch (error) {
@@ -262,7 +262,7 @@ export class SessionSecurity {
 export class SecureAPI {
   static async request(url, options = {}) {
     const csrfToken = CSRFProtection.getToken();
-    
+
     const secureOptions = {
       ...options,
       headers: {
@@ -279,10 +279,10 @@ export class SecureAPI {
 
     try {
       const response = await fetch(url, secureOptions);
-      
+
       // Check for security headers in response
       this.validateResponseHeaders(response);
-      
+
       return response;
     } catch (error) {
       console.error('Secure API request failed:', error);
@@ -293,7 +293,7 @@ export class SecureAPI {
   static validateResponseHeaders(response) {
     const securityHeaders = [
       'X-Content-Type-Options',
-      'X-Frame-Options', 
+      'X-Frame-Options',
       'X-XSS-Protection'
     ];
 
@@ -311,17 +311,17 @@ export class SecureAPI {
 export function initializeSecurity() {
   // Set CSRF token
   CSRFProtection.setToken();
-  
+
   // Clear expired session items
   SessionSecurity.clearExpiredItems();
-  
+
   // Set up periodic cleanup
   setInterval(() => {
     SessionSecurity.clearExpiredItems();
   }, 5 * 60 * 1000); // Every 5 minutes
 
   // Log security initialization
-  console.log('Security measures initialized');
+  // console.log('Security measures initialized');
 }
 
 export default {

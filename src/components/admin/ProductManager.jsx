@@ -38,7 +38,7 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
     const [specValue, setSpecValue] = useState('');
     const [featureInput, setFeatureInput] = useState('');
     const [includeInput, setIncludeInput] = useState('');
-    const [deletedProduct, setDeletedProduct] = useState(null); // For undo
+
 
     // Generate slug from product name
     const generateSlug = (name) => {
@@ -200,8 +200,7 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
             product.name,
             async () => {
                 try {
-                    // Store deleted product for undo
-                    setDeletedProduct({ id, product, timestamp: Date.now() });
+
 
                     await deleteProduct(id);
 
@@ -227,8 +226,8 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
                         onUndo: async () => {
                             try {
                                 // Restore product
-                                await addProduct(deletedProduct.product);
-                                setDeletedProduct(null);
+                                await addProduct(product);
+
                                 toast.success('Produk berhasil dikembalikan!');
                             } catch (error) {
                                 toast.error('Gagal mengembalikan produk: ' + error.message);

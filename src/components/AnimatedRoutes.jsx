@@ -1,6 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
-import { AnimatePresence } from 'framer-motion';
+import { Routes, Route } from 'react-router-dom';
 import PageTransition from './PageTransition';
 
 // Lazy Load Pages
@@ -27,9 +26,11 @@ const PageLoading = () => (
 
 // Helper to wrap pages with transition and suspense
 const WithTransition = ({ children }) => (
-    <Suspense fallback={<PageLoading />}>
-        {children}
-    </Suspense>
+    <PageTransition>
+        <Suspense fallback={<PageLoading />}>
+            {children}
+        </Suspense>
+    </PageTransition>
 );
 
 export default function AnimatedRoutes() {

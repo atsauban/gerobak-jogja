@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { ZoomIn, Image as ImageIcon } from 'lucide-react';
 import { getGalleryImages } from '../services/firebaseService';
 import { handleError } from '../utils/errorHandler';
@@ -6,8 +7,22 @@ import ImageGallery from '../components/ImageGallery';
 import PageHero from '../components/PageHero';
 
 export default function Galeri() {
+  /* URL Sync Implementation */
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedCategory = searchParams.get('kategori') || 'semua';
+
+  // Helper to update URL params
+  const handleCategoryChange = (category) => {
+    const nextParams = new URLSearchParams(searchParams);
+    if (category === 'semua') {
+      nextParams.delete('kategori');
+    } else {
+      nextParams.set('kategori', category);
+    }
+    setSearchParams(nextParams);
+  };
+
   const [selectedImage, setSelectedImage] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState('semua');
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -72,7 +87,7 @@ export default function Galeri() {
           {categories.map(cat => (
             <button
               key={cat.id}
-              onClick={() => setSelectedCategory(cat.id)}
+              onClick={() => handleCategoryChange(cat.id)}
               className={`px-5 py-3 rounded-full font-medium transition-all duration-300 min-h-[44px] min-w-[44px] ${selectedCategory === cat.id
                 ? 'bg-gradient-to-r from-primary-600 to-primary-700 text-white shadow-lg scale-105'
                 : 'bg-white text-gray-700 hover:bg-gray-50 shadow-md hover:shadow-lg'

@@ -9,6 +9,8 @@ import ProductImageGallery from '../components/product/ProductImageGallery';
 import ProductInfo from '../components/product/ProductInfo';
 import ProductContent from '../components/product/ProductContent';
 import ProductCTA from '../components/product/ProductCTA';
+import RelatedProducts from '../components/product/RelatedProducts';
+import StickyBottomBar from '../components/product/StickyBottomBar';
 
 export default function ProductDetail() {
   const { slug } = useParams();
@@ -83,6 +85,25 @@ export default function ProductDetail() {
         description={product.shortDesc}
         image={product.images && product.images[0]}
         type="product"
+        schema={{
+          "@context": "https://schema.org/",
+          "@type": "Product",
+          "name": product.name,
+          "image": product.images || [],
+          "description": product.description || product.shortDesc,
+          "brand": {
+            "@type": "Brand",
+            "name": "Gerobak Jogja"
+          },
+          "offers": {
+            "@type": "Offer",
+            "url": window.location.href,
+            "priceCurrency": "IDR",
+            "price": product.price,
+            "availability": "https://schema.org/InStock",
+            "itemCondition": "https://schema.org/NewCondition"
+          }
+        }}
       />
       <div className="pt-16 min-h-screen bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -116,8 +137,14 @@ export default function ProductDetail() {
 
           {/* CTA */}
           <ProductCTA product={product} />
+
+          {/* Related Products */}
+          <RelatedProducts currentProduct={product} />
         </div>
       </div>
+
+      {/* Mobile Sticky Action Bar */}
+      <StickyBottomBar product={product} />
     </>
   );
 }

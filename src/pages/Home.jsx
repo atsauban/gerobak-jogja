@@ -6,7 +6,7 @@ import FAQ from '../components/FAQ';
 import EmptyState from '../components/EmptyState';
 import LazyImage from '../components/LazyImage';
 import CountUpNumber from '../components/CountUpNumber';
-import ScrollReveal from '../components/ScrollReveal';
+import RevealOnScroll from '../components/RevealOnScroll';
 
 import { ProductGridSkeleton } from '../components/LoadingSkeleton';
 import { CONTACT_INFO } from '../config/contact';
@@ -43,6 +43,7 @@ export default function Home() {
             alt="Workshop Gerobak Jogja"
             className="w-full h-full object-cover filter blur-sm scale-110"
             loading="eager"
+            fetchPriority="high"
           />
           {/* Gradient overlay for better text readability */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary-900/85 via-primary-800/80 to-primary-900/90"></div>
@@ -64,26 +65,26 @@ export default function Home() {
 
         <div className="max-w-7xl mx-auto container-padding relative z-10">
           <div className="text-center">
-            <ScrollReveal animation="fade-up" delay={200}>
+            <RevealOnScroll delay={200}>
               <div className="inline-block mb-6 px-4 py-2 bg-white/15 backdrop-blur-md rounded-full text-sm font-semibold border border-white/20 shadow-lg">
                 ✨ Dipercaya oleh 100+ Pelanggan
               </div>
-            </ScrollReveal>
+            </RevealOnScroll>
 
-            <ScrollReveal animation="fade-up" delay={400}>
+            <RevealOnScroll delay={400}>
               <h1 className="hero-title mb-6">
                 <span className="block">Gerobak Premium</span>
                 <span className="text-accent-300 block bg-gradient-to-r from-accent-300 to-accent-200 bg-clip-text text-transparent">Bisnis Sukses</span>
               </h1>
-            </ScrollReveal>
+            </RevealOnScroll>
 
-            <ScrollReveal animation="fade-up" delay={600}>
+            <RevealOnScroll delay={600}>
               <p className="hero-subtitle mb-8 text-blue-100 drop-shadow-sm">
                 Dari <span className="font-bold text-accent-300">Rp 2.5 juta</span> sudah bisa punya gerobak berkualitas tinggi
               </p>
-            </ScrollReveal>
+            </RevealOnScroll>
 
-            <ScrollReveal animation="fade-up" delay={800}>
+            <RevealOnScroll delay={800}>
               <div className="flex flex-col sm:flex-row gap-4 justify-center max-w-md sm:max-w-none mx-auto">
                 <Link
                   to="/katalog"
@@ -99,13 +100,13 @@ export default function Home() {
                   Konsultasi Gratis
                 </WhatsAppButton>
               </div>
-            </ScrollReveal>
+            </RevealOnScroll>
           </div>
         </div>
 
         {/* Stats with Enhanced Glassmorphism */}
         <div className="max-w-7xl mx-auto container-padding mt-16">
-          <ScrollReveal animation="fade-up" delay={1000}>
+          <RevealOnScroll delay={1000}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {stats.map((stat, index) => (
                 <div
@@ -119,38 +120,38 @@ export default function Home() {
                     end={stat.value}
                     suffix={stat.suffix}
                     duration={stat.duration}
-                    className="text-4xl font-display font-bold mb-2"
+                    className="text-3xl md:text-4xl font-display font-bold mb-2"
                   />
                   <div className="text-blue-100">{stat.label}</div>
                 </div>
               ))}
             </div>
-          </ScrollReveal>
+          </RevealOnScroll>
         </div>
       </section>
 
       {/* Features with Scroll Reveal */}
       <section className="section-padding gradient-subtle">
         <div className="max-w-7xl mx-auto container-padding">
-          <ScrollReveal animation="fade-up">
+          <RevealOnScroll>
             <div className="text-center mb-12">
               <h2 className="section-title">Mengapa Pilih Kami?</h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
                 Kami berkomitmen memberikan produk terbaik dengan layanan yang memuaskan
               </p>
             </div>
-          </ScrollReveal>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          </RevealOnScroll>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature, index) => (
-              <ScrollReveal key={index} animation="fade-up" delay={index * 100}>
-                <div className="card p-8 text-center group cursor-pointer h-full flex flex-col">
-                  <div className={`feature-icon bg-gradient-to-br ${feature.color} mb-6`}>
+              <RevealOnScroll key={index} delay={index * 100}>
+                <div className="card p-6 md:p-8 text-center group cursor-pointer h-full flex flex-col">
+                  <div className={`feature-icon bg-gradient-to-br ${feature.color} mb-6 mx-auto`}>
                     {feature.icon}
                   </div>
-                  <h3 className="text-xl font-bold mb-3 text-gray-900">{feature.title}</h3>
-                  <p className="text-gray-600 flex-grow">{feature.desc}</p>
+                  <h3 className="text-lg md:text-xl font-bold mb-3 text-gray-900">{feature.title}</h3>
+                  <p className="text-gray-600 flex-grow text-sm md:text-base">{feature.desc}</p>
                 </div>
-              </ScrollReveal>
+              </RevealOnScroll>
             ))}
           </div>
         </div>
@@ -159,9 +160,9 @@ export default function Home() {
       {/* Products Preview */}
       <section className="section-padding bg-white">
         <div className="max-w-7xl mx-auto container-padding">
-          <div className="text-center mb-12">
+          <div className="text-center mb-10 md:mb-12">
             <h2 className="section-title">Produk Unggulan</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
               Pilihan terbaik untuk memulai bisnis gerobak Anda
             </p>
           </div>
@@ -177,7 +178,7 @@ export default function Home() {
           {!loading && featuredProducts.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {featuredProducts.map((product, index) => (
-                <ScrollReveal key={product.id} animation="fade-up" delay={index * 150}>
+                <RevealOnScroll key={product.id} delay={index * 150}>
                   <div
                     className="card overflow-hidden group"
                   >
@@ -202,14 +203,14 @@ export default function Home() {
                         </div>
                       </div>
                     </div>
-                    <div className="p-6">
-                      <h3 className="text-2xl font-bold mb-2 text-gray-900 group-hover:text-primary-600 transition-colors">
+                    <div className="p-5 md:p-6">
+                      <h3 className="text-xl md:text-2xl font-bold mb-2 text-gray-900 group-hover:text-primary-600 transition-colors">
                         {product.name}
                       </h3>
                       <p className="text-gray-600 mb-4 text-sm line-clamp-2">
                         {product.shortDesc || product.description}
                       </p>
-                      <p className="text-primary-600 font-bold text-2xl mb-6">
+                      <p className="text-primary-600 font-bold text-xl md:text-2xl mb-6">
                         Mulai Rp {parseInt(product.price).toLocaleString('id-ID')}
                       </p>
                       <div className="flex gap-2 items-stretch">
@@ -217,7 +218,7 @@ export default function Home() {
                           to={`/produk/${product.slug || product.id}`}
                           className="flex-1 btn-primary justify-center items-center h-11"
                         >
-                          Lihat Detail
+                          Detail
                         </Link>
                         <WhatsAppButton
                           productName={product.name}
@@ -228,7 +229,7 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                </ScrollReveal>
+                </RevealOnScroll>
               ))}
             </div>
           )}
@@ -268,10 +269,10 @@ export default function Home() {
       {/* CTA Section */}
       <section className="section-padding gradient-primary text-white">
         <div className="max-w-4xl mx-auto container-padding text-center">
-          <h2 className="text-4xl md:text-5xl font-display font-bold mb-6">
+          <h2 className="text-3xl md:text-5xl font-display font-bold mb-6">
             Siap Memulai Bisnis Gerobak Anda?
           </h2>
-          <p className="text-xl mb-8 text-blue-100">
+          <p className="text-lg md:text-xl mb-8 text-blue-100">
             Konsultasikan kebutuhan Anda dengan tim kami sekarang juga!
           </p>
           <WhatsAppButton

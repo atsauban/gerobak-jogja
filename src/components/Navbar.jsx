@@ -20,7 +20,7 @@ export default function Navbar() {
   // Close menu when route changes
   useEffect(() => {
     setIsOpen(false);
-  }, [location.pathname]);
+  }, [location, setIsOpen]);
 
   // Handle outside click
   useEffect(() => {
@@ -45,7 +45,7 @@ export default function Navbar() {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('touchstart', handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isOpen, setIsOpen]);
 
   // Handle escape key
   useEffect(() => {
@@ -66,35 +66,50 @@ export default function Navbar() {
     return () => {
       document.removeEventListener('keydown', handleEscape);
     };
-  }, [isOpen]);
+  }, [isOpen, setIsOpen]);
+
+  // Handle resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024 && isOpen) {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isOpen, setIsOpen]);
 
   // Prevent body scroll when menu is open
   useEffect(() => {
     if (isOpen) {
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
       document.body.style.overflow = 'hidden';
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
     } else {
       document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
     }
 
     return () => {
       document.body.style.overflow = '';
+      document.body.style.paddingRight = '';
     };
   }, [isOpen]);
 
   const isActive = (path) => location.pathname === path;
 
   return (
-    <nav className={`fixed w-full z-50 transition-all duration-300 ${
-      scrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-white shadow-md'
-    }`}>
+    <nav className={`fixed w-full z-[100] transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-white shadow-md'
+      }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-2 sm:gap-3 group">
               <div className="relative">
-                <img 
-                  src="/images/logo.webp" 
-                  alt="Gerobak Jogja Logo" 
+                <img
+                  src="/images/logo.webp"
+                  alt="Gerobak Jogja Logo"
                   className="h-8 w-8 sm:h-10 sm:w-10 object-contain transition-transform duration-300 group-hover:scale-105"
                   onError={(e) => e.target.style.display = 'none'}
                 />
@@ -108,91 +123,79 @@ export default function Navbar() {
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center space-x-1 xl:space-x-2">
-            <Link 
-              to="/" 
-              className={`relative px-4 py-2 font-medium transition-all duration-300 group ${
-                isActive('/') 
-                  ? 'text-primary-600' 
-                  : 'text-gray-700 hover:text-primary-600'
-              }`}
+            <Link
+              to="/"
+              className={`relative px-4 py-2 font-medium transition-all duration-300 group ${isActive('/')
+                ? 'text-primary-600'
+                : 'text-gray-700 hover:text-primary-600'
+                }`}
             >
               Beranda
-              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary-500 to-primary-700 transform transition-transform duration-300 ${
-                isActive('/') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-              }`}></span>
+              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary-500 to-primary-700 transform transition-transform duration-300 ${isActive('/') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                }`}></span>
             </Link>
-            <Link 
-              to="/katalog" 
-              className={`relative px-4 py-2 font-medium transition-all duration-300 group ${
-                isActive('/katalog') 
-                  ? 'text-primary-600' 
-                  : 'text-gray-700 hover:text-primary-600'
-              }`}
+            <Link
+              to="/katalog"
+              className={`relative px-4 py-2 font-medium transition-all duration-300 group ${isActive('/katalog')
+                ? 'text-primary-600'
+                : 'text-gray-700 hover:text-primary-600'
+                }`}
             >
               Katalog
-              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary-500 to-primary-700 transform transition-transform duration-300 ${
-                isActive('/katalog') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-              }`}></span>
+              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary-500 to-primary-700 transform transition-transform duration-300 ${isActive('/katalog') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                }`}></span>
             </Link>
-            <Link 
-              to="/galeri" 
-              className={`relative px-4 py-2 font-medium transition-all duration-300 group ${
-                isActive('/galeri') 
-                  ? 'text-primary-600' 
-                  : 'text-gray-700 hover:text-primary-600'
-              }`}
+            <Link
+              to="/galeri"
+              className={`relative px-4 py-2 font-medium transition-all duration-300 group ${isActive('/galeri')
+                ? 'text-primary-600'
+                : 'text-gray-700 hover:text-primary-600'
+                }`}
             >
               Galeri
-              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary-500 to-primary-700 transform transition-transform duration-300 ${
-                isActive('/galeri') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-              }`}></span>
+              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary-500 to-primary-700 transform transition-transform duration-300 ${isActive('/galeri') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                }`}></span>
             </Link>
-            <Link 
-              to="/tentang" 
-              className={`relative px-4 py-2 font-medium transition-all duration-300 group ${
-                isActive('/tentang') 
-                  ? 'text-primary-600' 
-                  : 'text-gray-700 hover:text-primary-600'
-              }`}
+            <Link
+              to="/tentang"
+              className={`relative px-4 py-2 font-medium transition-all duration-300 group ${isActive('/tentang')
+                ? 'text-primary-600'
+                : 'text-gray-700 hover:text-primary-600'
+                }`}
             >
               Tentang
-              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary-500 to-primary-700 transform transition-transform duration-300 ${
-                isActive('/tentang') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-              }`}></span>
+              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary-500 to-primary-700 transform transition-transform duration-300 ${isActive('/tentang') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                }`}></span>
             </Link>
-            <Link 
-              to="/kontak" 
-              className={`relative px-4 py-2 font-medium transition-all duration-300 group ${
-                isActive('/kontak') 
-                  ? 'text-primary-600' 
-                  : 'text-gray-700 hover:text-primary-600'
-              }`}
+            <Link
+              to="/kontak"
+              className={`relative px-4 py-2 font-medium transition-all duration-300 group ${isActive('/kontak')
+                ? 'text-primary-600'
+                : 'text-gray-700 hover:text-primary-600'
+                }`}
             >
               Kontak
-              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary-500 to-primary-700 transform transition-transform duration-300 ${
-                isActive('/kontak') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-              }`}></span>
+              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary-500 to-primary-700 transform transition-transform duration-300 ${isActive('/kontak') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                }`}></span>
             </Link>
-            <Link 
-              to="/blog" 
-              className={`relative px-4 py-2 font-medium transition-all duration-300 group ${
-                isActive('/blog') 
-                  ? 'text-primary-600' 
-                  : 'text-gray-700 hover:text-primary-600'
-              }`}
+            <Link
+              to="/blog"
+              className={`relative px-4 py-2 font-medium transition-all duration-300 group ${isActive('/blog')
+                ? 'text-primary-600'
+                : 'text-gray-700 hover:text-primary-600'
+                }`}
             >
               Blog
-              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary-500 to-primary-700 transform transition-transform duration-300 ${
-                isActive('/blog') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-              }`}></span>
+              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary-500 to-primary-700 transform transition-transform duration-300 ${isActive('/blog') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                }`}></span>
             </Link>
           </div>
 
           {/* Mobile menu button */}
           <div className="lg:hidden flex items-center">
-            <button 
+            <button
               ref={buttonRef}
-              onClick={() => setIsOpen(!isOpen)} 
+              onClick={() => setIsOpen(!isOpen)}
               className="relative text-gray-700 hover:text-primary-600 transition-all duration-300 p-2 hover:bg-primary-50 rounded-lg group"
               aria-label={isOpen ? "Close menu" : "Open menu"}
               aria-expanded={isOpen}
@@ -208,76 +211,70 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div 
+        <div
           id="mobile-menu"
           ref={menuRef}
-          className="lg:hidden animate-slide-down"
+          className="lg:hidden absolute top-full left-0 w-full bg-white shadow-lg overflow-hidden animate-slide-down"
           role="menu"
           aria-label="Main navigation"
         >
-          <div className="px-3 pt-3 pb-4 space-y-2 sm:px-4 bg-gradient-to-b from-white to-gray-50 border-t shadow-lg">
-            <Link 
-              to="/" 
-              className={`block px-4 py-3 rounded-xl transition-all duration-300 ${
-                isActive('/') 
-                  ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-md transform scale-105' 
-                  : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600 hover:pl-6'
-              }`}
+          <div className="px-4 py-4 space-y-2 max-h-[80vh] overflow-y-auto">
+            <Link
+              to="/"
+              className={`block px-4 py-3 rounded-xl text-base font-medium transition-colors duration-200 ${isActive('/')
+                ? 'bg-primary-50 text-primary-600'
+                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                }`}
               onClick={() => setIsOpen(false)}
             >
               Beranda
             </Link>
-            <Link 
-              to="/katalog" 
-              className={`block px-4 py-3 rounded-xl transition-all duration-300 ${
-                isActive('/katalog') 
-                  ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-md transform scale-105' 
-                  : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600 hover:pl-6'
-              }`}
+            <Link
+              to="/katalog"
+              className={`block px-4 py-3 rounded-xl text-base font-medium transition-colors duration-200 ${isActive('/katalog')
+                ? 'bg-primary-50 text-primary-600'
+                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                }`}
               onClick={() => setIsOpen(false)}
             >
               Katalog
             </Link>
-            <Link 
-              to="/galeri" 
-              className={`block px-4 py-3 rounded-xl transition-all duration-300 ${
-                isActive('/galeri') 
-                  ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-md transform scale-105' 
-                  : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600 hover:pl-6'
-              }`}
+            <Link
+              to="/galeri"
+              className={`block px-4 py-3 rounded-xl text-base font-medium transition-colors duration-200 ${isActive('/galeri')
+                ? 'bg-primary-50 text-primary-600'
+                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                }`}
               onClick={() => setIsOpen(false)}
             >
               Galeri
             </Link>
-            <Link 
-              to="/tentang" 
-              className={`block px-4 py-3 rounded-xl transition-all duration-300 ${
-                isActive('/tentang') 
-                  ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-md transform scale-105' 
-                  : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600 hover:pl-6'
-              }`}
+            <Link
+              to="/tentang"
+              className={`block px-4 py-3 rounded-xl text-base font-medium transition-colors duration-200 ${isActive('/tentang')
+                ? 'bg-primary-50 text-primary-600'
+                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                }`}
               onClick={() => setIsOpen(false)}
             >
               Tentang
             </Link>
-            <Link 
-              to="/kontak" 
-              className={`block px-4 py-3 rounded-xl transition-all duration-300 ${
-                isActive('/kontak') 
-                  ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-md transform scale-105' 
-                  : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600 hover:pl-6'
-              }`}
+            <Link
+              to="/kontak"
+              className={`block px-4 py-3 rounded-xl text-base font-medium transition-colors duration-200 ${isActive('/kontak')
+                ? 'bg-primary-50 text-primary-600'
+                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                }`}
               onClick={() => setIsOpen(false)}
             >
               Kontak
             </Link>
-            <Link 
-              to="/blog" 
-              className={`block px-4 py-3 rounded-xl transition-all duration-300 ${
-                isActive('/blog') 
-                  ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold shadow-md transform scale-105' 
-                  : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600 hover:pl-6'
-              }`}
+            <Link
+              to="/blog"
+              className={`block px-4 py-3 rounded-xl text-base font-medium transition-colors duration-200 ${isActive('/blog')
+                ? 'bg-primary-50 text-primary-600'
+                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
+                }`}
               onClick={() => setIsOpen(false)}
             >
               Blog

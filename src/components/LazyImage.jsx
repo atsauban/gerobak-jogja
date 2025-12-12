@@ -8,7 +8,7 @@ export default function LazyImage({
   onLoad,
   ...props
 }) {
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(props.loading === 'eager');
   const [hasError, setHasError] = useState(false);
 
   const handleLoad = (e) => {

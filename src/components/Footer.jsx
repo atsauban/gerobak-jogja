@@ -16,50 +16,50 @@ export default function Footer() {
               Spesialis pembuatan gerobak berkualitas untuk berbagai kebutuhan usaha Anda.
             </p>
             <div className="flex gap-3">
-              <a 
-                href={getWhatsAppUrl()} 
-                target="_blank" 
+              <a
+                href={getWhatsAppUrl()}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center hover:bg-green-600 transition-colors"
                 title="WhatsApp"
               >
                 <MessageCircle size={20} />
               </a>
-              <a 
-                href={CONTACT_INFO.instagram} 
-                target="_blank" 
+              <a
+                href={CONTACT_INFO.instagram}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 bg-pink-500 rounded-full flex items-center justify-center hover:bg-pink-600 transition-colors"
                 title="Instagram"
               >
                 <Instagram size={20} />
               </a>
-              <a 
-                href={CONTACT_INFO.facebook} 
-                target="_blank" 
+              <a
+                href={CONTACT_INFO.facebook}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors"
                 title="Facebook Page"
               >
                 <Facebook size={20} />
               </a>
-              <a 
-                href={CONTACT_INFO.facebookGroup} 
-                target="_blank" 
+              <a
+                href={CONTACT_INFO.facebookGroup}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center hover:bg-blue-600 transition-colors"
                 title="Facebook Group"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-                  <circle cx="9" cy="7" r="4"/>
-                  <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
               </a>
             </div>
           </div>
-          
+
           {/* Quick Links */}
           <div>
             <h3 className="text-lg font-bold mb-4">Menu Cepat</h3>
@@ -84,7 +84,7 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-          
+
           {/* Contact */}
           <div>
             <h3 className="text-lg font-bold mb-4">Kontak</h3>
@@ -101,9 +101,9 @@ export default function Footer() {
                 </div>
                 <span>{CONTACT_INFO.email}</span>
               </a>
-              <a 
-                href={CONTACT_INFO.mapsUrl} 
-                target="_blank" 
+              <a
+                href={CONTACT_INFO.mapsUrl}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors"
               >
@@ -114,7 +114,7 @@ export default function Footer() {
               </a>
             </div>
           </div>
-          
+
           {/* Hours */}
           <div>
             <h3 className="text-lg font-bold mb-4">Jam Operasional</h3>
@@ -134,15 +134,15 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        
+
         <div className="border-t border-gray-700 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-400 text-sm">
               &copy; {new Date().getFullYear()} Gerobak Jogja. All rights reserved.
             </p>
             <div className="flex gap-6 text-sm text-gray-400">
-              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-              <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+              <Link to="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link>
+              <Link to="/terms" className="hover:text-white transition-colors">Terms of Service</Link>
             </div>
           </div>
         </div>
