@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, X, Image as ImageIcon } from 'lucide-react';
-import ImageUpload from './ImageUpload';
-import { useToast } from './Toast';
-import { logSitemapChange } from '../utils/sitemapUpdater';
-import { debouncedRegenerateSitemap } from '../services/sitemapService';
-import { handleError, getErrorMessage } from '../utils/errorHandler';
+import ImageUpload from '../ImageUpload';
+import { useToast } from '../Toast';
+import { logSitemapChange } from '../../utils/sitemapUpdater';
+import { debouncedRegenerateSitemap } from '../../services/sitemapService';
+import { handleError, getErrorMessage } from '../../utils/errorHandler';
 import {
   getGalleryImages,
   createGalleryImage,
   updateGalleryImage,
   deleteGalleryImage,
   deleteImageFromCloudinary
-} from '../services/firebaseService';
+} from '../../services/firebaseService';
 
 export default function GalleryManager({ showDeleteConfirmation }) {
   const toast = useToast();
@@ -62,7 +62,7 @@ export default function GalleryManager({ showDeleteConfirmation }) {
       if (editingId) {
         await updateGalleryImage(editingId, formData);
         result = { id: editingId, ...formData };
-        
+
         // Log sitemap change for updated gallery image
         logSitemapChange('updated', 'gallery', {
           id: editingId,
@@ -71,7 +71,7 @@ export default function GalleryManager({ showDeleteConfirmation }) {
         });
       } else {
         result = await createGalleryImage(formData);
-        
+
         // Log sitemap change for new gallery image
         logSitemapChange('added', 'gallery', {
           id: result.id || 'new',
@@ -87,7 +87,7 @@ export default function GalleryManager({ showDeleteConfirmation }) {
       setFormData({ url: '', title: '', category: 'aluminium' });
       setShowForm(false);
       setEditingId(null);
-      
+
       toast.success('Gambar berhasil disimpan!');
     } catch (error) {
       handleError(error, 'Gagal menyimpan gambar. Silakan coba lagi.', toast);
@@ -107,7 +107,7 @@ export default function GalleryManager({ showDeleteConfirmation }) {
   const handleDelete = (id) => {
     // Find the image to get its details
     const image = images.find(img => img.id === id);
-    
+
     showDeleteConfirmation(
       'gallery',
       id,
@@ -118,10 +118,10 @@ export default function GalleryManager({ showDeleteConfirmation }) {
             // Delete from Cloudinary first
             await deleteImageFromCloudinary(image.url);
           }
-          
+
           // Then delete from Firebase
           await deleteGalleryImage(id);
-          
+
           // Log sitemap change for deleted gallery image
           if (image) {
             logSitemapChange('deleted', 'gallery', {
@@ -130,10 +130,10 @@ export default function GalleryManager({ showDeleteConfirmation }) {
               url: image.url
             });
           }
-          
+
           // Regenerate sitemap when gallery image is deleted
           debouncedRegenerateSitemap();
-          
+
           await loadImages();
           toast.success('Gambar berhasil dihapus!');
         } catch (error) {

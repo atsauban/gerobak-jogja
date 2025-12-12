@@ -1,3 +1,4 @@
+import { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ProductProvider } from './context/ProductContext';
 import { AuthProvider } from './context/AuthContext';
@@ -10,51 +11,28 @@ import Footer from './components/Footer';
 import FloatingActionButton from './components/FloatingActionButton';
 import ProgressBar from './components/ProgressBar';
 import ScrollToTopOnMount from './components/ScrollToTopOnMount';
-import Home from './pages/Home';
-import Katalog from './pages/Katalog';
-import ProductDetail from './pages/ProductDetail';
-import Galeri from './pages/Galeri';
-import Tentang from './pages/Tentang';
-import Kontak from './pages/Kontak';
-import Blog from './pages/Blog';
-import BlogDetail from './pages/BlogDetail';
-import Admin from './pages/Admin';
-import NotFound from './pages/NotFound';
-import { 
-  createProduct, 
-  createTestimonial, 
-  createBlogPost, 
-  createFAQ,
-  createGalleryImage
-} from './services/firebaseService';
 
-// Helper functions untuk migrasi data dari localStorage ke Firebase
-if (typeof window !== 'undefined') {
-  window.addProductToFirebase = async (product) => {
-    const { id, ...productData } = product; // Remove old ID
-    return await createProduct(productData);
-  };
+// Lazy Load Pages
+const Home = lazy(() => import('./pages/Home'));
+const Katalog = lazy(() => import('./pages/Katalog'));
+const ProductDetail = lazy(() => import('./pages/ProductDetail'));
+const Galeri = lazy(() => import('./pages/Galeri'));
+const Tentang = lazy(() => import('./pages/Tentang'));
+const Kontak = lazy(() => import('./pages/Kontak'));
+const Blog = lazy(() => import('./pages/Blog'));
+const BlogDetail = lazy(() => import('./pages/BlogDetail'));
+const Admin = lazy(() => import('./pages/Admin'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
-  window.addTestimonialToFirebase = async (testimonial) => {
-    const { id, ...testimonialData } = testimonial;
-    return await createTestimonial(testimonialData);
-  };
-
-  window.addBlogPostToFirebase = async (post) => {
-    const { id, ...postData } = post;
-    return await createBlogPost(postData);
-  };
-
-  window.addFAQToFirebase = async (faq) => {
-    const { id, ...faqData } = faq;
-    return await createFAQ(faqData);
-  };
-
-  window.addGalleryImageToFirebase = async (image) => {
-    const { id, ...imageData } = image;
-    return await createGalleryImage(imageData);
-  };
-}
+// Loading Screen
+const PageLoading = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="flex flex-col items-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mb-4"></div>
+      <p className="text-gray-500 font-medium">Memuat halaman...</p>
+    </div>
+  </div>
+);
 
 function App() {
   return (
@@ -71,19 +49,21 @@ function App() {
               <div className="flex flex-col min-h-screen">
                 <Navbar />
                 <main id="main-content" className="flex-grow" tabIndex={-1}>
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/katalog" element={<Katalog />} />
-                    <Route path="/produk/:slug" element={<ProductDetail />} />
-                    <Route path="/galeri" element={<Galeri />} />
-                    <Route path="/tentang" element={<Tentang />} />
-                    <Route path="/kontak" element={<Kontak />} />
-                    <Route path="/blog" element={<Blog />} />
-                    <Route path="/blog/:slug" element={<BlogDetail />} />
-                    <Route path="/admin" element={<Admin />} />
-                    <Route path="/404-redirect" element={<NotFound />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
+                  <Suspense fallback={<PageLoading />}>
+                    <Routes>
+                      <Route path="/" element={<Home />} />
+                      <Route path="/katalog" element={<Katalog />} />
+                      <Route path="/produk/:slug" element={<ProductDetail />} />
+                      <Route path="/galeri" element={<Galeri />} />
+                      <Route path="/tentang" element={<Tentang />} />
+                      <Route path="/kontak" element={<Kontak />} />
+                      <Route path="/blog" element={<Blog />} />
+                      <Route path="/blog/:slug" element={<BlogDetail />} />
+                      <Route path="/admin" element={<Admin />} />
+                      <Route path="/404-redirect" element={<NotFound />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </Suspense>
                 </main>
                 <Footer />
                 <FloatingActionButton />

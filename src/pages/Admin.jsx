@@ -9,11 +9,11 @@ import ConfirmModal from '../components/ConfirmModal';
 // Lazy Load Admin Components
 const AdminLogin = lazy(() => import('../components/admin/AdminLogin'));
 const AdminDashboardStats = lazy(() => import('../components/admin/AdminDashboardStats'));
-const AdminProductManager = lazy(() => import('../components/admin/AdminProductManager'));
-const AdminBlogManager = lazy(() => import('../components/admin/AdminBlogManager'));
-const AdminTestimonialManager = lazy(() => import('../components/admin/AdminTestimonialManager'));
-const AdminFAQManager = lazy(() => import('../components/admin/AdminFAQManager'));
-const GalleryManager = lazy(() => import('../components/GalleryManager'));
+const ProductManager = lazy(() => import('../components/admin/ProductManager'));
+const BlogManager = lazy(() => import('../components/admin/BlogManager'));
+const TestimonialManager = lazy(() => import('../components/admin/TestimonialManager'));
+const FAQManager = lazy(() => import('../components/admin/FAQManager'));
+const GalleryManager = lazy(() => import('../components/admin/GalleryManager'));
 
 // Loading Component for Tabs
 const TabLoading = () => (
@@ -173,7 +173,7 @@ export default function Admin() {
         <div className="card p-4 sm:p-6 lg:p-8">
           <Suspense fallback={<TabLoading />}>
             {/* Products Tab */}
-            {activeTab === 'products' && <AdminProductManager showDeleteConfirmation={showDeleteConfirmation} />}
+            {activeTab === 'products' && <ProductManager showDeleteConfirmation={showDeleteConfirmation} />}
 
             {/* Gallery Tab */}
             {activeTab === 'gallery' && (
@@ -187,13 +187,13 @@ export default function Admin() {
             )}
 
             {/* Testimonials Tab */}
-            {activeTab === 'testimonials' && <AdminTestimonialManager showDeleteConfirmation={showDeleteConfirmation} />}
+            {activeTab === 'testimonials' && <TestimonialManager showDeleteConfirmation={showDeleteConfirmation} />}
 
             {/* Blog Tab */}
-            {activeTab === 'blog' && <AdminBlogManager showDeleteConfirmation={showDeleteConfirmation} />}
+            {activeTab === 'blog' && <BlogManager showDeleteConfirmation={showDeleteConfirmation} />}
 
             {/* FAQ Tab */}
-            {activeTab === 'faq' && <AdminFAQManager showDeleteConfirmation={showDeleteConfirmation} />}
+            {activeTab === 'faq' && <FAQManager showDeleteConfirmation={showDeleteConfirmation} />}
           </Suspense>
         </div>
 
