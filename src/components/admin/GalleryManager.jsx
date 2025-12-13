@@ -176,11 +176,8 @@ export default function GalleryManager({ showDeleteConfirmation }) {
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="mb-6 p-6 bg-purple-50 border-2 border-purple-300 rounded-lg">
-          <div className="mb-4 p-3 bg-purple-100 border border-purple-300 rounded">
-            <p className="text-sm font-semibold text-purple-900">📸 Upload Gambar Galeri</p>
-            <p className="text-xs text-purple-700">Gambar akan disimpan di folder: gerobak-jogja/gallery/</p>
-          </div>
+        <form onSubmit={handleSubmit} className="mb-6 p-6 bg-gray-50 rounded-lg">
+
           <div className="mb-4">
             <label className="block text-sm font-medium mb-2">Upload Gambar *</label>
             <ImageUpload

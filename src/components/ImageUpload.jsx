@@ -6,9 +6,9 @@ import { handleError, getErrorMessage } from '../utils/errorHandler';
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'gerobak_jogja';
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dpjpj7l1y';
 
-export default function ImageUpload({ 
-  onUploadComplete, 
-  multiple = false, 
+export default function ImageUpload({
+  onUploadComplete,
+  multiple = false,
   maxFiles = 5,
   currentImages = [],
   folder = 'products'
@@ -24,7 +24,7 @@ export default function ImageUpload({
 
   const uploadToCloudinary = async (file, onProgress) => {
     const targetFolder = `gerobak-jogja/${folder}`;
-    
+
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
@@ -32,7 +32,7 @@ export default function ImageUpload({
 
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
-      
+
       // Track upload progress
       xhr.upload.addEventListener('progress', (e) => {
         if (e.lengthComputable) {
@@ -68,7 +68,7 @@ export default function ImageUpload({
 
   const validateFiles = (files) => {
     const fileArray = Array.from(files);
-    
+
     if (!fileArray.length) return { valid: false, error: 'Tidak ada file yang dipilih' };
 
     // Validate file count
@@ -133,7 +133,7 @@ export default function ImageUpload({
       });
 
       const urls = await Promise.all(uploadPromises);
-      
+
       // Clear local preview and add uploaded URLs
       setLocalPreview([]);
       if (multiple) {
@@ -143,9 +143,9 @@ export default function ImageUpload({
         setPreview([urls[0]]);
         onUploadComplete(urls[0]);
       }
-      
+
       setUploadProgress(100);
-      
+
       // Reset progress after a moment
       setTimeout(() => {
         setUploadProgress(0);
@@ -223,11 +223,11 @@ export default function ImageUpload({
             className={`
               border-2 border-dashed rounded-lg p-6 text-center
               transition-all duration-200
-              ${isDragging 
-                ? 'border-primary-500 bg-primary-50 scale-105' 
-                : uploading 
-                ? 'border-gray-300 bg-gray-50' 
-                : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'
+              ${isDragging
+                ? 'border-primary-500 bg-primary-50 scale-105'
+                : uploading
+                  ? 'border-gray-300 bg-gray-50'
+                  : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'
               }
             `}
             onDragOver={handleDragOver}
@@ -304,9 +304,8 @@ export default function ImageUpload({
                     <img
                       src={url}
                       alt={`Preview ${index + 1}`}
-                      className={`w-full h-32 object-cover rounded-lg border-2 ${
-                        isLocal ? 'border-yellow-400 opacity-75' : 'border-gray-200'
-                      }`}
+                      className={`w-full h-32 object-cover rounded-lg border-2 ${isLocal ? 'border-yellow-400 opacity-75' : 'border-gray-200'
+                        }`}
                     />
                     {isLocal && (
                       <div className="absolute inset-0 bg-black bg-opacity-30 rounded-lg flex items-center justify-center">
@@ -343,23 +342,7 @@ export default function ImageUpload({
         </div>
       )}
 
-      {/* Tips */}
-      {!allPreviews.length && (
-        <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <div className="flex gap-3">
-            <ImageIcon className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-            <div className="text-sm text-blue-800">
-              <p className="font-semibold mb-1">Tips Upload Gambar:</p>
-              <ul className="list-disc list-inside space-y-1 text-blue-700">
-                <li>Gunakan foto dengan pencahayaan yang baik</li>
-                <li>Resolusi minimal 800x600 pixel</li>
-                <li>Upload gratis via Cloudinary (auto-optimized)</li>
-                {multiple && <li>Gambar pertama akan jadi foto utama</li>}
-              </ul>
-            </div>
-          </div>
-        </div>
-      )}
+
     </div>
   );
 }

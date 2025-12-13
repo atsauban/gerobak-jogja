@@ -613,24 +613,7 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
                 </form>
             )}
 
-            {/* Featured Products Info */}
-            <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                    <Star className="text-yellow-500" size={20} fill="currentColor" />
-                    <h3 className="font-semibold text-yellow-900">Produk Unggulan di Beranda</h3>
-                </div>
-                <p className="text-sm text-yellow-700 mb-2">
-                    Pilih maksimal 3 produk untuk ditampilkan di section "Produk Unggulan" di beranda.
-                </p>
-                <div className="text-sm text-yellow-800">
-                    <strong>Terpilih: {products.filter(p => p.featured).length}/3</strong>
-                    {products.filter(p => p.featured).length > 0 && (
-                        <span className="ml-2">
-                            ({products.filter(p => p.featured).map(p => p.name).join(', ')})
-                        </span>
-                    )}
-                </div>
-            </div>
+
 
             {/* Desktop Table View */}
             <div className="hidden md:block overflow-x-auto">
