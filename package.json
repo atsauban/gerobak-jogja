@@ -17,6 +17,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "cloudinary": "^2.8.0",
     "firebase": "^12.6.0",
     "framer-motion": "^12.23.26",

@@ -77,6 +77,52 @@ export default function ProductDetail() {
     );
   }
 
+  // Breadcrumb Schema
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Beranda",
+        "item": window.location.origin
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Katalog",
+        "item": `${window.location.origin}/katalog`
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": product.name,
+        "item": window.location.href
+      }
+    ]
+  };
+
+  const productSchema = {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    "name": product.name,
+    "image": product.images || [],
+    "description": product.description || product.shortDesc,
+    "brand": {
+      "@type": "Brand",
+      "name": "Gerobak Jogja"
+    },
+    "offers": {
+      "@type": "Offer",
+      "url": window.location.href,
+      "priceCurrency": "IDR",
+      "price": product.price,
+      "availability": "https://schema.org/InStock",
+      "itemCondition": "https://schema.org/NewCondition"
+    }
+  };
+
   // Main Render
   return (
     <>
@@ -85,25 +131,7 @@ export default function ProductDetail() {
         description={product.shortDesc}
         image={product.images && product.images[0]}
         type="product"
-        schema={{
-          "@context": "https://schema.org/",
-          "@type": "Product",
-          "name": product.name,
-          "image": product.images || [],
-          "description": product.description || product.shortDesc,
-          "brand": {
-            "@type": "Brand",
-            "name": "Gerobak Jogja"
-          },
-          "offers": {
-            "@type": "Offer",
-            "url": window.location.href,
-            "priceCurrency": "IDR",
-            "price": product.price,
-            "availability": "https://schema.org/InStock",
-            "itemCondition": "https://schema.org/NewCondition"
-          }
-        }}
+        schema={[productSchema, breadcrumbSchema]}
       />
       <div className="pt-16 min-h-screen bg-gradient-to-b from-gray-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

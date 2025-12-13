@@ -170,6 +170,52 @@ export default function BlogDetail() {
     );
   }
 
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Beranda",
+        "item": window.location.origin
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Blog",
+        "item": `${window.location.origin}/blog`
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": displayArticle.title,
+        "item": window.location.href
+      }
+    ]
+  };
+
+  const articleSchema = {
+    "@context": "https://schema.org/",
+    "@type": "BlogPosting",
+    "headline": displayArticle.title,
+    "image": [displayArticle.image],
+    "datePublished": displayArticle.date,
+    "author": {
+      "@type": "Person",
+      "name": displayArticle.author || "Admin Gerobak Jogja"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Gerobak Jogja",
+      "logo": {
+        "@type": "ImageObject",
+        "url": `${window.location.origin}/images/logo.webp`
+      }
+    },
+    "description": `Baca artikel tentang ${displayArticle.title} di Gerobak Jogja Blog.`
+  };
+
   return (
     <>
       <SEO
@@ -177,26 +223,7 @@ export default function BlogDetail() {
         description={`Baca artikel tentang ${displayArticle.title} di Gerobak Jogja Blog.`}
         image={displayArticle.image}
         type="article"
-        schema={{
-          "@context": "https://schema.org/",
-          "@type": "BlogPosting",
-          "headline": displayArticle.title,
-          "image": [displayArticle.image],
-          "datePublished": displayArticle.date,
-          "author": {
-            "@type": "Person",
-            "name": displayArticle.author || "Admin Gerobak Jogja"
-          },
-          "publisher": {
-            "@type": "Organization",
-            "name": "Gerobak Jogja",
-            "logo": {
-              "@type": "ImageObject",
-              "url": `${window.location.origin}/images/logo.webp`
-            }
-          },
-          "description": `Baca artikel tentang ${displayArticle.title} di Gerobak Jogja Blog.`
-        }}
+        schema={[articleSchema, breadcrumbSchema]}
       />
       <div className="pt-16 min-h-screen bg-gradient-to-b from-gray-50 to-white">
         <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
