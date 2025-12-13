@@ -13,8 +13,45 @@ import { CONTACT_INFO } from '../config/contact';
 import { useProducts } from '../context/ProductContext';
 
 
+import SEO from '../components/SEO';
+
 export default function Home() {
   const { products, loading } = useProducts();
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Gerobak Jogja",
+    "alternateName": ["Gerobak Jogja Official", "Pusat Gerobak Jogja"],
+    "url": window.location.origin,
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": `${window.location.origin}/katalog?q={search_term_string}`
+      },
+      "query-input": "required name=search_term_string"
+    }
+  };
+
+  const organizationSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Gerobak Jogja",
+    "url": window.location.origin,
+    "logo": `${window.location.origin}/images/logo.webp`,
+    "sameAs": [
+      "https://www.instagram.com/gerobakjogja",
+      "https://www.facebook.com/gerobakjogja"
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+6282327220077",
+      "contactType": "customer service",
+      "areaServed": "ID",
+      "availableLanguage": "Indonesian"
+    }
+  };
 
   const features = [
     { icon: <Award className="w-12 h-12" />, title: 'Kualitas Terjamin', desc: 'Material pilihan dan pengerjaan profesional', color: 'from-primary-500 to-primary-600' },
@@ -34,6 +71,11 @@ export default function Home() {
 
   return (
     <div className="pt-16">
+      <SEO
+        title="Spesialis Gerobak & Booth Custom"
+        description="Jasa pembuatan gerobak aluminium, kayu, dan baja ringan di Jogja. Desain custom, harga kompetitif, dan pengerjaan rapi. Gratis konsultasi!"
+        schema={[websiteSchema, organizationSchema]}
+      />
       {/* Hero Section */}
       <section className="relative text-white section-padding overflow-hidden">
         {/* Blurred Background Image */}
