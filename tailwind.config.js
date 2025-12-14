@@ -42,6 +42,7 @@ export default {
         'blob': 'blob 7s infinite',
         'float': 'float 3s ease-in-out infinite',
         'glow': 'glow 2s ease-in-out infinite alternate',
+        'marquee': 'marquee 40s linear infinite',
       },
       keyframes: {
         fadeIn: {

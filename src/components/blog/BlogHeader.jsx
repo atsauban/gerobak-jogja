@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Calendar, User, Facebook, Twitter, MessageCircle } from 'lucide-react';
+import { Calendar, User } from 'lucide-react';
+import ShareButton from '../ShareButton';
 
 export default function BlogHeader({ article }) {
     const shareUrl = window.location.href;
@@ -40,33 +41,11 @@ export default function BlogHeader({ article }) {
                 {/* Share Buttons */}
                 <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-600 mr-2">Bagikan:</span>
-                    <a
-                        href={`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center hover:bg-blue-700 transition-colors"
-                        title="Share on Facebook"
-                    >
-                        <Facebook size={18} />
-                    </a>
-                    <a
-                        href={`https://twitter.com/intent/tweet?url=${shareUrl}&text=${shareTitle}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-10 h-10 bg-sky-500 text-white rounded-full flex items-center justify-center hover:bg-sky-600 transition-colors"
-                        title="Share on Twitter"
-                    >
-                        <Twitter size={18} />
-                    </a>
-                    <a
-                        href={`https://wa.me/?text=${shareTitle} ${shareUrl}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center hover:bg-green-600 transition-colors"
-                        title="Share on WhatsApp"
-                    >
-                        <MessageCircle size={18} />
-                    </a>
+                    <ShareButton
+                        title={article.title}
+                        text={`Baca artikel menarik: ${article.title}`}
+                        className="bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-primary-600 rounded-full px-4 py-2 text-sm"
+                    />
                 </div>
             </div>
         </header>

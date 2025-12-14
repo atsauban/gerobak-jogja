@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { 
-  signInWithEmailAndPassword, 
-  signOut, 
-  onAuthStateChanged 
+import {
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged
 } from 'firebase/auth';
 import { auth } from '../config/firebase';
 import { logLogin, logLogout } from '../utils/auditLog';
@@ -39,19 +39,20 @@ export const AuthProvider = ({ children }) => {
     if (!user) return;
 
     let timeout;
-    
+
     const resetTimeout = () => {
       clearTimeout(timeout);
       timeout = setTimeout(() => {
         // Auto logout after inactivity
         logout(true); // true = auto logout
-        alert('Session expired due to inactivity. Please login again.');
+        // Alert removed to prevent annoying popups on public pages
+        // The user will simply be redirected to login next time they try to access admin
       }, SESSION_TIMEOUT);
     };
 
     // Events that reset the timeout
     const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
-    
+
     events.forEach(event => {
       window.addEventListener(event, resetTimeout, { passive: true });
     });
@@ -71,7 +72,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      
+
       // Log successful login
       try {
         await logLogin(userCredential.user);
@@ -79,7 +80,7 @@ export const AuthProvider = ({ children }) => {
         console.error('Failed to log login:', logError);
         // Don't throw - logging failure shouldn't prevent login
       }
-      
+
       return userCredential.user;
     } catch (error) {
       console.error('Login error:', error);
@@ -97,9 +98,9 @@ export const AuthProvider = ({ children }) => {
           console.error('Failed to log logout:', logError);
         }
       }
-      
+
       await signOut(auth);
-      
+
       if (!isAutoLogout) {
         // Only show message for manual logout
       }

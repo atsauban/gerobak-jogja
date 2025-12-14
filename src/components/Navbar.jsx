@@ -1,26 +1,47 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Search } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
+import SearchOverlay from './SearchOverlay';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  // Scroll Logic
   const [scrolled, setScrolled] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
   const location = useLocation();
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      const currentScrollY = window.scrollY;
+
+      // Glass effect trigger
+      setScrolled(currentScrollY > 20);
+
+      // Hide/Show on scroll
+      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+        setIsVisible(false); // Scroll Down -> Hide
+      } else {
+        setIsVisible(true);  // Scroll Up -> Show
+      }
+
+      lastScrollY.current = currentScrollY;
     };
-    window.addEventListener('scroll', handleScroll);
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Close menu when route changes
   useEffect(() => {
     setIsOpen(false);
-  }, [location, setIsOpen]);
+    setIsSearchOpen(false);
+  }, [location]);
 
   // Handle outside click
   useEffect(() => {
@@ -45,28 +66,7 @@ export default function Navbar() {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('touchstart', handleClickOutside);
     };
-  }, [isOpen, setIsOpen]);
-
-  // Handle escape key
-  useEffect(() => {
-    const handleEscape = (event) => {
-      if (event.key === 'Escape' && isOpen) {
-        setIsOpen(false);
-        // Return focus to menu button
-        if (buttonRef.current) {
-          buttonRef.current.focus();
-        }
-      }
-    };
-
-    if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleEscape);
-    };
-  }, [isOpen, setIsOpen]);
+  }, [isOpen]);
 
   // Handle resize
   useEffect(() => {
@@ -78,11 +78,11 @@ export default function Navbar() {
 
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [isOpen, setIsOpen]);
+  }, [isOpen]);
 
   // Prevent body scroll when menu is open
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen || isSearchOpen) {
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
       document.body.style.overflow = 'hidden';
       document.body.style.paddingRight = `${scrollbarWidth}px`;
@@ -95,193 +95,137 @@ export default function Navbar() {
       document.body.style.overflow = '';
       document.body.style.paddingRight = '';
     };
-  }, [isOpen]);
+  }, [isOpen, isSearchOpen]);
 
   const isActive = (path) => location.pathname === path;
 
   return (
-    <nav className={`fixed w-full z-[100] transition-all duration-300 ${scrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-white shadow-md'
-      }`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link to="/" className="flex items-center gap-2 sm:gap-3 group">
-              <div className="relative">
-                <img
-                  src="/images/logo.webp"
-                  alt="Gerobak Jogja Logo"
-                  className="h-8 w-8 sm:h-10 sm:w-10 object-contain transition-transform duration-300 group-hover:scale-105"
-                  onError={(e) => e.target.style.display = 'none'}
-                />
-                <div className="absolute inset-0 bg-primary-400 rounded-full blur-lg opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-              </div>
-              <span className="text-lg sm:text-2xl font-display font-bold gradient-text whitespace-nowrap group-hover:tracking-wide transition-all duration-300">
-                Gerobak Jogja
-              </span>
-            </Link>
-          </div>
+    <>
+      <nav
+        className={`fixed w-full z-[100] transition-all duration-300 transform ${isVisible ? 'translate-y-0' : '-translate-y-full'
+          } ${scrolled
+            ? 'bg-white/80 backdrop-blur-xl shadow-lg border-b border-white/20'
+            : 'bg-white shadow-sm'
+          }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-20 items-center">
+            {/* Logo */}
+            <div className="flex-shrink-0 flex items-center">
+              <Link to="/" className="flex items-center gap-3 group">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-primary-400 rounded-full blur-xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"></div>
+                  <img
+                    src="/images/logo.webp"
+                    alt="Gerobak Jogja Logo"
+                    className="h-10 w-10 sm:h-12 sm:w-12 object-contain relative z-10 transition-transform duration-300 group-hover:rotate-6"
+                    onError={(e) => e.target.style.display = 'none'}
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <span className="text-xl sm:text-2xl font-display font-bold gradient-text tracking-tight group-hover:tracking-wide transition-all duration-300">
+                    Gerobak Jogja
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-gray-500 font-medium tracking-widest uppercase">
+                    Pusat Gerobak Premium
+                  </span>
+                </div>
+              </Link>
+            </div>
 
-          {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center space-x-1 xl:space-x-2">
-            <Link
-              to="/"
-              className={`relative px-4 py-2 font-medium transition-all duration-300 group ${isActive('/')
-                ? 'text-primary-600'
-                : 'text-gray-700 hover:text-primary-600'
-                }`}
-            >
-              Beranda
-              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary-500 to-primary-700 transform transition-transform duration-300 ${isActive('/') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-                }`}></span>
-            </Link>
-            <Link
-              to="/katalog"
-              className={`relative px-4 py-2 font-medium transition-all duration-300 group ${isActive('/katalog')
-                ? 'text-primary-600'
-                : 'text-gray-700 hover:text-primary-600'
-                }`}
-            >
-              Katalog
-              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary-500 to-primary-700 transform transition-transform duration-300 ${isActive('/katalog') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-                }`}></span>
-            </Link>
-            <Link
-              to="/galeri"
-              className={`relative px-4 py-2 font-medium transition-all duration-300 group ${isActive('/galeri')
-                ? 'text-primary-600'
-                : 'text-gray-700 hover:text-primary-600'
-                }`}
-            >
-              Galeri
-              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary-500 to-primary-700 transform transition-transform duration-300 ${isActive('/galeri') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-                }`}></span>
-            </Link>
-            <Link
-              to="/tentang"
-              className={`relative px-4 py-2 font-medium transition-all duration-300 group ${isActive('/tentang')
-                ? 'text-primary-600'
-                : 'text-gray-700 hover:text-primary-600'
-                }`}
-            >
-              Tentang
-              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary-500 to-primary-700 transform transition-transform duration-300 ${isActive('/tentang') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-                }`}></span>
-            </Link>
-            <Link
-              to="/kontak"
-              className={`relative px-4 py-2 font-medium transition-all duration-300 group ${isActive('/kontak')
-                ? 'text-primary-600'
-                : 'text-gray-700 hover:text-primary-600'
-                }`}
-            >
-              Kontak
-              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary-500 to-primary-700 transform transition-transform duration-300 ${isActive('/kontak') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-                }`}></span>
-            </Link>
-            <Link
-              to="/blog"
-              className={`relative px-4 py-2 font-medium transition-all duration-300 group ${isActive('/blog')
-                ? 'text-primary-600'
-                : 'text-gray-700 hover:text-primary-600'
-                }`}
-            >
-              Blog
-              <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-primary-500 to-primary-700 transform transition-transform duration-300 ${isActive('/blog') ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-                }`}></span>
-            </Link>
-          </div>
+            {/* Desktop Menu */}
+            <div className="hidden lg:flex items-center gap-1 xl:gap-2">
+              {[
+                { path: '/', label: 'Beranda' },
+                { path: '/katalog', label: 'Katalog' },
+                { path: '/galeri', label: 'Galeri' },
+                { path: '/tentang', label: 'Tentang' },
+                { path: '/blog', label: 'Blog' },
+                { path: '/kontak', label: 'Kontak' },
+              ].map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`relative px-4 py-2 text-sm font-semibold transition-all duration-300 rounded-full hover:bg-gray-50 ${isActive(link.path)
+                      ? 'text-primary-600 bg-primary-50'
+                      : 'text-gray-600 hover:text-primary-600'
+                    }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
 
-          {/* Mobile menu button */}
-          <div className="lg:hidden flex items-center">
-            <button
-              ref={buttonRef}
-              onClick={() => setIsOpen(!isOpen)}
-              className="relative text-gray-700 hover:text-primary-600 transition-all duration-300 p-2 hover:bg-primary-50 rounded-lg group"
-              aria-label={isOpen ? "Close menu" : "Open menu"}
-              aria-expanded={isOpen}
-              aria-controls="mobile-menu"
-            >
-              <div className="relative z-10">
-                {isOpen ? <X size={24} className="transition-transform duration-300 rotate-90" /> : <Menu size={24} className="transition-transform duration-300" />}
-              </div>
-            </button>
+              {/* Separator */}
+              <div className="w-px h-6 bg-gray-200 mx-2"></div>
+
+              {/* Search Button */}
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className="p-2.5 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-all duration-200 group"
+                aria-label="Cari produk"
+              >
+                <Search size={20} className="group-hover:scale-110 transition-transform" />
+              </button>
+            </div>
+
+            {/* Mobile Menu Button & Search */}
+            <div className="lg:hidden flex items-center gap-2">
+              <button
+                onClick={() => setIsSearchOpen(true)}
+                className="p-2 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-all"
+                aria-label="Cari"
+              >
+                <Search size={24} />
+              </button>
+
+              <button
+                ref={buttonRef}
+                onClick={() => setIsOpen(!isOpen)}
+                className="p-2 text-gray-700 hover:text-primary-600 transition-colors"
+                aria-label={isOpen ? "Close menu" : "Open menu"}
+                aria-expanded={isOpen}
+              >
+                {isOpen ? <X size={28} /> : <Menu size={28} />}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Mobile Menu */}
-      {isOpen && (
-        <div
-          id="mobile-menu"
-          ref={menuRef}
-          className="lg:hidden absolute top-full left-0 w-full bg-white shadow-lg overflow-hidden animate-slide-down"
-          role="menu"
-          aria-label="Main navigation"
-        >
-          <div className="px-4 py-4 space-y-2 max-h-[80vh] overflow-y-auto">
-            <Link
-              to="/"
-              className={`block px-4 py-3 rounded-xl text-base font-medium transition-colors duration-200 ${isActive('/')
-                ? 'bg-primary-50 text-primary-600'
-                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                }`}
-              onClick={() => setIsOpen(false)}
-            >
-              Beranda
-            </Link>
-            <Link
-              to="/katalog"
-              className={`block px-4 py-3 rounded-xl text-base font-medium transition-colors duration-200 ${isActive('/katalog')
-                ? 'bg-primary-50 text-primary-600'
-                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                }`}
-              onClick={() => setIsOpen(false)}
-            >
-              Katalog
-            </Link>
-            <Link
-              to="/galeri"
-              className={`block px-4 py-3 rounded-xl text-base font-medium transition-colors duration-200 ${isActive('/galeri')
-                ? 'bg-primary-50 text-primary-600'
-                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                }`}
-              onClick={() => setIsOpen(false)}
-            >
-              Galeri
-            </Link>
-            <Link
-              to="/tentang"
-              className={`block px-4 py-3 rounded-xl text-base font-medium transition-colors duration-200 ${isActive('/tentang')
-                ? 'bg-primary-50 text-primary-600'
-                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                }`}
-              onClick={() => setIsOpen(false)}
-            >
-              Tentang
-            </Link>
-            <Link
-              to="/kontak"
-              className={`block px-4 py-3 rounded-xl text-base font-medium transition-colors duration-200 ${isActive('/kontak')
-                ? 'bg-primary-50 text-primary-600'
-                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                }`}
-              onClick={() => setIsOpen(false)}
-            >
-              Kontak
-            </Link>
-            <Link
-              to="/blog"
-              className={`block px-4 py-3 rounded-xl text-base font-medium transition-colors duration-200 ${isActive('/blog')
-                ? 'bg-primary-50 text-primary-600'
-                : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                }`}
-              onClick={() => setIsOpen(false)}
-            >
-              Blog
-            </Link>
+        {/* Mobile Menu Overlay */}
+        {isOpen && (
+          <div
+            id="mobile-menu"
+            ref={menuRef}
+            className="lg:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-xl shadow-2xl border-t border-gray-100 animate-slide-down overflow-hidden z-[90]"
+          >
+            <div className="px-4 py-6 space-y-2 max-h-[80vh] overflow-y-auto">
+              {[
+                { path: '/', label: 'Beranda' },
+                { path: '/katalog', label: 'Katalog' },
+                { path: '/galeri', label: 'Galeri' },
+                { path: '/tentang', label: 'Tentang' },
+                { path: '/blog', label: 'Blog' },
+                { path: '/kontak', label: 'Kontak' },
+              ].map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  onClick={() => setIsOpen(false)}
+                  className={`block px-5 py-4 rounded-xl text-lg font-semibold transition-all duration-200 border-l-4 ${isActive(link.path)
+                      ? 'bg-primary-50/50 text-primary-700 border-primary-500'
+                      : 'text-gray-600 border-transparent hover:bg-gray-50 hover:text-gray-900'
+                    }`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
-    </nav>
+        )}
+      </nav>
+
+      {/* Global Search Overlay */}
+      <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
+    </>
   );
 }

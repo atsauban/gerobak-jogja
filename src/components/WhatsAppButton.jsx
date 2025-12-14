@@ -7,7 +7,8 @@ export default function WhatsAppButton({
   productPrice,
   className = "btn-whatsapp",
   showIcon = true,
-  children
+  children,
+  iconOnly = false
 }) {
   const getMessage = () => {
     if (message) return message;
@@ -23,9 +24,10 @@ export default function WhatsAppButton({
       target="_blank"
       rel="noopener noreferrer"
       className={className}
+      aria-label="Chat WhatsApp"
     >
-      {showIcon && <MessageCircle size={18} />}
-      {children || 'WhatsApp'}
+      {showIcon && <MessageCircle size={20} />}
+      {!iconOnly && (children || 'WhatsApp')}
     </a>
   );
 }

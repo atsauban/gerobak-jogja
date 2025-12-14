@@ -57,38 +57,44 @@ export default function Testimonials() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {testimonials.map((testimonial, index) => (
-            <div 
-              key={testimonial.id} 
-              className="card p-8 relative animate-scale-in"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <Quote className="absolute top-6 right-6 text-primary-100" size={48} />
-              
-              <div className="flex items-center gap-4 mb-6">
-                <img 
-                  src={testimonial.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.name)}&background=0284c7&color=fff`} 
-                  alt={testimonial.name}
-                  className="w-16 h-16 rounded-full"
-                />
-                <div>
-                  <h4 className="font-bold text-lg text-gray-900">{testimonial.name}</h4>
-                  <p className="text-sm text-gray-600">{testimonial.business}</p>
+        <div className="relative overflow-hidden group">
+          {/* Gradient Masks */}
+          <div className="absolute left-0 top-0 bottom-0 w-8 md:w-32 bg-gradient-to-r from-white to-transparent z-10"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-8 md:w-32 bg-gradient-to-l from-white to-transparent z-10"></div>
+
+          {/* Marquee Container */}
+          <div className="flex gap-8 w-max animate-marquee group-hover:pause">
+            {[...testimonials, ...testimonials].map((testimonial, index) => (
+              <div
+                key={`${testimonial.id}-${index}`}
+                className="w-80 md:w-96 flex-shrink-0 card p-8 relative hover:scale-105 transition-transform duration-300"
+              >
+                <Quote className="absolute top-6 right-6 text-primary-100" size={48} />
+
+                <div className="flex items-center gap-4 mb-6">
+                  <img
+                    src={testimonial.image || `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.name)}&background=0284c7&color=fff`}
+                    alt={testimonial.name}
+                    className="w-14 h-14 rounded-full border-2 border-primary-100"
+                  />
+                  <div>
+                    <h4 className="font-bold text-base text-gray-900 line-clamp-1">{testimonial.name}</h4>
+                    <p className="text-xs text-gray-500 line-clamp-1">{testimonial.business}</p>
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex gap-1 mb-4">
-                {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-                ))}
-              </div>
+                <div className="flex gap-1 mb-4">
+                  {[...Array(testimonial.rating)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
 
-              <p className="text-gray-600 leading-relaxed relative z-10">
-                "{testimonial.text}"
-              </p>
-            </div>
-          ))}
+                <p className="text-gray-600 text-sm leading-relaxed relative z-10 line-clamp-4">
+                  "{testimonial.text}"
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

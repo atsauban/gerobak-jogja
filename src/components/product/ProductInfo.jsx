@@ -1,5 +1,6 @@
 import { Star, Package, Truck, Shield, Ruler } from 'lucide-react';
 import WhatsAppButton from '../WhatsAppButton';
+import ShareButton from '../ShareButton';
 
 export default function ProductInfo({ product }) {
     return (
@@ -29,13 +30,20 @@ export default function ProductInfo({ product }) {
                 <div className="text-4xl font-bold text-primary-600 mb-4">
                     Rp {parseInt(product.price).toLocaleString('id-ID')}
                 </div>
-                <WhatsAppButton
-                    productName={product.name}
-                    productPrice={product.price}
-                    className="btn-whatsapp w-full justify-center text-lg py-4"
-                >
-                    Pesan Sekarang
-                </WhatsAppButton>
+                <div className="flex gap-3">
+                    <WhatsAppButton
+                        productName={product.name}
+                        productPrice={product.price}
+                        className="btn-whatsapp flex-1 justify-center text-lg py-4"
+                    >
+                        Pesan Sekarang
+                    </WhatsAppButton>
+                    <ShareButton
+                        title={product.name}
+                        text={`Cek produk ${product.name} di Gerobak Jogja! Harga mulai Rp ${parseInt(product.price).toLocaleString('id-ID')}`}
+                        className="px-4 py-4 bg-white text-primary-600 border border-primary-200 hover:bg-primary-50 rounded-xl"
+                    />
+                </div>
             </div>
 
             {/* Quick Info */}

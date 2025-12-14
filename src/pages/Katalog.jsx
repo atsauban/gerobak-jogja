@@ -10,6 +10,7 @@ import QuickViewModal from '../components/QuickViewModal';
 import { ProductGridSkeleton } from '../components/LoadingSkeleton';
 import { CONTACT_INFO } from '../config/contact';
 import { useProducts } from '../context/ProductContext';
+import PremiumProductCard from '../components/PremiumProductCard';
 
 export default function Katalog() {
   /* URL Sync Implementation */
@@ -181,77 +182,13 @@ export default function Katalog() {
             {filteredProducts.map((product, index) => (
               <div
                 key={product.id}
-                className="bg-white rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden group animate-scale-in"
+                className="h-full animate-scale-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="relative overflow-hidden">
-                  <LazyImage
-                    src={product.images?.[0] || product.image || 'https://via.placeholder.com/400x300?text=No+Image'}
-                    alt={`Gerobak ${product.name} - ${product.category}`}
-                    className="w-full h-56 object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-
-                  {/* Quick View Button */}
-                  <button
-                    onClick={() => setQuickViewProduct(product)}
-                    className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm p-2 rounded-full 
-                               opacity-0 group-hover:opacity-100 transition-all duration-300 
-                               hover:bg-white hover:scale-110 shadow-lg"
-                    aria-label="Quick view"
-                  >
-                    <Zap size={20} className="text-primary-600" />
-                  </button>
-
-                  {product.badge && (
-                    <div className="absolute top-4 right-4">
-                      <span className="bg-gradient-to-r from-accent-500 to-accent-600 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
-                        {product.badge}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Image Gallery Indicator */}
-                  {product.images && product.images.length > 1 && (
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1">
-                      {product.images.slice(0, 5).map((_, i) => (
-                        <div
-                          key={i}
-                          className="w-1.5 h-1.5 rounded-full bg-white/70 backdrop-blur-sm"
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold mb-2 text-gray-900 group-hover:text-primary-600 transition-colors">
-                    {product.name}
-                  </h3>
-                  <p className="text-gray-600 mb-4 text-sm line-clamp-2">
-                    {product.shortDesc || product.desc}
-                  </p>
-                  <div className="flex items-baseline gap-2 mb-6">
-                    <span className="text-sm text-gray-500">Mulai dari</span>
-                    <p className="text-primary-600 font-bold text-2xl">
-                      Rp {parseInt(product.price).toLocaleString('id-ID')}
-                    </p>
-                  </div>
-                  <div className="flex gap-2 items-stretch">
-                    <Link
-                      to={`/produk/${product.slug || product.id}`}
-                      className="flex-1 btn-primary justify-center items-center text-sm py-3 h-11"
-                    >
-                      <Eye size={18} />
-                      Detail
-                    </Link>
-                    <WhatsAppButton
-                      productName={product.name}
-                      productPrice={product.price}
-                      className="flex-1 btn-whatsapp justify-center items-center text-sm py-3 h-11"
-                    >
-                      Pesan
-                    </WhatsAppButton>
-                  </div>
-                </div>
+                <PremiumProductCard
+                  product={product}
+                  onQuickView={setQuickViewProduct}
+                />
               </div>
             ))}
           </div>

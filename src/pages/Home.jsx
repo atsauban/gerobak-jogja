@@ -11,6 +11,7 @@ import RevealOnScroll from '../components/RevealOnScroll';
 import { ProductGridSkeleton } from '../components/LoadingSkeleton';
 import { CONTACT_INFO } from '../config/contact';
 import { useProducts } from '../context/ProductContext';
+import PremiumProductCard from '../components/PremiumProductCard';
 
 
 import SEO from '../components/SEO';
@@ -54,10 +55,10 @@ export default function Home() {
   };
 
   const features = [
-    { icon: <Award className="w-12 h-12" />, title: 'Kualitas Terjamin', desc: 'Material pilihan dan pengerjaan profesional', color: 'from-primary-500 to-primary-600' },
-    { icon: <Wrench className="w-12 h-12" />, title: 'Custom Design', desc: 'Desain sesuai kebutuhan bisnis Anda', color: 'from-primary-600 to-primary-700' },
-    { icon: <Users className="w-12 h-12" />, title: 'Berpengalaman', desc: 'Lebih dari 10 tahun melayani pelanggan', color: 'from-accent-400 to-accent-500' },
-    { icon: <ShoppingCart className="w-12 h-12" />, title: 'Harga Kompetitif', desc: 'Harga terbaik dengan kualitas premium', color: 'from-accent-500 to-accent-600' },
+    { icon: <Award className="w-6 h-6" />, title: 'Kualitas Terjamin', desc: 'Material pilihan dan pengerjaan profesional', colorTheme: 'blue' },
+    { icon: <Wrench className="w-6 h-6" />, title: 'Custom Design', desc: 'Desain sesuai kebutuhan bisnis Anda', colorTheme: 'emerald' },
+    { icon: <Users className="w-6 h-6" />, title: 'Berpengalaman', desc: 'Lebih dari 10 tahun melayani pelanggan', colorTheme: 'orange' },
+    { icon: <ShoppingCart className="w-6 h-6" />, title: 'Harga Kompetitif', desc: 'Harga terbaik dengan kualitas premium', colorTheme: 'purple' },
   ];
 
   // Get only featured products (max 3)
@@ -67,6 +68,7 @@ export default function Home() {
     { value: 100, suffix: '+', label: 'Pelanggan Puas', icon: <Users className="w-8 h-8" />, duration: 2000 },
     { value: 10, suffix: '+', label: 'Tahun Pengalaman', icon: <Award className="w-8 h-8" />, duration: 1500 },
     { value: 100, suffix: '+', label: 'Gerobak Terjual', icon: <TrendingUp className="w-8 h-8" />, duration: 2500 },
+    { value: 15, suffix: '+', label: 'Kota Terjangkau', icon: <ShoppingCart className="w-8 h-8" />, duration: 1800 },
   ];
 
   return (
@@ -149,7 +151,7 @@ export default function Home() {
         {/* Stats with Enhanced Glassmorphism */}
         <div className="max-w-7xl mx-auto container-padding mt-16">
           <RevealOnScroll delay={1000}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
               {stats.map((stat, index) => (
                 <div
                   key={index}
@@ -183,15 +185,15 @@ export default function Home() {
               </p>
             </div>
           </RevealOnScroll>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {features.map((feature, index) => (
               <RevealOnScroll key={index} delay={index * 100}>
-                <div className="card p-6 md:p-8 text-center group cursor-pointer h-full flex flex-col">
-                  <div className={`feature-icon bg-gradient-to-br ${feature.color} mb-6 mx-auto`}>
+                <div className="feature-card group cursor-pointer">
+                  <div className={`feature-card-icon ${feature.colorTheme}`}>
                     {feature.icon}
                   </div>
-                  <h3 className="text-lg md:text-xl font-bold mb-3 text-gray-900">{feature.title}</h3>
-                  <p className="text-gray-600 flex-grow text-sm md:text-base">{feature.desc}</p>
+                  <h3>{feature.title}</h3>
+                  <p>{feature.desc}</p>
                 </div>
               </RevealOnScroll>
             ))}
@@ -221,55 +223,8 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {featuredProducts.map((product, index) => (
                 <RevealOnScroll key={product.id} delay={index * 150}>
-                  <div
-                    className="card overflow-hidden group"
-                  >
-                    <div className="relative overflow-hidden">
-                      <LazyImage
-                        src={product.images?.[0] || product.image || 'https://via.placeholder.com/400x300?text=No+Image'}
-                        alt={`Gerobak ${product.name} - Produk Unggulan`}
-                        className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      {product.badge && (
-                        <div className="absolute top-4 right-4">
-                          <span className="bg-accent-500 text-white px-3 py-1 rounded-full text-sm font-semibold shadow-lg">
-                            {product.badge}
-                          </span>
-                        </div>
-                      )}
-                      {/* Featured Badge */}
-                      <div className="absolute top-4 left-4">
-                        <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-white px-3 py-1 rounded-full text-xs font-semibold shadow-lg flex items-center gap-1">
-                          <Star size={14} fill="currentColor" />
-                          <span>Unggulan</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="p-5 md:p-6">
-                      <h3 className="text-xl md:text-2xl font-bold mb-2 text-gray-900 group-hover:text-primary-600 transition-colors">
-                        {product.name}
-                      </h3>
-                      <p className="text-gray-600 mb-4 text-sm line-clamp-2">
-                        {product.shortDesc || product.description}
-                      </p>
-                      <p className="text-primary-600 font-bold text-xl md:text-2xl mb-6">
-                        Mulai Rp {parseInt(product.price).toLocaleString('id-ID')}
-                      </p>
-                      <div className="flex gap-2 items-stretch">
-                        <Link
-                          to={`/produk/${product.slug || product.id}`}
-                          className="flex-1 btn-primary justify-center items-center h-11"
-                        >
-                          Detail
-                        </Link>
-                        <WhatsAppButton
-                          productName={product.name}
-                          className="flex-1 btn-whatsapp justify-center items-center h-11"
-                        >
-                          Pesan
-                        </WhatsAppButton>
-                      </div>
-                    </div>
+                  <div className="h-full">
+                    <PremiumProductCard product={product} />
                   </div>
                 </RevealOnScroll>
               ))}
