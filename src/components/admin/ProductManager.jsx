@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Plus, Edit, Trash2, X, Star, Eye } from 'lucide-react';
+import { Plus, Edit, Trash2, X, Star, Eye, Loader } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useProducts } from '../../context/ProductContext';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../Toast';
-import ImageUpload from '../ImageUpload';
+import ImageUpload, { uploadToCloudinary } from '../ImageUpload';
 import ProductCard from '../ProductCard';
 import { sanitizeText, sanitizePrice, sanitizeUrl } from '../../utils/sanitize';
 import { logProductAction } from '../../utils/auditLog';
@@ -13,12 +13,15 @@ import { debouncedRegenerateSitemap } from '../../services/sitemapService';
 import { handleError } from '../../utils/errorHandler';
 
 export default function AdminProductManager({ showDeleteConfirmation }) {
-    const { products, addProduct, updateProduct, deleteProduct } = useProducts();
+    const { products, addProduct, updateProduct, deleteProduct, cancelCloudinaryDeletion } = useProducts();
     const { user } = useAuth();
     const toast = useToast();
 
     const [showForm, setShowForm] = useState(false);
     const [editingId, setEditingId] = useState(null);
+    const [isSaving, setIsSaving] = useState(false);
+    const [isCropping, setIsCropping] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
     const [formData, setFormData] = useState({
         name: '',
         slug: '',
@@ -27,7 +30,8 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
         shortDesc: '',
         description: '',
         badge: '',
-        images: [],
+        images: [], // Existing URLs
+        pendingImages: [], // New File objects to upload
         specifications: {},
         features: [],
         includes: []
@@ -57,39 +61,66 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Validate images
-        if (!formData.images || formData.images.length === 0) {
+        // Block submit if still cropping
+        if (isCropping) {
+            toast.warning('Tunggu proses crop selesai!');
+            return;
+        }
+
+        // Validate images (existing + pending)
+        const totalImages = (formData.images?.length || 0) + (formData.pendingImages?.length || 0);
+        
+        if (totalImages === 0) {
             toast.error('Minimal upload 1 gambar produk!');
             return;
         }
 
-        // Sanitize all inputs
-        const productData = {
-            name: sanitizeText(formData.name, 100),
-            slug: formData.slug || generateSlug(formData.name),
-            category: formData.category, // Already validated by select
-            price: sanitizePrice(formData.price),
-            shortDesc: sanitizeText(formData.shortDesc, 200),
-            description: sanitizeText(formData.description || formData.shortDesc, 2000),
-            badge: sanitizeText(formData.badge, 50),
-            images: Array.isArray(formData.images)
-                ? formData.images.map(url => sanitizeUrl(url)).filter(url => url)
-                : [sanitizeUrl(formData.images)].filter(url => url),
-            rating: 0,
-            reviews: 0,
-            featured: formData.featured || false,
-            specifications: formData.specifications || {},
-            features: (formData.features || []).map(f => sanitizeText(f, 200)),
-            includes: (formData.includes || []).map(i => sanitizeText(i, 200))
-        };
-
-        // Validate sanitized data
-        if (!productData.name || !productData.shortDesc || productData.images.length === 0) {
-            toast.error('Data tidak valid setelah sanitasi. Periksa input Anda.');
-            return;
-        }
+        setIsSaving(true);
+        setUploadProgress(0);
 
         try {
+            // Upload pending images to Cloudinary first
+            let uploadedUrls = [];
+            if (formData.pendingImages && formData.pendingImages.length > 0) {
+                const totalFiles = formData.pendingImages.length;
+                for (let i = 0; i < totalFiles; i++) {
+                    const file = formData.pendingImages[i];
+                    const url = await uploadToCloudinary(file, 'products', (progress) => {
+                        const overallProgress = ((i / totalFiles) * 100) + (progress / totalFiles);
+                        setUploadProgress(Math.round(overallProgress));
+                    });
+                    uploadedUrls.push(url);
+                }
+            }
+
+            // Combine existing URLs with newly uploaded URLs
+            const allImages = [...(formData.images || []), ...uploadedUrls];
+
+            // Sanitize all inputs
+            const productData = {
+                name: sanitizeText(formData.name, 100),
+                slug: formData.slug || generateSlug(formData.name),
+                category: formData.category,
+                price: sanitizePrice(formData.price),
+                shortDesc: sanitizeText(formData.shortDesc, 200),
+                description: sanitizeText(formData.description || formData.shortDesc, 2000),
+                badge: sanitizeText(formData.badge, 50),
+                images: allImages.map(url => sanitizeUrl(url)).filter(url => url),
+                rating: 0,
+                reviews: 0,
+                featured: formData.featured || false,
+                specifications: formData.specifications || {},
+                features: (formData.features || []).map(f => sanitizeText(f, 200)),
+                includes: (formData.includes || []).map(i => sanitizeText(i, 200))
+            };
+
+            // Validate sanitized data
+            if (!productData.name || !productData.shortDesc || productData.images.length === 0) {
+                toast.error('Data tidak valid setelah sanitasi. Periksa input Anda.');
+                setIsSaving(false);
+                return;
+            }
+
             if (editingId) {
                 // Check if product exists in Firebase (has Firebase ID format)
                 const product = products.find(p => p.id === editingId);
@@ -160,6 +191,7 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
                 description: '',
                 badge: '',
                 images: [],
+                pendingImages: [],
                 specifications: {},
                 features: [],
                 includes: []
@@ -169,6 +201,9 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
             toast.success('Produk berhasil disimpan!');
         } catch (error) {
             handleError(error, 'Gagal menyimpan produk. Silakan coba lagi.', toast);
+        } finally {
+            setIsSaving(false);
+            setUploadProgress(0);
         }
     };
 
@@ -182,6 +217,7 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
             description: product.description || product.shortDesc || '',
             badge: product.badge || '',
             images: product.images || [],
+            pendingImages: [],
             specifications: product.specifications || {},
             features: product.features || [],
             includes: product.includes || []
@@ -202,7 +238,9 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
                 try {
 
 
-                    await deleteProduct(id);
+                    // Delete product (Cloudinary deletion is delayed for undo support)
+                    const result = await deleteProduct(id, { undoTimeout: 5000 });
+                    const deletedProductId = result?.productId || id;
 
                     // Log delete action
                     await logProductAction(user, 'delete', {
@@ -225,8 +263,13 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
                     toast.success('Produk berhasil dihapus!', 5000, {
                         onUndo: async () => {
                             try {
-                                // Restore product
-                                await addProduct(product);
+                                // Cancel pending Cloudinary deletion first
+                                cancelCloudinaryDeletion(deletedProductId);
+                                
+                                // Restore product - remove old id to create new one
+                                // eslint-disable-next-line no-unused-vars
+                                const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, ...productData } = product;
+                                await addProduct(productData);
 
                                 toast.success('Produk berhasil dikembalikan!');
                             } catch (error) {
@@ -261,6 +304,7 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
     const handleCancel = () => {
         setShowForm(false);
         setEditingId(null);
+        setIsCropping(false);
         setFormData({
             name: '',
             slug: '',
@@ -270,6 +314,7 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
             description: '',
             badge: '',
             images: [],
+            pendingImages: [],
             specifications: {},
             features: [],
             includes: []
@@ -351,6 +396,7 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
                             description: '',
                             badge: '',
                             images: [],
+                            pendingImages: [],
                             specifications: {},
                             features: [],
                             includes: []
@@ -361,11 +407,10 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
                         setFeatureInput('');
                         setIncludeInput('');
                     }}
-                    className="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl text-sm sm:text-base w-full sm:w-auto justify-center"
+                    className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 text-sm"
                 >
-                    {showForm ? <X size={18} className="sm:w-5 sm:h-5" /> : <Plus size={18} className="sm:w-5 sm:h-5" />}
-                    <span className="hidden xs:inline">{showForm ? 'Tutup' : 'Tambah Produk'}</span>
-                    <span className="xs:hidden">{showForm ? 'Tutup' : 'Tambah'}</span>
+                    {showForm ? <X size={18} /> : <Plus size={18} />}
+                    {showForm ? 'Tutup' : 'Tambah Produk'}
                 </button>
             </div>
 
@@ -595,12 +640,31 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
                             multiple={true}
                             maxFiles={5}
                             currentImages={formData.images}
-                            onUploadComplete={(urls) => setFormData({ ...formData, images: urls })}
+                            onFilesChange={({ existingUrls, pendingFiles }) => {
+                                setFormData(prev => ({ ...prev, images: existingUrls, pendingImages: pendingFiles }));
+                            }}
+                            onCroppingChange={setIsCropping}
                         />
                     </div>
                     <div className="flex gap-2">
-                        <button type="submit" className="bg-green-500 text-white px-6 py-3 rounded hover:bg-green-600 min-h-[44px] transition-colors focus:outline-none focus:ring-2 focus:ring-green-300">
-                            {editingId ? 'Update Produk' : 'Simpan Produk'}
+                        <button 
+                            type="submit" 
+                            disabled={isSaving || isCropping}
+                            className="bg-green-500 text-white px-6 py-3 rounded hover:bg-green-600 min-h-[44px] transition-colors focus:outline-none focus:ring-2 focus:ring-green-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                        >
+                            {isCropping ? (
+                                <>
+                                    <Loader size={18} className="animate-spin" />
+                                    Menunggu crop...
+                                </>
+                            ) : isSaving ? (
+                                <>
+                                    <Loader size={18} className="animate-spin" />
+                                    {uploadProgress > 0 ? `Uploading ${uploadProgress}%` : 'Menyimpan...'}
+                                </>
+                            ) : (
+                                editingId ? 'Update Produk' : 'Simpan Produk'
+                            )}
                         </button>
                         <button
                             type="button"

@@ -229,12 +229,12 @@ export default function ContactForm() {
 
   if (isSuccess) {
     return (
-      <div className="card p-8 text-center animate-scale-in">
+      <div className="text-center py-8">
         <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
           <CheckCircle className="text-green-600" size={32} />
         </div>
-        <h3 className="text-2xl font-bold mb-2 text-gray-900">Pesan Terkirim!</h3>
-        <p className="text-gray-600">
+        <h3 className="text-xl font-bold mb-2 text-gray-900">Pesan Terkirim!</h3>
+        <p className="text-gray-600 text-sm max-w-sm mx-auto">
           Terima kasih telah menghubungi kami. Tim kami akan segera merespons pesan Anda.
         </p>
       </div>
@@ -242,19 +242,8 @@ export default function ContactForm() {
   }
 
   return (
-    <div className="card p-8">
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 bg-primary-50 text-primary-600 px-4 py-2 rounded-full mb-4">
-          <Mail size={20} />
-          <span className="font-semibold">Form Kontak</span>
-        </div>
-        <h3 className="text-3xl font-display font-bold mb-2 text-gray-900">Kirim Pesan</h3>
-        <p className="text-gray-600">
-          Isi form di bawah ini dan kami akan menghubungi Anda segera
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+    <div>
+      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         {/* Honeypot Field (Hidden) */}
         <div className="hidden" aria-hidden="true">
           <label htmlFor="bot_check">Jangan diisi</label>
@@ -271,12 +260,12 @@ export default function ContactForm() {
 
         {/* Name Field */}
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-            Nama Lengkap *
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1.5">
+            Nama Lengkap <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <User className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${errors.name && touched.name ? 'text-red-500' : 'text-gray-400'
-              }`} size={20} />
+              }`} size={18} />
             <input
               type="text"
               id="name"
@@ -285,9 +274,9 @@ export default function ContactForm() {
               onChange={handleChange}
               onBlur={handleBlur}
               required
-              className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent transition-all ${errors.name && touched.name
+              className={`w-full pl-10 pr-4 py-2.5 text-sm bg-gray-50 border rounded-lg focus:ring-2 focus:border-transparent focus:bg-white transition-all ${errors.name && touched.name
                   ? 'border-red-500 focus:ring-red-500 bg-red-50'
-                  : 'border-gray-300 focus:ring-primary-500'
+                  : 'border-gray-200 focus:ring-primary-500'
                 }`}
               placeholder="Masukkan nama Anda"
               aria-invalid={errors.name && touched.name ? 'true' : 'false'}
@@ -295,8 +284,8 @@ export default function ContactForm() {
             />
           </div>
           {errors.name && touched.name && (
-            <p id="name-error" className="mt-1 text-sm text-red-600 flex items-center gap-1" role="alert">
-              <AlertCircle size={14} />
+            <p id="name-error" className="mt-1 text-xs text-red-600 flex items-center gap-1" role="alert">
+              <AlertCircle size={12} />
               {errors.name}
             </p>
           )}
@@ -304,12 +293,12 @@ export default function ContactForm() {
 
         {/* Email Field */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-            Email *
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
+            Email <span className="text-red-500">*</span>
           </label>
           <div className="relative">
             <Mail className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${errors.email && touched.email ? 'text-red-500' : 'text-gray-400'
-              }`} size={20} />
+              }`} size={18} />
             <input
               type="email"
               id="email"
@@ -318,9 +307,9 @@ export default function ContactForm() {
               onChange={handleChange}
               onBlur={handleBlur}
               required
-              className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent transition-all ${errors.email && touched.email
+              className={`w-full pl-10 pr-4 py-2.5 text-sm bg-gray-50 border rounded-lg focus:ring-2 focus:border-transparent focus:bg-white transition-all ${errors.email && touched.email
                   ? 'border-red-500 focus:ring-red-500 bg-red-50'
-                  : 'border-gray-300 focus:ring-primary-500'
+                  : 'border-gray-200 focus:ring-primary-500'
                 }`}
               placeholder="nama@email.com"
               aria-invalid={errors.email && touched.email ? 'true' : 'false'}
@@ -328,8 +317,8 @@ export default function ContactForm() {
             />
           </div>
           {errors.email && touched.email && (
-            <p id="email-error" className="mt-1 text-sm text-red-600 flex items-center gap-1" role="alert">
-              <AlertCircle size={14} />
+            <p id="email-error" className="mt-1 text-xs text-red-600 flex items-center gap-1" role="alert">
+              <AlertCircle size={12} />
               {errors.email}
             </p>
           )}
@@ -337,13 +326,13 @@ export default function ContactForm() {
 
         {/* Phone Field */}
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1.5">
             Nomor Telepon
-            <span className="text-gray-500 text-xs font-normal ml-1">(Opsional)</span>
+            <span className="text-gray-400 text-xs font-normal ml-1">(Opsional)</span>
           </label>
           <div className="relative">
             <Phone className={`absolute left-3 top-1/2 transform -translate-y-1/2 ${errors.phone && touched.phone ? 'text-red-500' : 'text-gray-400'
-              }`} size={20} />
+              }`} size={18} />
             <input
               type="tel"
               id="phone"
@@ -351,9 +340,9 @@ export default function ContactForm() {
               value={formData.phone}
               onChange={handleChange}
               onBlur={handleBlur}
-              className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent transition-all ${errors.phone && touched.phone
+              className={`w-full pl-10 pr-4 py-2.5 text-sm bg-gray-50 border rounded-lg focus:ring-2 focus:border-transparent focus:bg-white transition-all ${errors.phone && touched.phone
                   ? 'border-red-500 focus:ring-red-500 bg-red-50'
-                  : 'border-gray-300 focus:ring-primary-500'
+                  : 'border-gray-200 focus:ring-primary-500'
                 }`}
               placeholder="081234567890"
               aria-invalid={errors.phone && touched.phone ? 'true' : 'false'}
@@ -361,34 +350,31 @@ export default function ContactForm() {
             />
           </div>
           {errors.phone && touched.phone && (
-            <p id="phone-error" className="mt-1 text-sm text-red-600 flex items-center gap-1" role="alert">
-              <AlertCircle size={14} />
+            <p id="phone-error" className="mt-1 text-xs text-red-600 flex items-center gap-1" role="alert">
+              <AlertCircle size={12} />
               {errors.phone}
             </p>
-          )}
-          {!errors.phone && formData.phone && (
-            <p className="mt-1 text-xs text-gray-500">Format: 08xx-xxxx-xxxx atau 08xxxxxxxxxx</p>
           )}
         </div>
 
         {/* Message Field */}
         <div>
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-1.5">
             <label htmlFor="message" className="block text-sm font-medium text-gray-700">
-              Pesan *
+              Pesan <span className="text-red-500">*</span>
             </label>
             <span className={`text-xs ${messageLength > maxMessageLength
                 ? 'text-red-600 font-semibold'
                 : messageLength > maxMessageLength * 0.9
                   ? 'text-yellow-600'
-                  : 'text-gray-500'
+                  : 'text-gray-400'
               }`}>
-              {messageLength} / {maxMessageLength}
+              {messageLength}/{maxMessageLength}
             </span>
           </div>
           <div className="relative">
             <MessageSquare className={`absolute left-3 top-3 ${errors.message && touched.message ? 'text-red-500' : 'text-gray-400'
-              }`} size={20} />
+              }`} size={18} />
             <textarea
               id="message"
               name="message"
@@ -396,11 +382,11 @@ export default function ContactForm() {
               onChange={handleChange}
               onBlur={handleBlur}
               required
-              rows="5"
+              rows="4"
               maxLength={maxMessageLength}
-              className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:border-transparent transition-all resize-none ${errors.message && touched.message
+              className={`w-full pl-10 pr-4 py-2.5 text-sm bg-gray-50 border rounded-lg focus:ring-2 focus:border-transparent focus:bg-white transition-all resize-none ${errors.message && touched.message
                   ? 'border-red-500 focus:ring-red-500 bg-red-50'
-                  : 'border-gray-300 focus:ring-primary-500'
+                  : 'border-gray-200 focus:ring-primary-500'
                 }`}
               placeholder="Tulis pesan Anda di sini..."
               aria-invalid={errors.message && touched.message ? 'true' : 'false'}
@@ -408,8 +394,8 @@ export default function ContactForm() {
             />
           </div>
           {errors.message && touched.message && (
-            <p id="message-error" className="mt-1 text-sm text-red-600 flex items-center gap-1" role="alert">
-              <AlertCircle size={14} />
+            <p id="message-error" className="mt-1 text-xs text-red-600 flex items-center gap-1" role="alert">
+              <AlertCircle size={12} />
               {errors.message}
             </p>
           )}
@@ -418,16 +404,16 @@ export default function ContactForm() {
         <button
           type="submit"
           disabled={isSubmitting || Object.values(errors).some(error => error !== '')}
-          className="w-full btn-primary flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+          className="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSubmitting ? (
             <>
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               Mengirim...
             </>
           ) : (
             <>
-              <Send size={20} />
+              <Send size={18} />
               Kirim Pesan
             </>
           )}

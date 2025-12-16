@@ -131,7 +131,7 @@ export class SecureValidator {
   }
 
   static validatePhone(phone) {
-    const pattern = /^[\+]?[0-9\s\-\(\)]{10,15}$/;
+    const pattern = /^[+]?[0-9\s\-()]{10,15}$/;
     return pattern.test(phone) && !XSSProtection.detect(phone);
   }
 

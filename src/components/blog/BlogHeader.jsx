@@ -3,8 +3,6 @@ import { Calendar, User } from 'lucide-react';
 import ShareButton from '../ShareButton';
 
 export default function BlogHeader({ article }) {
-    const shareUrl = window.location.href;
-    const shareTitle = article.title;
 
     return (
         <header className="mb-8">

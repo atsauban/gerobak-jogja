@@ -13,11 +13,43 @@ import {
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
 
+// ==================== RETRY UTILITY ====================
+
+/**
+ * Retry wrapper for async operations with exponential backoff
+ * @param {Function} fn - Async function to retry
+ * @param {number} retries - Number of retry attempts
+ * @param {number} delay - Initial delay in ms
+ * @returns {Promise} Result of the function
+ */
+const withRetry = async (fn, retries = 3, delay = 1000) => {
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      const isLastAttempt = attempt === retries - 1;
+      const isRetryable = 
+        error.code === 'unavailable' || 
+        error.code === 'resource-exhausted' ||
+        error.message?.includes('network') ||
+        error.message?.includes('timeout');
+      
+      if (isLastAttempt || !isRetryable) {
+        throw error;
+      }
+      
+      // Exponential backoff
+      const waitTime = delay * Math.pow(2, attempt);
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+    }
+  }
+};
+
 // ==================== PRODUCTS ====================
 
 // Get all products
 export const getProducts = async () => {
-  try {
+  return withRetry(async () => {
     const productsRef = collection(db, 'products');
     const q = query(productsRef, orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
@@ -26,15 +58,12 @@ export const getProducts = async () => {
       id: doc.id,
       ...doc.data()
     }));
-  } catch (error) {
-    console.error('Error getting products:', error);
-    throw error;
-  }
+  });
 };
 
 // Get single product
 export const getProduct = async (id) => {
-  try {
+  return withRetry(async () => {
     const docId = String(id);
     const docRef = doc(db, 'products', docId);
     const docSnap = await getDoc(docRef);
@@ -44,10 +73,7 @@ export const getProduct = async (id) => {
     } else {
       throw new Error('Product not found');
     }
-  } catch (error) {
-    console.error('Error getting product:', error);
-    throw error;
-  }
+  });
 };
 
 // Sanitize data for Firestore (remove undefined, functions, etc)
@@ -213,16 +239,8 @@ export const deleteImageFromCloudinary = async (imageUrl) => {
     }
 
     // Determine function endpoint
-    let functionUrl;
-    let platform;
-    
-    if (isVercel) {
-      functionUrl = '/api/cloudinary-delete';
-      platform = 'Vercel';
-    } else if (isNetlify || isDevelopment) {
-      functionUrl = '/.netlify/functions/cloudinary-delete';
-      platform = 'Netlify';
-    }
+    const platform = isVercel ? 'Vercel' : 'Netlify';
+    const functionUrl = isVercel ? '/api/cloudinary-delete' : '/.netlify/functions/cloudinary-delete';
 
     // Call appropriate function to delete from Cloudinary
     const response = await fetch(functionUrl, {
@@ -253,7 +271,7 @@ export const deleteImageFromCloudinary = async (imageUrl) => {
     return true;
     
   } catch (error) {
-    console.error(`❌ ${platform} Cloudinary delete error:`, error.message);
+    console.error('❌ Cloudinary delete error:', error.message);
     
     // Provide helpful troubleshooting info
     if (error.message.includes('cloud_name')) {
@@ -271,7 +289,7 @@ export const deleteImageFromCloudinary = async (imageUrl) => {
 
 // Get all blog posts
 export const getBlogPosts = async () => {
-  try {
+  return withRetry(async () => {
     const postsRef = collection(db, 'blogPosts');
     const q = query(postsRef, orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
@@ -280,10 +298,7 @@ export const getBlogPosts = async () => {
       id: doc.id,
       ...doc.data()
     }));
-  } catch (error) {
-    console.error('Error getting blog posts:', error);
-    throw error;
-  }
+  });
 };
 
 // Get single blog post
@@ -352,7 +367,7 @@ export const deleteBlogPost = async (id) => {
 
 // Get all testimonials
 export const getTestimonials = async () => {
-  try {
+  return withRetry(async () => {
     const testimonialsRef = collection(db, 'testimonials');
     const q = query(testimonialsRef, orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
@@ -361,10 +376,7 @@ export const getTestimonials = async () => {
       id: doc.id,
       ...doc.data()
     }));
-  } catch (error) {
-    console.error('Error getting testimonials:', error);
-    throw error;
-  }
+  });
 };
 
 // Create testimonial
@@ -424,7 +436,7 @@ export const deleteTestimonial = async (id) => {
 
 // Get all FAQs
 export const getFAQs = async () => {
-  try {
+  return withRetry(async () => {
     const faqsRef = collection(db, 'faqs');
     const q = query(faqsRef, orderBy('order', 'asc'));
     const snapshot = await getDocs(q);
@@ -433,10 +445,7 @@ export const getFAQs = async () => {
       id: doc.id,
       ...doc.data()
     }));
-  } catch (error) {
-    console.error('Error getting FAQs:', error);
-    throw error;
-  }
+  });
 };
 
 // Create FAQ
@@ -544,7 +553,7 @@ export const markMessageAsRead = async (id) => {
 
 // Get all gallery images
 export const getGalleryImages = async () => {
-  try {
+  return withRetry(async () => {
     const galleryRef = collection(db, 'gallery');
     const q = query(galleryRef, orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
@@ -553,10 +562,7 @@ export const getGalleryImages = async () => {
       id: doc.id,
       ...doc.data()
     }));
-  } catch (error) {
-    console.error('Error getting gallery images:', error);
-    throw error;
-  }
+  });
 };
 
 // Create gallery image

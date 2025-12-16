@@ -1,30 +1,24 @@
 import { Helmet } from 'react-helmet-async';
 
-/**
- * StructuredData Component
- * Adds JSON-LD structured data to pages for better SEO
- */
-
 // Organization Schema
 export function OrganizationSchema() {
   const schema = {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Gerobak Jogja",
-    "url": "https://gerobakjogja.vercel.app",
-    "logo": "https://gerobakjogja.vercel.app/images/logo.webp",
+    "url": "https://gerobakjogja.com",
+    "logo": "https://gerobakjogja.com/images/logo.webp",
     "description": "Spesialis pembuatan gerobak aluminium, kayu, dan stainless steel berkualitas tinggi di Yogyakarta",
     "address": {
       "@type": "PostalAddress",
       "addressLocality": "Yogyakarta",
-      "addressRegion": "DI Yogyakarta",
+      "addressRegion": "DIY",
       "addressCountry": "ID"
     },
     "contactPoint": {
       "@type": "ContactPoint",
       "telephone": "+62-823-2722-0077",
-      "contactType": "Customer Service",
-      "availableLanguage": ["Indonesian"]
+      "contactType": "sales"
     },
     "sameAs": [
       "https://www.instagram.com/gerobakjogja",
@@ -33,52 +27,11 @@ export function OrganizationSchema() {
   };
 
   return (
-    <script type="application/ld+json">
-      {JSON.stringify(schema)}
-    </script>
-  );
-}
-
-// LocalBusiness Schema
-export function LocalBusinessSchema() {
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": "Gerobak Jogja",
-    "image": "https://gerobakjogja.vercel.app/images/logo.webp",
-    "url": "https://gerobakjogja.vercel.app",
-    "telephone": "+62-823-2722-0077",
-    "priceRange": "Rp 2.500.000 - Rp 5.000.000",
-    "address": {
-      "@type": "PostalAddress",
-      "addressLocality": "Yogyakarta",
-      "addressRegion": "DI Yogyakarta",
-      "addressCountry": "ID"
-    },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": -7.7956,
-      "longitude": 110.3695
-    },
-    "openingHoursSpecification": {
-      "@type": "OpeningHoursSpecification",
-      "dayOfWeek": [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday"
-      ],
-      "opens": "08:00",
-      "closes": "17:00"
-    }
-  };
-
-  return (
-    <script type="application/ld+json">
-      {JSON.stringify(schema)}
-    </script>
+    <Helmet>
+      <script type="application/ld+json">
+        {JSON.stringify(schema)}
+      </script>
+    </Helmet>
   );
 }
 
@@ -90,67 +43,35 @@ export function ProductSchema({ product }) {
     "@context": "https://schema.org",
     "@type": "Product",
     "name": product.name,
-    "image": product.images?.[0] || product.image,
-    "description": product.description || product.shortDesc,
+    "description": product.description,
+    "image": product.images?.[0] || '',
     "brand": {
       "@type": "Brand",
       "name": "Gerobak Jogja"
     },
     "offers": {
       "@type": "Offer",
-      "url": `https://gerobakjogja.vercel.app/produk/${product.id}`,
-      "priceCurrency": "IDR",
       "price": product.price,
-      "priceValidUntil": new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      "priceCurrency": "IDR",
       "availability": "https://schema.org/InStock",
       "seller": {
         "@type": "Organization",
         "name": "Gerobak Jogja"
       }
-    }
-  };
-
-  // Add rating if available
-  if (product.rating) {
-    schema.aggregateRating = {
-      "@type": "AggregateRating",
-      "ratingValue": product.rating,
-      "bestRating": "5",
-      "worstRating": "1",
-      "ratingCount": product.reviewCount || 1
-    };
-  }
-
-  return (
-    <script type="application/ld+json">
-      {JSON.stringify(schema)}
-    </script>
-  );
-}
-
-// Breadcrumb Schema
-export function BreadcrumbSchema({ items }) {
-  if (!items || items.length === 0) return null;
-
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    "itemListElement": items.map((item, index) => ({
-      "@type": "ListItem",
-      "position": index + 1,
-      "name": item.name,
-      "item": `https://gerobakjogja.vercel.app${item.path}`
-    }))
+    },
+    "category": product.category
   };
 
   return (
-    <script type="application/ld+json">
-      {JSON.stringify(schema)}
-    </script>
+    <Helmet>
+      <script type="application/ld+json">
+        {JSON.stringify(schema)}
+      </script>
+    </Helmet>
   );
 }
 
-// Article Schema (for blog posts)
+// Article Schema for Blog
 export function ArticleSchema({ article }) {
   if (!article) return null;
 
@@ -158,28 +79,30 @@ export function ArticleSchema({ article }) {
     "@context": "https://schema.org",
     "@type": "Article",
     "headline": article.title,
+    "description": article.excerpt,
     "image": article.image,
     "author": {
-      "@type": "Person",
-      "name": article.author || "Gerobak Jogja"
+      "@type": "Organization",
+      "name": "Gerobak Jogja"
     },
     "publisher": {
       "@type": "Organization",
       "name": "Gerobak Jogja",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://gerobakjogja.vercel.app/images/logo.webp"
+        "url": "https://gerobakjogja.com/images/logo.webp"
       }
     },
-    "datePublished": article.createdAt?.toDate?.()?.toISOString() || article.createdAt,
-    "dateModified": article.updatedAt?.toDate?.()?.toISOString() || article.updatedAt || article.createdAt,
-    "description": article.excerpt || article.description
+    "datePublished": article.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+    "dateModified": article.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString()
   };
 
   return (
-    <script type="application/ld+json">
-      {JSON.stringify(schema)}
-    </script>
+    <Helmet>
+      <script type="application/ld+json">
+        {JSON.stringify(schema)}
+      </script>
+    </Helmet>
   );
 }
 
@@ -201,54 +124,75 @@ export function FAQSchema({ faqs }) {
   };
 
   return (
-    <script type="application/ld+json">
-      {JSON.stringify(schema)}
-    </script>
+    <Helmet>
+      <script type="application/ld+json">
+        {JSON.stringify(schema)}
+      </script>
+    </Helmet>
   );
 }
 
-// Website Schema
-export function WebsiteSchema() {
+// Breadcrumb Schema
+export function BreadcrumbSchema({ items }) {
+  if (!items || items.length === 0) return null;
+
   const schema = {
     "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "Gerobak Jogja",
-    "url": "https://gerobakjogja.vercel.app",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": {
-        "@type": "EntryPoint",
-        "urlTemplate": "https://gerobakjogja.vercel.app/katalog?search={search_term_string}"
-      },
-      "query-input": "required name=search_term_string"
-    }
+    "@type": "BreadcrumbList",
+    "itemListElement": items.map((item, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "name": item.name,
+      "item": item.url
+    }))
   };
 
   return (
-    <script type="application/ld+json">
-      {JSON.stringify(schema)}
-    </script>
+    <Helmet>
+      <script type="application/ld+json">
+        {JSON.stringify(schema)}
+      </script>
+    </Helmet>
   );
 }
 
-// Combined Schema for Homepage
-export function HomepageSchema() {
+// Local Business Schema
+export function LocalBusinessSchema() {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "LocalBusiness",
+    "name": "Gerobak Jogja",
+    "image": "https://gerobakjogja.com/images/logo.webp",
+    "priceRange": "Rp 1.000.000 - Rp 50.000.000",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Yogyakarta",
+      "addressLocality": "Yogyakarta",
+      "addressRegion": "DIY",
+      "postalCode": "55000",
+      "addressCountry": "ID"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": -7.7956,
+      "longitude": 110.3695
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        "opens": "08:00",
+        "closes": "17:00"
+      }
+    ],
+    "telephone": "+62-823-2722-0077"
+  };
+
   return (
-    <>
-      <OrganizationSchema />
-      <LocalBusinessSchema />
-      <WebsiteSchema />
-    </>
+    <Helmet>
+      <script type="application/ld+json">
+        {JSON.stringify(schema)}
+      </script>
+    </Helmet>
   );
 }
-
-export default {
-  OrganizationSchema,
-  LocalBusinessSchema,
-  ProductSchema,
-  BreadcrumbSchema,
-  ArticleSchema,
-  FAQSchema,
-  WebsiteSchema,
-  HomepageSchema
-};

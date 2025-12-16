@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, X, Star } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../Toast';
 import {
     getTestimonials,
@@ -10,7 +9,6 @@ import {
 } from '../../services/firebaseService';
 
 export default function AdminTestimonialManager({ showDeleteConfirmation }) {
-    const { user } = useAuth();
     const toast = useToast();
     const [testimonials, setTestimonials] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -81,7 +79,26 @@ export default function AdminTestimonialManager({ showDeleteConfirmation }) {
                 try {
                     await deleteTestimonial(id);
                     await loadTestimonials();
-                    toast.success('Testimoni berhasil dihapus!');
+
+                    toast.success('Testimoni berhasil dihapus!', 5000, {
+                        onUndo: async () => {
+                            try {
+                                // Restore testimonial
+                                await createTestimonial({
+                                    name: testimonial.name,
+                                    business: testimonial.business,
+                                    rating: testimonial.rating,
+                                    text: testimonial.text,
+                                    image: testimonial.image || ''
+                                });
+
+                                await loadTestimonials();
+                                toast.success('Testimoni berhasil dikembalikan!');
+                            } catch (error) {
+                                toast.error('Gagal mengembalikan testimoni: ' + error.message);
+                            }
+                        }
+                    });
                 } catch (error) {
                     toast.error('Gagal menghapus testimoni: ' + error.message);
                 }
@@ -105,9 +122,9 @@ export default function AdminTestimonialManager({ showDeleteConfirmation }) {
                         setFormData({ name: '', business: '', rating: 5, text: '', image: '' });
                         setEditingId(null);
                     }}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2"
+                    className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 text-sm"
                 >
-                    {showForm ? <X size={20} /> : <Plus size={20} />}
+                    {showForm ? <X size={18} /> : <Plus size={18} />}
                     {showForm ? 'Tutup' : 'Tambah Testimoni'}
                 </button>
             </div>

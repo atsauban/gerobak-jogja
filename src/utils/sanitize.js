@@ -132,7 +132,7 @@ export function sanitizeUrl(url) {
     }
     
     return urlObj.href;
-  } catch (e) {
+  } catch {
     return '';
   }
 }

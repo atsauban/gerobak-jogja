@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { ChevronDown, HelpCircle } from 'lucide-react';
 import { getFAQs } from '../services/firebaseService';
 import { handleError } from '../utils/errorHandler';
+import { FAQSchema } from './StructuredData';
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(null);
@@ -58,47 +59,59 @@ export default function FAQ() {
     }
   };
 
+  if (loading) {
+    return (
+      <section className="py-20">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-300 border-t-primary-600 mx-auto"></div>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section className="py-20 bg-white">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-primary-50 text-primary-600 px-4 py-2 rounded-full mb-4">
-            <HelpCircle size={20} />
-            <span className="font-semibold">FAQ</span>
-          </div>
-          <h2 className="section-title">Pertanyaan yang Sering Diajukan</h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Temukan jawaban untuk pertanyaan umum seputar produk dan layanan kami
+    <section className="py-20 bg-gray-50/50">
+      <FAQSchema faqs={faqs} />
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-10">
+          <span className="inline-block text-sm font-semibold text-primary-600 uppercase tracking-wider mb-3">
+            FAQ
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-display font-bold text-gray-900 mb-3">
+            Pertanyaan Umum
+          </h2>
+          <p className="text-gray-600">
+            Temukan jawaban untuk pertanyaan seputar produk dan layanan kami
           </p>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
           {faqs.map((faq, index) => (
             <div 
               key={index} 
-              className="card overflow-hidden"
+              className="bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm"
             >
               <button
                 onClick={() => setOpenIndex(openIndex === index ? null : index)}
-                className="w-full px-6 py-5 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+                className="w-full px-5 py-4 flex items-center justify-between text-left hover:bg-gray-100 transition-colors"
               >
-                <span className="font-semibold text-lg text-gray-900 pr-4">
+                <span className="font-medium text-gray-900 pr-4">
                   {faq.question}
                 </span>
                 <ChevronDown 
-                  className={`flex-shrink-0 text-primary-600 transition-transform duration-300 ${
+                  className={`flex-shrink-0 text-gray-400 transition-transform duration-200 ${
                     openIndex === index ? 'rotate-180' : ''
                   }`}
-                  size={24}
+                  size={20}
                 />
               </button>
               
               <div 
-                className={`overflow-hidden transition-all duration-300 ${
+                className={`overflow-hidden transition-all duration-200 ${
                   openIndex === index ? 'max-h-96' : 'max-h-0'
                 }`}
               >
-                <div className="px-6 pb-5 text-gray-600 leading-relaxed">
+                <div className="px-5 pb-4 text-gray-600 text-sm leading-relaxed">
                   {faq.answer}
                 </div>
               </div>
@@ -106,8 +119,8 @@ export default function FAQ() {
           ))}
         </div>
 
-        <div className="mt-12 text-center">
-          <p className="text-gray-600 mb-4">Masih ada pertanyaan lain?</p>
+        <div className="mt-10 text-center">
+          <p className="text-gray-600 text-sm mb-4">Masih ada pertanyaan lain?</p>
           <a 
             href="https://wa.me/6282327220077?text=Halo%20Gerobak%20Jogja,%20saya%20punya%20pertanyaan"
             target="_blank"

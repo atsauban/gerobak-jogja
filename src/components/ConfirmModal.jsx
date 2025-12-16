@@ -59,9 +59,9 @@ export default function ConfirmModal({
         };
       default:
         return {
-          icon: 'bg-blue-100 text-blue-600',
-          button: 'bg-blue-600 hover:bg-blue-700 text-white',
-          border: 'border-blue-200'
+          icon: 'bg-gray-100 text-gray-600',
+          button: 'bg-gray-900 hover:bg-gray-800 text-white',
+          border: 'border-gray-200'
         };
     }
   };
@@ -70,7 +70,7 @@ export default function ConfirmModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -78,7 +78,7 @@ export default function ConfirmModal({
     >
       <div
         ref={modalRef}
-        className="bg-white rounded-2xl max-w-md w-full shadow-2xl animate-scale-in border-2"
+        className="bg-white rounded-xl max-w-md w-full shadow-xl animate-scale-in border border-gray-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
@@ -108,7 +108,7 @@ export default function ConfirmModal({
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 p-6 border-t bg-gray-50 rounded-b-2xl">
+        <div className="flex gap-3 p-6 border-t bg-gray-50 rounded-b-xl">
           <button
             onClick={onClose}
             className="flex-1 px-4 py-3 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 min-h-[44px]"

@@ -2,11 +2,11 @@ export default function Loading() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="text-center">
-        <div className="inline-block relative w-20 h-20">
-          <div className="absolute border-4 border-primary-200 rounded-full w-20 h-20"></div>
-          <div className="absolute border-4 border-primary-600 rounded-full w-20 h-20 animate-spin border-t-transparent"></div>
+        <div className="inline-block relative w-16 h-16">
+          <div className="absolute border-4 border-gray-200 rounded-full w-16 h-16"></div>
+          <div className="absolute border-4 border-gray-900 rounded-full w-16 h-16 animate-spin border-t-transparent"></div>
         </div>
-        <p className="mt-4 text-gray-600 font-medium">Memuat...</p>
+        <p className="mt-4 text-gray-500 text-sm">Memuat...</p>
       </div>
     </div>
   );

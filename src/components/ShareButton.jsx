@@ -40,7 +40,7 @@ export default function ShareButton({ title, text, url, className = "" }) {
             setIsCopied(true);
             toast.success('Link berhasil disalin!');
             setTimeout(() => setIsCopied(false), 2000);
-        } catch (err) {
+        } catch {
             toast.error('Gagal menyalin link');
         }
     };

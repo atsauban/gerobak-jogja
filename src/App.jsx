@@ -11,6 +11,7 @@ import Footer from './components/Footer';
 import FloatingActionButton from './components/FloatingActionButton';
 import ProgressBar from './components/ProgressBar';
 import ScrollToTopOnMount from './components/ScrollToTopOnMount';
+import { OrganizationSchema, LocalBusinessSchema } from './components/StructuredData';
 import Home from './pages/Home';
 import Katalog from './pages/Katalog';
 import ProductDetail from './pages/ProductDetail';
@@ -27,6 +28,8 @@ import NotFound from './pages/NotFound';
 function App() {
   return (
     <HelmetProvider>
+      <OrganizationSchema />
+      <LocalBusinessSchema />
       <AuthProvider>
         <ProductProvider>
           <ToastProvider>
@@ -37,32 +40,25 @@ function App() {
                 <AriaLiveRegion message="" priority="assertive" />
                 <ProgressBar />
                 <ScrollToTopOnMount />
-                <Routes>
-                  {/* Admin route - no navbar/footer */}
-                  <Route path="/admin" element={<Admin />} />
-                  
-                  {/* Public routes - with navbar/footer */}
-                  <Route path="/*" element={
-                    <div className="flex flex-col min-h-screen">
-                      <Navbar />
-                      <main id="main-content" className="flex-grow" tabIndex={-1}>
-                        <Routes>
-                          <Route path="/" element={<Home />} />
-                          <Route path="/katalog" element={<Katalog />} />
-                          <Route path="/produk/:id" element={<ProductDetail />} />
-                          <Route path="/galeri" element={<Galeri />} />
-                          <Route path="/tentang" element={<Tentang />} />
-                          <Route path="/kontak" element={<Kontak />} />
-                          <Route path="/blog" element={<Blog />} />
-                          <Route path="/blog/:slug" element={<BlogDetail />} />
-                          <Route path="*" element={<NotFound />} />
-                        </Routes>
-                      </main>
-                      <Footer />
-                      <FloatingActionButton />
-                    </div>
-                  } />
-                </Routes>
+                <div className="flex flex-col min-h-screen">
+                  <Navbar />
+                  <main id="main-content" className="flex-grow" tabIndex={-1}>
+                    <Routes>
+                      <Route path="/" element={<Home />} />
+                      <Route path="/katalog" element={<Katalog />} />
+                      <Route path="/produk/:id" element={<ProductDetail />} />
+                      <Route path="/galeri" element={<Galeri />} />
+                      <Route path="/tentang" element={<Tentang />} />
+                      <Route path="/kontak" element={<Kontak />} />
+                      <Route path="/blog" element={<Blog />} />
+                      <Route path="/blog/:slug" element={<BlogDetail />} />
+                      <Route path="/admin" element={<Admin />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </main>
+                  <Footer />
+                  <FloatingActionButton />
+                </div>
               </ErrorBoundary>
             </Router>
           </ToastProvider>

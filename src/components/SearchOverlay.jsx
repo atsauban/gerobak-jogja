@@ -74,7 +74,7 @@ export default function SearchOverlay({ isOpen, onClose }) {
                         />
                         <button
                             type="submit"
-                            className="absolute right-6 top-1/2 -translate-y-1/2 bg-primary-600 text-white p-3 rounded-xl hover:bg-primary-700 transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="absolute right-6 top-1/2 -translate-y-1/2 bg-gray-900 text-white p-3 rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             disabled={!query.trim()}
                             aria-label="Cari"
                         >

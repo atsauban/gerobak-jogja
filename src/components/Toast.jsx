@@ -146,7 +146,7 @@ const ToastItem = ({ toast, onRemove }) => {
       case 'warning':
         return `${baseStyles} bg-yellow-50 border-yellow-200 text-yellow-800`;
       default:
-        return `${baseStyles} bg-blue-50 border-blue-200 text-blue-800`;
+        return `${baseStyles} bg-gray-50 border-gray-200 text-gray-800`;
     }
   };
 
@@ -161,7 +161,7 @@ const ToastItem = ({ toast, onRemove }) => {
       case 'warning':
         return <AlertCircle {...iconProps} className={`${iconProps.className} text-yellow-600`} />;
       default:
-        return <Info {...iconProps} className={`${iconProps.className} text-blue-600`} />;
+        return <Info {...iconProps} className={`${iconProps.className} text-gray-600`} />;
     }
   };
 

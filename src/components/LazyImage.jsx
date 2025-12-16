@@ -1,4 +1,30 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+
+/**
+ * Optimize Cloudinary URLs with auto-format and quality
+ * @param {string} url - Original image URL
+ * @param {object} options - Optimization options
+ * @returns {string} Optimized URL
+ */
+const optimizeImageUrl = (url, options = {}) => {
+  if (!url) return url;
+  
+  const { width = 800, quality = 'auto', format = 'auto' } = options;
+  
+  // Cloudinary optimization
+  if (url.includes('cloudinary.com') && url.includes('/upload/')) {
+    // Check if transformations already exist
+    if (url.includes('/upload/f_') || url.includes('/upload/q_')) {
+      return url;
+    }
+    return url.replace(
+      '/upload/',
+      `/upload/f_${format},q_${quality},w_${width},c_limit/`
+    );
+  }
+  
+  return url;
+};
 
 export default function LazyImage({
   src,
@@ -6,10 +32,18 @@ export default function LazyImage({
   className = '',
   placeholderClassName = '',
   onLoad,
+  width,
+  optimizeWidth = 800,
   ...props
 }) {
   const [isLoaded, setIsLoaded] = useState(props.loading === 'eager');
   const [hasError, setHasError] = useState(false);
+
+  // Memoize optimized URL
+  const optimizedSrc = useMemo(() => 
+    optimizeImageUrl(src, { width: optimizeWidth }), 
+    [src, optimizeWidth]
+  );
 
   const handleLoad = (e) => {
     setIsLoaded(true);
@@ -37,10 +71,11 @@ export default function LazyImage({
       {/* Actual Image */}
       {!hasError ? (
         <img
-          src={src}
+          src={optimizedSrc}
           alt={alt}
           loading="lazy"
           decoding="async"
+          width={width}
           className={`${className} transition-all duration-500 ${isLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-sm'
             }`}
           onLoad={handleLoad}

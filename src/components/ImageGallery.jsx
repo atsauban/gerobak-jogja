@@ -172,7 +172,7 @@ export default function ImageGallery({
             ref={imageRef}
             src={currentImage}
             alt={title || `Image ${currentIndex + 1} of ${images.length}`}
-            className={`w-full h-auto rounded-2xl shadow-2xl transition-transform duration-300 ${
+            className={`w-full h-auto rounded-xl shadow-xl transition-transform duration-300 ${
               isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'
             }`}
             style={{

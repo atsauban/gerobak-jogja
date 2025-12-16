@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, X } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../Toast';
 import {
     getFAQs,
@@ -10,7 +9,6 @@ import {
 } from '../../services/firebaseService';
 
 export default function AdminFAQManager({ showDeleteConfirmation }) {
-    const { user } = useAuth();
     const toast = useToast();
     const [faqs, setFaqs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -77,7 +75,24 @@ export default function AdminFAQManager({ showDeleteConfirmation }) {
                 try {
                     await deleteFAQ(id);
                     await loadFAQs();
-                    toast.success('FAQ berhasil dihapus!');
+
+                    toast.success('FAQ berhasil dihapus!', 5000, {
+                        onUndo: async () => {
+                            try {
+                                // Restore FAQ
+                                await createFAQ({
+                                    question: faq.question,
+                                    answer: faq.answer,
+                                    order: faq.order || 0
+                                });
+
+                                await loadFAQs();
+                                toast.success('FAQ berhasil dikembalikan!');
+                            } catch (error) {
+                                toast.error('Gagal mengembalikan FAQ: ' + error.message);
+                            }
+                        }
+                    });
                 } catch (error) {
                     toast.error('Gagal menghapus FAQ: ' + error.message);
                 }
@@ -95,9 +110,9 @@ export default function AdminFAQManager({ showDeleteConfirmation }) {
                         setFormData({ question: '', answer: '', order: 0 });
                         setEditingId(null);
                     }}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2"
+                    className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 text-sm"
                 >
-                    {showForm ? <X size={20} /> : <Plus size={20} />}
+                    {showForm ? <X size={18} /> : <Plus size={18} />}
                     {showForm ? 'Tutup' : 'Tambah FAQ'}
                 </button>
             </div>

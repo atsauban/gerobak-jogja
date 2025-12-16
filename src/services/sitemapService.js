@@ -189,8 +189,6 @@ export const generateSitemapXML = async () => {
 
 // Submit sitemap to search engines (development mode only shows info)
 export const submitSitemapToSearchEngines = async () => {
-  const sitemapUrl = `${SITE_URL}/sitemap.xml`;
-  
   // Check if we're in development mode
   const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   
@@ -218,7 +216,7 @@ export const regenerateSitemap = async () => {
         });
         
         if (response.ok) {
-          const result = await response.json();
+          await response.json();
         } else {
           console.warn('⚠️ Development: Sitemap regeneration failed, falling back to logging only');
         }
@@ -250,7 +248,7 @@ export const regenerateSitemap = async () => {
       });
       
       if (response.ok) {
-        const result = await response.json();
+        await response.json();
         return true;
       } else {
         console.error('❌ Production: Sitemap regeneration failed:', response.status, response.statusText);
@@ -259,14 +257,9 @@ export const regenerateSitemap = async () => {
         try {
           const errorData = await response.text();
           console.error('Error details:', errorData);
-        } catch (e) {
+        } catch {
           console.error('Could not parse error response');
         }
-        
-        // Provide helpful troubleshooting info
-        const isVercel = window.location.hostname.includes('vercel.app');
-        const platform = isVercel ? 'Vercel' : 'Netlify';
-        const functionPath = isVercel ? '/api/regenerate-sitemap' : '/.netlify/functions/regenerate-sitemap';
         
         // Fallback: just log the attempt
         await submitSitemapToSearchEngines();

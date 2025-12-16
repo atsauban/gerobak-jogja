@@ -44,15 +44,26 @@
     <link rel="icon" type="image/webp" sizes="16x16" href="/images/logo.webp" />
     <link rel="shortcut icon" href="/images/logo.webp" />
     
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Gerobak Jogja" />
+    
     <!-- Theme Color -->
-    <meta name="theme-color" content="#0284c7" />
+    <meta name="theme-color" content="#111827" />
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1f2937" />
     
     <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preconnect" href="https://firebasestorage.googleapis.com" />
+    <link rel="preconnect" href="https://res.cloudinary.com" />
     <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
     
     <!-- Preload critical resources -->
     <link rel="preload" href="/images/logo.webp" as="image" type="image/webp" />
@@ -69,5 +80,15 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Register Service Worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(() => console.log('SW registered'))
+            .catch(() => console.log('SW registration failed'));
+        });
+      }
+    </script>
   </body>
 </html>

@@ -106,23 +106,6 @@ export const logSitemapChange = (action, itemType, itemData) => {
   // Add to changes array
   sitemapChanges.push(logEntry);
   
-  // Console logging with emojis and colors
-  const actionEmoji = {
-    'added': '➕',
-    'updated': '✏️',
-    'deleted': '🗑️'
-  };
-  
-  const typeEmoji = {
-    'product': '🛒',
-    'blog': '📝',
-    'gallery': '🖼️',
-    'testimonial': '💬',
-    'faq': '❓'
-  };
-  
-
-  
   return logEntry;
 };
 

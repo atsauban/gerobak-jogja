@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, X, Eye } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../Toast';
 import BlogCard from '../BlogCard';
 import { logSitemapChange } from '../../utils/sitemapUpdater';
@@ -14,7 +13,6 @@ import {
 } from '../../services/firebaseService';
 
 export default function AdminBlogManager({ showDeleteConfirmation }) {
-    const { user } = useAuth();
     const toast = useToast();
     const [blogs, setBlogs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -154,7 +152,34 @@ export default function AdminBlogManager({ showDeleteConfirmation }) {
                     // Regenerate sitemap when blog is deleted
                     debouncedRegenerateSitemap();
 
-                    toast.success('Blog berhasil dihapus!');
+                    toast.success('Blog berhasil dihapus!', 5000, {
+                        onUndo: async () => {
+                            try {
+                                // Restore blog post
+                                const restoredBlog = await createBlogPost({
+                                    title: blogToDelete.title,
+                                    slug: blogToDelete.slug,
+                                    excerpt: blogToDelete.excerpt,
+                                    content: blogToDelete.content,
+                                    category: blogToDelete.category,
+                                    image: blogToDelete.image || '',
+                                    author: blogToDelete.author || 'Admin Gerobak Jogja',
+                                    readTime: blogToDelete.readTime || '5 menit',
+                                    featured: blogToDelete.featured || false,
+                                    date: blogToDelete.date
+                                });
+
+                                // Log sitemap change for restored blog
+                                logSitemapChange('added', 'blog', restoredBlog);
+                                debouncedRegenerateSitemap();
+
+                                await loadBlogs();
+                                toast.success('Blog berhasil dikembalikan!');
+                            } catch (error) {
+                                toast.error('Gagal mengembalikan blog: ' + error.message);
+                            }
+                        }
+                    });
                 } catch (error) {
                     console.error('Delete blog error:', error);
                     toast.error('Gagal menghapus blog: ' + error.message);
@@ -173,9 +198,9 @@ export default function AdminBlogManager({ showDeleteConfirmation }) {
                         setFormData({ title: '', slug: '', excerpt: '', content: '', category: 'Tips', image: '', author: 'Admin Gerobak Jogja', readTime: '5 menit', featured: false });
                         setEditingId(null);
                     }}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2"
+                    className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 text-sm"
                 >
-                    {showForm ? <X size={20} /> : <Plus size={20} />}
+                    {showForm ? <X size={18} /> : <Plus size={18} />}
                     {showForm ? 'Tutup' : 'Tambah Blog'}
                 </button>
             </div>

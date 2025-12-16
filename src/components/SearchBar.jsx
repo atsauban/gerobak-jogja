@@ -20,7 +20,7 @@ export default function SearchBar({
     if (history) {
       try {
         setSearchHistory(JSON.parse(history));
-      } catch (e) {
+      } catch {
         setSearchHistory([]);
       }
     }
@@ -95,12 +95,12 @@ export default function SearchBar({
   }, [showHistory]);
 
   return (
-    <div className={`relative max-w-2xl mx-auto ${className}`} ref={searchRef}>
+    <div className={`relative ${className}`} ref={searchRef}>
       <form onSubmit={handleSubmit}>
         <div className="relative">
           <Search 
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" 
-            size={20}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" 
+            size={18}
           />
           <input
             type="text"
@@ -108,10 +108,9 @@ export default function SearchBar({
             value={value}
             onChange={onChange}
             onFocus={handleFocus}
-            className="w-full pl-12 pr-12 py-3 md:py-4 rounded-xl border-2 border-gray-200 
-                     focus:border-primary-500 focus:ring-4 focus:ring-primary-100 
-                     transition-all outline-none text-gray-900 placeholder-gray-400
-                     shadow-sm hover:shadow-md"
+            className="w-full pl-10 pr-10 py-2.5 text-sm rounded-lg bg-white border border-gray-200 
+                     focus:border-primary-500 focus:ring-2 focus:ring-primary-100 
+                     transition-all outline-none text-gray-900 placeholder-gray-400"
             aria-label="Search products"
             autoComplete="off"
           />
@@ -119,12 +118,12 @@ export default function SearchBar({
             <button
               type="button"
               onClick={handleClear}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 
-                       hover:text-gray-600 transition-colors p-1 hover:bg-gray-100 rounded-full
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 
+                       hover:text-gray-600 transition-colors p-0.5 hover:bg-gray-100 rounded
                        focus:outline-none focus:ring-2 focus:ring-primary-500"
               aria-label="Clear search"
             >
-              <X size={20} />
+              <X size={16} />
             </button>
           )}
         </div>
@@ -134,11 +133,11 @@ export default function SearchBar({
       {showSuggestions && showHistory && searchHistory.length > 0 && (
         <div 
           ref={suggestionsRef}
-          className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-lg border border-gray-200 z-50 overflow-hidden"
+          className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 z-50 overflow-hidden"
         >
-          <div className="p-2">
-            <div className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              <Clock size={14} />
+          <div className="p-1.5">
+            <div className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-gray-400">
+              <Clock size={12} />
               Pencarian Terakhir
             </div>
             {searchHistory.map((query, index) => (
@@ -146,13 +145,10 @@ export default function SearchBar({
                 key={index}
                 type="button"
                 onClick={() => handleHistoryClick(query)}
-                className="w-full text-left px-4 py-2.5 hover:bg-gray-50 rounded-lg transition-colors flex items-center gap-3 group"
+                className="w-full text-left px-3 py-2 hover:bg-gray-50 rounded-md transition-colors flex items-center gap-2 text-sm"
               >
-                <Clock size={16} className="text-gray-400 group-hover:text-primary-600 transition-colors" />
-                <span className="text-gray-700 group-hover:text-primary-600 transition-colors flex-1">
-                  {query}
-                </span>
-                <TrendingUp size={14} className="text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+                <Clock size={14} className="text-gray-400" />
+                <span className="text-gray-700 flex-1">{query}</span>
               </button>
             ))}
           </div>

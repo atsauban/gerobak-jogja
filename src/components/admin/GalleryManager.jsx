@@ -4,7 +4,7 @@ import ImageUpload from '../ImageUpload';
 import { useToast } from '../Toast';
 import { logSitemapChange } from '../../utils/sitemapUpdater';
 import { debouncedRegenerateSitemap } from '../../services/sitemapService';
-import { handleError, getErrorMessage } from '../../utils/errorHandler';
+import { handleError } from '../../utils/errorHandler';
 import {
   getGalleryImages,
   createGalleryImage,
@@ -104,6 +104,9 @@ export default function GalleryManager({ showDeleteConfirmation }) {
     setShowForm(true);
   };
 
+  // Store pending Cloudinary deletions for undo support
+  const pendingCloudinaryDeletions = {};
+
   const handleDelete = (id) => {
     // Find the image to get its details
     const image = images.find(img => img.id === id);
@@ -114,12 +117,7 @@ export default function GalleryManager({ showDeleteConfirmation }) {
       image?.title || 'gambar ini',
       async () => {
         try {
-          if (image && image.url) {
-            // Delete from Cloudinary first
-            await deleteImageFromCloudinary(image.url);
-          }
-
-          // Then delete from Firebase
+          // Delete from Firebase first
           await deleteGalleryImage(id);
 
           // Log sitemap change for deleted gallery image
@@ -135,7 +133,44 @@ export default function GalleryManager({ showDeleteConfirmation }) {
           debouncedRegenerateSitemap();
 
           await loadImages();
-          toast.success('Gambar berhasil dihapus!');
+
+          // Schedule Cloudinary deletion after undo timeout
+          if (image && image.url && image.url.includes('cloudinary.com')) {
+            const timeoutId = setTimeout(async () => {
+              try {
+                await deleteImageFromCloudinary(image.url);
+              } catch (err) {
+                console.error('Error deleting Cloudinary image:', err);
+              }
+              delete pendingCloudinaryDeletions[id];
+            }, 5500); // 5 seconds undo + 500ms buffer
+
+            pendingCloudinaryDeletions[id] = { timeoutId, url: image.url };
+          }
+
+          toast.success('Gambar berhasil dihapus!', 5000, {
+            onUndo: async () => {
+              try {
+                // Cancel pending Cloudinary deletion
+                if (pendingCloudinaryDeletions[id]) {
+                  clearTimeout(pendingCloudinaryDeletions[id].timeoutId);
+                  delete pendingCloudinaryDeletions[id];
+                }
+
+                // Restore gallery image
+                await createGalleryImage({
+                  url: image.url,
+                  title: image.title,
+                  category: image.category
+                });
+
+                await loadImages();
+                toast.success('Gambar berhasil dikembalikan!');
+              } catch (error) {
+                toast.error('Gagal mengembalikan gambar: ' + error.message);
+              }
+            }
+          });
         } catch (error) {
           handleError(error, 'Gagal menghapus gambar. Silakan coba lagi.', toast);
         }
@@ -168,9 +203,9 @@ export default function GalleryManager({ showDeleteConfirmation }) {
             setFormData({ url: '', title: '', category: 'aluminium' });
             setEditingId(null);
           }}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center gap-2"
+          className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 text-sm"
         >
-          {showForm ? <X size={20} /> : <Plus size={20} />}
+          {showForm ? <X size={18} /> : <Plus size={18} />}
           {showForm ? 'Tutup' : 'Tambah Gambar'}
         </button>
       </div>

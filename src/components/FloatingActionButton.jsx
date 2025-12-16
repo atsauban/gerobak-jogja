@@ -23,7 +23,7 @@ export default function FloatingActionButton() {
       {/* WhatsApp FAB */}
       <WhatsAppButton
         showIcon={false}
-        className="group relative w-14 h-14 bg-green-500 rounded-full shadow-xl hover:shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-105 animate-gentle-glow"
+        className="group relative w-14 h-14 bg-green-600 rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-200 hover:bg-green-700"
         aria-label="Chat WhatsApp"
       >
         <MessageCircle size={24} className="text-white" />
@@ -32,16 +32,13 @@ export default function FloatingActionButton() {
         <span className="absolute right-full mr-3 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
           Chat WhatsApp
         </span>
-
-        {/* Gentle pulse effect */}
-        <span className="absolute inset-0 rounded-full bg-green-400 animate-subtle-pulse"></span>
       </WhatsAppButton>
 
       {/* Scroll to Top FAB */}
       {showScrollTop && (
         <button
           onClick={scrollToTop}
-          className="group relative w-14 h-14 bg-primary-600 rounded-full shadow-xl hover:shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-105"
+          className="group relative w-14 h-14 bg-gray-900 rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-200 hover:bg-gray-800"
           aria-label="Scroll to top"
         >
           <ArrowUp size={24} className="text-white" />

@@ -54,36 +54,33 @@ export default function EmptyState({
   const finalActionLink = actionLink || config.defaultLink;
 
   return (
-    <div className="text-center py-20 px-4">
-      <div className="w-32 h-32 mx-auto mb-6 relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-100 to-primary-200 rounded-full opacity-50 animate-pulse"></div>
-        <div className="relative flex items-center justify-center h-full">
-          {config.emoji ? (
-            <span className="text-7xl opacity-50">{config.emoji}</span>
-          ) : (
-            <Icon size={64} className="text-primary-300" />
-          )}
-        </div>
+    <div className="text-center py-16 px-4">
+      <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+        {config.emoji ? (
+          <span className="text-3xl">{config.emoji}</span>
+        ) : (
+          <Icon size={28} className="text-gray-400" />
+        )}
       </div>
       
-      <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+      <h3 className="text-xl font-bold text-gray-900 mb-2">
         {finalTitle}
       </h3>
       
-      <p className="text-gray-600 mb-6 max-w-md mx-auto text-lg">
+      <p className="text-gray-500 mb-6 max-w-sm mx-auto">
         {finalDescription}
       </p>
 
       {/* Suggestions */}
       {suggestions && suggestions.length > 0 && (
-        <div className="mb-8 max-w-md mx-auto">
-          <p className="text-sm text-gray-500 mb-3">Saran pencarian:</p>
+        <div className="mb-6 max-w-sm mx-auto">
+          <p className="text-xs text-gray-400 mb-2">Saran:</p>
           <div className="flex flex-wrap gap-2 justify-center">
             {suggestions.map((suggestion, index) => (
               <button
                 key={index}
                 onClick={() => onClearFilters && onClearFilters(suggestion)}
-                className="px-4 py-2 bg-gray-100 hover:bg-primary-100 text-gray-700 hover:text-primary-700 rounded-full text-sm font-medium transition-colors"
+                className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-lg text-sm transition-colors"
               >
                 {suggestion}
               </button>
@@ -93,32 +90,21 @@ export default function EmptyState({
       )}
       
       {/* Action Buttons */}
-      <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+      <div className="flex flex-col sm:flex-row gap-2 justify-center items-center">
         {onClearFilters && (
           <button
             onClick={() => onClearFilters()}
-            className="btn-secondary inline-flex items-center gap-2"
+            className="btn-secondary text-sm"
           >
-            <Filter size={18} />
             {finalActionText}
           </button>
         )}
         {finalActionLink && (
           <Link 
             to={finalActionLink}
-            className="btn-primary inline-flex items-center gap-2"
+            className="btn-primary text-sm"
           >
-            <Icon size={20} />
             {type === 'search' ? 'Lihat Semua Produk' : finalActionText}
-          </Link>
-        )}
-        {type === 'search' && (
-          <Link
-            to="/"
-            className="btn-secondary inline-flex items-center gap-2"
-          >
-            <Home size={18} />
-            Kembali ke Beranda
           </Link>
         )}
       </div>

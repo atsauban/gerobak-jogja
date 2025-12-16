@@ -104,29 +104,26 @@ export default function Navbar() {
       <nav
         className={`fixed w-full z-[100] transition-all duration-300 transform ${isVisible ? 'translate-y-0' : '-translate-y-full'
           } ${scrolled
-            ? 'bg-white/80 backdrop-blur-xl shadow-lg border-b border-white/20'
-            : 'bg-white shadow-sm'
+            ? 'bg-white/90 backdrop-blur-xl shadow-sm border-b border-gray-100'
+            : 'bg-white'
           }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-20 items-center">
+          <div className="flex justify-between h-16 lg:h-18 items-center">
             {/* Logo */}
             <div className="flex-shrink-0 flex items-center">
-              <Link to="/" className="flex items-center gap-3 group">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-primary-400 rounded-full blur-xl opacity-0 group-hover:opacity-30 transition-opacity duration-500"></div>
-                  <img
-                    src="/images/logo.webp"
-                    alt="Gerobak Jogja Logo"
-                    className="h-10 w-10 sm:h-12 sm:w-12 object-contain relative z-10 transition-transform duration-300 group-hover:rotate-6"
-                    onError={(e) => e.target.style.display = 'none'}
-                  />
-                </div>
+              <Link to="/" className="flex items-center gap-2.5 group">
+                <img
+                  src="/images/logo.webp"
+                  alt="Gerobak Jogja Logo"
+                  className="h-9 w-9 sm:h-10 sm:w-10 object-contain transition-transform duration-300 group-hover:scale-105"
+                  onError={(e) => e.target.style.display = 'none'}
+                />
                 <div className="flex flex-col">
-                  <span className="text-xl sm:text-2xl font-display font-bold gradient-text tracking-tight group-hover:tracking-wide transition-all duration-300">
+                  <span className="text-lg sm:text-xl font-display font-bold text-gray-900 tracking-tight">
                     Gerobak Jogja
                   </span>
-                  <span className="text-[10px] sm:text-xs text-gray-500 font-medium tracking-widest uppercase">
+                  <span className="text-[10px] text-gray-400 font-medium tracking-wide hidden sm:block">
                     Pusat Gerobak Premium
                   </span>
                 </div>
@@ -134,7 +131,7 @@ export default function Navbar() {
             </div>
 
             {/* Desktop Menu */}
-            <div className="hidden lg:flex items-center gap-1 xl:gap-2">
+            <div className="hidden lg:flex items-center gap-1">
               {[
                 { path: '/', label: 'Beranda' },
                 { path: '/katalog', label: 'Katalog' },
@@ -146,46 +143,47 @@ export default function Navbar() {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`relative px-4 py-2 text-sm font-semibold transition-all duration-300 rounded-full hover:bg-gray-50 ${isActive(link.path)
-                      ? 'text-primary-600 bg-primary-50'
-                      : 'text-gray-600 hover:text-primary-600'
+                  aria-current={isActive(link.path) ? 'page' : undefined}
+                  className={`relative px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg ${isActive(link.path)
+                    ? 'text-primary-600'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                     }`}
                 >
                   {link.label}
+                  {isActive(link.path) && (
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary-600 rounded-full"></span>
+                  )}
                 </Link>
               ))}
-
-              {/* Separator */}
-              <div className="w-px h-6 bg-gray-200 mx-2"></div>
 
               {/* Search Button */}
               <button
                 onClick={() => setIsSearchOpen(true)}
-                className="p-2.5 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-all duration-200 group"
+                className="ml-2 p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all duration-200"
                 aria-label="Cari produk"
               >
-                <Search size={20} className="group-hover:scale-110 transition-transform" />
+                <Search size={18} />
               </button>
             </div>
 
             {/* Mobile Menu Button & Search */}
-            <div className="lg:hidden flex items-center gap-2">
+            <div className="lg:hidden flex items-center gap-1">
               <button
                 onClick={() => setIsSearchOpen(true)}
-                className="p-2 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-all"
+                className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all"
                 aria-label="Cari"
               >
-                <Search size={24} />
+                <Search size={20} />
               </button>
 
               <button
                 ref={buttonRef}
                 onClick={() => setIsOpen(!isOpen)}
-                className="p-2 text-gray-700 hover:text-primary-600 transition-colors"
+                className="p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
                 aria-label={isOpen ? "Close menu" : "Open menu"}
                 aria-expanded={isOpen}
               >
-                {isOpen ? <X size={28} /> : <Menu size={28} />}
+                {isOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
             </div>
           </div>
@@ -196,9 +194,9 @@ export default function Navbar() {
           <div
             id="mobile-menu"
             ref={menuRef}
-            className="lg:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur-xl shadow-2xl border-t border-gray-100 animate-slide-down overflow-hidden z-[90]"
+            className="lg:hidden absolute top-full left-0 w-full bg-white shadow-xl border-t border-gray-100 animate-slide-down overflow-hidden z-[90]"
           >
-            <div className="px-4 py-6 space-y-2 max-h-[80vh] overflow-y-auto">
+            <div className="px-4 py-4 space-y-1 max-h-[80vh] overflow-y-auto">
               {[
                 { path: '/', label: 'Beranda' },
                 { path: '/katalog', label: 'Katalog' },
@@ -211,9 +209,10 @@ export default function Navbar() {
                   key={link.path}
                   to={link.path}
                   onClick={() => setIsOpen(false)}
-                  className={`block px-5 py-4 rounded-xl text-lg font-semibold transition-all duration-200 border-l-4 ${isActive(link.path)
-                      ? 'bg-primary-50/50 text-primary-700 border-primary-500'
-                      : 'text-gray-600 border-transparent hover:bg-gray-50 hover:text-gray-900'
+                  aria-current={isActive(link.path) ? 'page' : undefined}
+                  className={`block px-4 py-3 rounded-xl text-base font-medium transition-all duration-200 ${isActive(link.path)
+                    ? 'bg-primary-50 text-primary-600'
+                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                     }`}
                 >
                   {link.label}

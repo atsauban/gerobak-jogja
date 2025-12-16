@@ -1,108 +1,137 @@
 import { Link } from 'react-router-dom';
-import { Star, Eye, Zap } from 'lucide-react';
+import { Star, ArrowUpRight } from 'lucide-react';
 import LazyImage from './LazyImage';
 import WhatsAppButton from './WhatsAppButton';
 
-export default function PremiumProductCard({ product, onQuickView }) {
+export default function PremiumProductCard({ product, variant = 'grid' }) {
     const isFeatured = product.featured;
     const priceFormatted = parseInt(product.price).toLocaleString('id-ID');
+    const productUrl = `/produk/${product.slug || product.id}`;
+    const imageUrl = product.images?.[0] || product.image || 'https://via.placeholder.com/400x300?text=No+Image';
 
-    return (
-        <div className="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 h-full flex flex-col border border-gray-100">
-
-            {/* Image Container with Zoom & Overlay */}
-            <div className="relative h-64 overflow-hidden bg-gray-50 flex items-center justify-center">
-                <LazyImage
-                    src={product.images?.[0] || product.image || 'https://via.placeholder.com/400x300?text=No+Image'}
-                    alt={`Gerobak ${product.name} - ${product.category}`}
-                    className="w-full h-full object-contain p-2 transition-transform duration-700 group-hover:scale-110"
-                />
-
-                {/* Overlay Dark Gradient on Hover */}
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10"></div>
-
-                {/* Floating Badges */}
-                <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
-                    {isFeatured && (
-                        <div className="bg-white/90 backdrop-blur-sm text-yellow-600 px-3 py-1 rounded-full text-xs font-bold shadow-lg flex items-center gap-1 animate-fade-in border border-white/50">
-                            <Star size={12} fill="currentColor" />
-                            <span>UNGGULAN</span>
-                        </div>
-                    )}
-                </div>
-
-                {product.badge && (
-                    <div className="absolute top-4 right-4 z-20">
-                        <span className="bg-accent-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-xl shadow-accent-500/20 border-2 border-white/20">
-                            {product.badge}
-                        </span>
+    // List View
+    if (variant === 'list') {
+        return (
+            <div className="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300">
+                <div className="flex flex-col sm:flex-row">
+                    {/* Image */}
+                    <div className="relative sm:w-56 md:w-64 flex-shrink-0 aspect-[4/3] sm:aspect-square overflow-hidden bg-gray-50">
+                        <Link to={productUrl}>
+                            <LazyImage
+                                src={imageUrl}
+                                alt={`Gerobak ${product.name}`}
+                                className="w-full h-full object-contain p-3 transition-transform duration-500 group-hover:scale-105"
+                            />
+                        </Link>
+                        {isFeatured && (
+                            <span className="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 bg-amber-400 text-amber-900 text-xs font-bold rounded-full">
+                                <Star size={10} fill="currentColor" />
+                                Unggulan
+                            </span>
+                        )}
                     </div>
-                )}
 
-                {/* Hover Action Buttons (Slide Up) - Always visible on mobile, slide-up on desktop */}
-                <div className="absolute bottom-4 left-0 right-0 z-20 flex justify-center gap-3 
-                              translate-y-0 opacity-100 
-                              lg:translate-y-10 lg:opacity-0 lg:group-hover:translate-y-0 lg:group-hover:opacity-100 
-                              transition-all duration-300 delay-75">
-                    <Link
-                        to={`/produk/${product.slug || product.id}`}
-                        className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-gray-700 hover:bg-primary-600 hover:text-white hover:scale-110 transition-all duration-300 shadow-lg"
-                        title="Lihat Detail"
-                    >
-                        <Eye size={18} />
-                    </Link>
+                    {/* Content */}
+                    <div className="flex-1 p-5 flex flex-col justify-between">
+                        <div>
+                            {product.category && (
+                                <span className="inline-block text-xs font-medium text-primary-600 bg-primary-50 px-2 py-0.5 rounded mb-2">
+                                    {product.category}
+                                </span>
+                            )}
+                            <Link to={productUrl}>
+                                <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+                                    {product.name}
+                                </h3>
+                            </Link>
+                            <p className="text-sm text-gray-500 line-clamp-2">
+                                {product.shortDesc || product.description}
+                            </p>
+                        </div>
 
-                    {onQuickView && (
-                        <button
-                            onClick={() => onQuickView(product)}
-                            className="hidden lg:flex w-10 h-10 bg-white rounded-full items-center justify-center text-gray-700 hover:bg-yellow-500 hover:text-white hover:scale-110 transition-all duration-300 shadow-lg"
-                            title="Quick View"
-                        >
-                            <Zap size={18} />
-                        </button>
-                    )}
-
-                    <div className="scale-100 hover:scale-110 transition-transform duration-300">
-                        <WhatsAppButton
-                            productName={product.name}
-                            productPrice={product.price}
-                            className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white shadow-lg !p-0"
-                            iconOnly={true}
-                        />
+                        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+                            <div>
+                                <span className="text-xs text-gray-400 block">Mulai dari</span>
+                                <span className="text-xl font-bold text-gray-900">Rp {priceFormatted}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <WhatsAppButton
+                                    productName={product.name}
+                                    productPrice={product.price}
+                                    className="!px-4 !py-2 !rounded-lg !text-sm"
+                                    iconOnly={false}
+                                >
+                                    Pesan
+                                </WhatsAppButton>
+                                <Link
+                                    to={productUrl}
+                                    className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
+                                >
+                                    Detail
+                                </Link>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
+        );
+    }
 
-            {/* Content Section */}
-            <div className="p-6 flex-1 flex flex-col relative bg-white">
-                {/* Decorative subtle pattern */}
+    // Grid View (default)
+    return (
+        <div className="group relative bg-white rounded-2xl overflow-hidden h-full flex flex-col border border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-300 hover:-translate-y-1">
+            {/* Image */}
+            <Link to={productUrl} className="relative aspect-square overflow-hidden bg-gray-50">
+                <LazyImage
+                    src={imageUrl}
+                    alt={`Gerobak ${product.name} - ${product.category}`}
+                    className="w-full h-full object-contain p-2 transition-transform duration-500 group-hover:scale-105"
+                />
 
-                <div className="flex-1">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors line-clamp-1">
+                {/* Badges */}
+                {isFeatured && (
+                    <span className="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 bg-amber-400 text-amber-900 text-xs font-bold rounded-full shadow-sm">
+                        <Star size={10} fill="currentColor" />
+                        Unggulan
+                    </span>
+                )}
+                {product.badge && (
+                    <span className="absolute top-3 right-3 px-2.5 py-1 bg-primary-600 text-white text-xs font-bold rounded-full shadow-sm">
+                        {product.badge}
+                    </span>
+                )}
+            </Link>
+
+            {/* Content */}
+            <div className="p-5 flex-1 flex flex-col">
+                {product.category && (
+                    <span className="inline-block w-fit text-xs font-medium text-primary-600 bg-primary-50 px-2 py-0.5 rounded mb-2">
+                        {product.category}
+                    </span>
+                )}
+
+                <Link to={productUrl}>
+                    <h3 className="text-lg font-bold text-gray-900 mb-1.5 line-clamp-1 group-hover:text-primary-600 transition-colors">
                         {product.name}
                     </h3>
-                    <p className="text-sm text-gray-500 line-clamp-2 mb-4">
-                        {product.shortDesc || product.description}
-                    </p>
-                </div>
+                </Link>
+                
+                <p className="text-sm text-gray-500 line-clamp-2 mb-4 flex-1">
+                    {product.shortDesc || product.description}
+                </p>
 
-                {/* Price & Divider */}
-                <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
-                    <div className="flex flex-col">
-                        <span className="text-xs text-gray-400 font-medium uppercase tracking-wider">Mulai Dari</span>
-                        <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-800 bg-clip-text text-transparent">
-                            Rp {priceFormatted}
-                        </span>
+                {/* Price & CTA */}
+                <div className="flex items-end justify-between pt-4 border-t border-gray-100">
+                    <div>
+                        <span className="text-xs text-gray-400 block">Mulai dari</span>
+                        <span className="text-xl font-bold text-gray-900">Rp {priceFormatted}</span>
                     </div>
 
                     <Link
-                        to={`/produk/${product.slug || product.id}`}
-                        className="text-sm font-semibold text-primary-600 hover:text-primary-800 flex items-center gap-1 group/link"
+                        to={productUrl}
+                        className="flex items-center justify-center w-10 h-10 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-900 hover:text-white transition-all duration-200 group/btn"
                     >
-                        Detail
-                        <svg className="w-4 h-4 transform group-hover/link:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                        </svg>
+                        <ArrowUpRight size={18} className="group-hover/btn:rotate-45 transition-transform duration-200" />
                     </Link>
                 </div>
             </div>

@@ -1,89 +1,104 @@
-import { useState, useRef } from 'react';
-import { Upload, X, Image as ImageIcon, Loader, CheckCircle } from 'lucide-react';
-import { handleError, getErrorMessage } from '../utils/errorHandler';
+import { useState, useRef, useEffect } from 'react';
+import { Upload, X, Crop } from 'lucide-react';
+import ImageCropper from './ImageCropper';
 
 // Get Cloudinary config from environment variables
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET || 'gerobak_jogja';
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME || 'dpjpj7l1y';
 
+// Export upload function for external use
+export const uploadToCloudinary = async (file, folder = 'products', onProgress) => {
+  const targetFolder = `gerobak-jogja/${folder}`;
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+  formData.append('folder', targetFolder);
+
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+
+    xhr.upload.addEventListener('progress', (e) => {
+      if (e.lengthComputable && onProgress) {
+        const percentComplete = (e.loaded / e.total) * 100;
+        onProgress(percentComplete);
+      }
+    });
+
+    xhr.addEventListener('load', () => {
+      if (xhr.status === 200) {
+        const data = JSON.parse(xhr.responseText);
+        resolve(data.secure_url);
+      } else {
+        reject(new Error('Upload failed'));
+      }
+    });
+
+    xhr.addEventListener('error', () => reject(new Error('Network error')));
+    xhr.addEventListener('abort', () => reject(new Error('Upload cancelled')));
+
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`);
+    xhr.send(formData);
+  });
+};
+
 export default function ImageUpload({
-  onUploadComplete,
+  onFilesChange, // Changed from onUploadComplete - now returns File objects
+  onCroppingChange, // Callback to notify parent when cropping is in progress
   multiple = false,
   maxFiles = 5,
-  currentImages = [],
-  folder = 'products'
+  currentImages = [], // Existing URLs (for edit mode)
+  folder = 'products',
+  enableCrop = true,
+  cropAspectRatio = 1
 }) {
-  const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [preview, setPreview] = useState(currentImages);
-  const [localPreview, setLocalPreview] = useState([]); // Local preview before upload
+  // Store both existing URLs and new File objects
+  const [existingUrls, setExistingUrls] = useState(currentImages.filter(img => typeof img === 'string'));
+  const [pendingFiles, setPendingFiles] = useState([]); // New files to upload
   const [error, setError] = useState('');
   const [isDragging, setIsDragging] = useState(false);
+  const [cropImage, setCropImage] = useState(null);
+  const [cropQueue, setCropQueue] = useState([]);
+  const [currentFileName, setCurrentFileName] = useState('');
   const fileInputRef = useRef(null);
-  const abortControllerRef = useRef(null);
+  
+  // Use refs to store callbacks to avoid stale closure
+  const onFilesChangeRef = useRef(onFilesChange);
+  onFilesChangeRef.current = onFilesChange;
+  
+  const onCroppingChangeRef = useRef(onCroppingChange);
+  onCroppingChangeRef.current = onCroppingChange;
 
-  const uploadToCloudinary = async (file, onProgress) => {
-    const targetFolder = `gerobak-jogja/${folder}`;
+  // Notify parent when cropping state changes (for initial mount and when crop modal opens)
+  const isCropping = cropImage !== null;
+  useEffect(() => {
+    if (onCroppingChangeRef.current) {
+      onCroppingChangeRef.current(isCropping);
+    }
+  }, [isCropping]);
 
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-    formData.append('folder', targetFolder);
-
-    return new Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-
-      // Track upload progress
-      xhr.upload.addEventListener('progress', (e) => {
-        if (e.lengthComputable) {
-          const percentComplete = (e.loaded / e.total) * 100;
-          if (onProgress) onProgress(percentComplete);
-        }
-      });
-
-      xhr.addEventListener('load', () => {
-        if (xhr.status === 200) {
-          const data = JSON.parse(xhr.responseText);
-          resolve(data.secure_url);
-        } else {
-          reject(new Error('Upload failed'));
-        }
-      });
-
-      xhr.addEventListener('error', () => {
-        reject(new Error('Network error'));
-      });
-
-      xhr.addEventListener('abort', () => {
-        reject(new Error('Upload cancelled'));
-      });
-
-      // Store abort controller
-      abortControllerRef.current = xhr;
-
-      xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`);
-      xhr.send(formData);
-    });
-  };
+  // Sync state to parent whenever pendingFiles or existingUrls change
+  useEffect(() => {
+    if (onFilesChangeRef.current) {
+      onFilesChangeRef.current({ existingUrls, pendingFiles });
+    }
+  }, [pendingFiles, existingUrls]);
 
   const validateFiles = (files) => {
     const fileArray = Array.from(files);
-
     if (!fileArray.length) return { valid: false, error: 'Tidak ada file yang dipilih' };
-
-    // Validate file count
-    if (multiple && fileArray.length > maxFiles) {
+    
+    const totalCount = existingUrls.length + pendingFiles.length + fileArray.length;
+    if (multiple && totalCount > maxFiles) {
       return { valid: false, error: `Maksimal ${maxFiles} gambar` };
     }
 
-    // Validate file size (max 5MB per file)
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = 5 * 1024 * 1024;
     const invalidFiles = fileArray.filter(f => f.size > maxSize);
     if (invalidFiles.length > 0) {
       return { valid: false, error: 'Ukuran file maksimal 5MB per gambar' };
     }
 
-    // Validate file type
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
     const invalidTypes = fileArray.filter(f => !validTypes.includes(f.type));
     if (invalidTypes.length > 0) {
@@ -91,20 +106,6 @@ export default function ImageUpload({
     }
 
     return { valid: true, files: fileArray };
-  };
-
-  const createLocalPreview = (files) => {
-    const previews = [];
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        previews.push(e.target.result);
-        if (previews.length === files.length) {
-          setLocalPreview(prev => [...prev, ...previews]);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
   };
 
   const handleFiles = async (files) => {
@@ -117,48 +118,59 @@ export default function ImageUpload({
     setError('');
     const fileArray = validation.files;
 
-    // Create local preview immediately
-    createLocalPreview(fileArray);
-
-    setUploading(true);
-    setUploadProgress(0);
-
-    try {
-      const uploadPromises = fileArray.map((file, index) => {
-        return uploadToCloudinary(file, (progress) => {
-          // Calculate overall progress
-          const overallProgress = ((index / fileArray.length) * 100) + (progress / fileArray.length);
-          setUploadProgress(overallProgress);
-        });
-      });
-
-      const urls = await Promise.all(uploadPromises);
-
-      // Clear local preview and add uploaded URLs
-      setLocalPreview([]);
-      if (multiple) {
-        setPreview(prev => [...prev, ...urls]);
-        onUploadComplete([...preview, ...urls]);
-      } else {
-        setPreview([urls[0]]);
-        onUploadComplete(urls[0]);
-      }
-
-      setUploadProgress(100);
-
-      // Reset progress after a moment
-      setTimeout(() => {
-        setUploadProgress(0);
-      }, 1000);
-    } catch (err) {
-      setLocalPreview([]);
-      const errorMsg = getErrorMessage(err);
-      setError(errorMsg || 'Gagal upload gambar. Pastikan sudah setup Cloudinary.');
-      handleError(err, 'Gagal upload gambar. Silakan coba lagi.');
-    } finally {
-      setUploading(false);
-      abortControllerRef.current = null;
+    if (enableCrop && fileArray.length > 0) {
+      setCropQueue(fileArray.slice(1));
+      setCurrentFileName(fileArray[0].name);
+      const reader = new FileReader();
+      reader.onload = (e) => setCropImage(e.target.result);
+      reader.readAsDataURL(fileArray[0]);
+    } else {
+      // No crop - add files directly
+      const newPendingFiles = multiple ? [...pendingFiles, ...fileArray] : fileArray;
+      setPendingFiles(newPendingFiles);
+      notifyChange(existingUrls, newPendingFiles);
     }
+  };
+
+  const handleCropComplete = async (croppedBlob) => {
+    const fileName = currentFileName || `image-${Date.now()}.jpg`;
+    const croppedFile = new File([croppedBlob], fileName, { type: 'image/jpeg' });
+    
+    // Calculate new files FIRST
+    const newPendingFiles = multiple ? [...pendingFiles, croppedFile] : [croppedFile];
+    
+    // Notify parent BEFORE closing crop modal (so parent has data before isCropping becomes false)
+    if (onFilesChangeRef.current) {
+      onFilesChangeRef.current({ existingUrls, pendingFiles: newPendingFiles });
+    }
+    
+    // Update local state
+    setPendingFiles(newPendingFiles);
+    
+    // Process next file in queue OR close crop modal
+    if (cropQueue.length > 0) {
+      const nextFile = cropQueue[0];
+      setCropQueue(cropQueue.slice(1));
+      setCurrentFileName(nextFile.name);
+      const reader = new FileReader();
+      reader.onload = (e) => setCropImage(e.target.result);
+      reader.readAsDataURL(nextFile);
+    } else {
+      // Close crop modal and notify parent cropping is done
+      setCurrentFileName('');
+      setCropImage(null);
+      
+      // Notify parent IMMEDIATELY that cropping is done (don't wait for useEffect)
+      if (onCroppingChangeRef.current) {
+        onCroppingChangeRef.current(false);
+      }
+    }
+  };
+
+  const handleCropCancel = () => {
+    setCropImage(null);
+    setCropQueue([]);
+    setCurrentFileName('');
   };
 
   const handleFileSelect = async (e) => {
@@ -166,7 +178,6 @@ export default function ImageUpload({
     if (files && files.length > 0) {
       await handleFiles(files);
     }
-    // Reset input
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -188,161 +199,148 @@ export default function ImageUpload({
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
-
     const files = e.dataTransfer.files;
     if (files && files.length > 0) {
       await handleFiles(files);
     }
   };
 
-  const cancelUpload = () => {
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-      abortControllerRef.current = null;
-    }
-    setUploading(false);
-    setUploadProgress(0);
-    setLocalPreview([]);
-    setError('');
+  const removeExistingUrl = (index) => {
+    const newUrls = existingUrls.filter((_, i) => i !== index);
+    setExistingUrls(newUrls);
+    notifyChange(newUrls, pendingFiles);
   };
 
-  const removeImage = (index) => {
-    const newPreview = preview.filter((_, i) => i !== index);
-    setPreview(newPreview);
-    onUploadComplete(multiple ? newPreview : '');
+  const removePendingFile = (index) => {
+    const newFiles = pendingFiles.filter((_, i) => i !== index);
+    setPendingFiles(newFiles);
+    notifyChange(existingUrls, newFiles);
   };
 
-  const allPreviews = [...preview, ...localPreview];
+  // Create preview URLs for pending files
+  const pendingPreviews = pendingFiles.map(file => URL.createObjectURL(file));
+  const totalImages = existingUrls.length + pendingFiles.length;
 
   return (
     <div className="space-y-4">
+      {/* Image Cropper Modal */}
+      {cropImage && (
+        <ImageCropper
+          imageSrc={cropImage}
+          onCropComplete={handleCropComplete}
+          onCancel={handleCropCancel}
+          aspectRatio={cropAspectRatio}
+        />
+      )}
+
       {/* Upload Area */}
-      <div className="flex items-center gap-4">
-        <label className="flex-1 cursor-pointer">
-          <div
-            className={`
-              border-2 border-dashed rounded-lg p-6 text-center
-              transition-all duration-200
-              ${isDragging
-                ? 'border-primary-500 bg-primary-50 scale-105'
-                : uploading
-                  ? 'border-gray-300 bg-gray-50'
-                  : 'border-gray-300 hover:border-primary-500 hover:bg-primary-50'
-              }
-            `}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-          >
-            {uploading ? (
-              <div className="flex flex-col items-center gap-3">
-                <Loader className="w-8 h-8 text-primary-600 animate-spin" />
-                <div className="w-full max-w-xs">
-                  <div className="flex justify-between text-xs text-gray-600 mb-1">
-                    <span>Uploading...</span>
-                    <span>{Math.round(uploadProgress)}%</span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-primary-600 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${uploadProgress}%` }}
-                    />
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={cancelUpload}
-                  className="text-sm text-red-600 hover:text-red-700 mt-2"
-                >
-                  Batalkan
-                </button>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center gap-2">
-                <Upload className={`w-8 h-8 ${isDragging ? 'text-primary-600' : 'text-gray-400'}`} />
-                <p className="text-sm text-gray-600">
-                  <span className="text-primary-600 font-semibold">Klik untuk upload</span> atau drag & drop
-                </p>
-                <p className="text-xs text-gray-500">
-                  {multiple ? `Maksimal ${maxFiles} gambar` : '1 gambar'} • JPG, PNG, WebP • Max 5MB
-                </p>
-              </div>
-            )}
+      <label className="block cursor-pointer">
+        <div
+          className={`
+            border-2 border-dashed rounded-xl p-6 text-center transition-all duration-200
+            ${isDragging ? 'border-primary-500 bg-primary-50 scale-[1.02]' : 
+              'border-gray-200 hover:border-gray-400 hover:bg-gray-50'}
+          `}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex items-center gap-2">
+              <Upload className={`w-6 h-6 ${isDragging ? 'text-gray-900' : 'text-gray-400'}`} />
+              {enableCrop && <Crop className={`w-5 h-5 ${isDragging ? 'text-gray-900' : 'text-gray-400'}`} />}
+            </div>
+            <p className="text-sm text-gray-600">
+              <span className="text-gray-900 font-medium">Klik untuk upload</span> atau drag & drop
+            </p>
+            <p className="text-xs text-gray-400">
+              {multiple ? `Maks ${maxFiles} gambar` : '1 gambar'} • JPG, PNG, WebP • Max 5MB
+              {enableCrop && ' • Crop tersedia'}
+            </p>
           </div>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/jpeg,image/jpg,image/png,image/webp"
-            multiple={multiple}
-            onChange={handleFileSelect}
-            disabled={uploading}
-            className="hidden"
-          />
-        </label>
-      </div>
+        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/jpg,image/png,image/webp"
+          multiple={multiple}
+          onChange={handleFileSelect}
+          className="hidden"
+        />
+      </label>
 
       {/* Error Message */}
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600 flex items-center gap-2">
+        <div className="p-3 bg-red-50 border border-red-100 rounded-lg text-sm text-red-600 flex items-center gap-2">
           <X size={16} />
           {error}
         </div>
       )}
 
       {/* Preview Images */}
-      {allPreviews.length > 0 && (
+      {totalImages > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-semibold text-gray-700">
-            {multiple ? 'Gambar yang diupload:' : 'Preview:'}
+          <p className="text-sm font-medium text-gray-700">
+            Gambar ({totalImages}):
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {allPreviews.map((url, index) => {
-              const isLocal = index >= preview.length;
-              return (
-                <div key={index} className="relative group">
-                  <div className="relative">
-                    <img
-                      src={url}
-                      alt={`Preview ${index + 1}`}
-                      className={`w-full h-32 object-cover rounded-lg border-2 ${isLocal ? 'border-yellow-400 opacity-75' : 'border-gray-200'
-                        }`}
-                    />
-                    {isLocal && (
-                      <div className="absolute inset-0 bg-black bg-opacity-30 rounded-lg flex items-center justify-center">
-                        <Loader className="w-6 h-6 text-white animate-spin" />
-                      </div>
-                    )}
-                    {!isLocal && (
-                      <div className="absolute top-2 left-2">
-                        <CheckCircle className="w-5 h-5 text-green-500 bg-white rounded-full" />
-                      </div>
-                    )}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+            {/* Existing URLs */}
+            {existingUrls.map((url, index) => (
+              <div key={`url-${index}`} className="relative group">
+                <div className="relative aspect-square rounded-lg overflow-hidden border border-gray-200">
+                  <img src={url} alt={`Image ${index + 1}`} className="w-full h-full object-cover" />
+                  <div className="absolute top-2 left-2 px-1.5 py-0.5 bg-green-500 text-white text-xs rounded">
+                    Tersimpan
                   </div>
-                  {!isLocal && (
-                    <button
-                      type="button"
-                      onClick={() => removeImage(index)}
-                      className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full 
-                               opacity-0 group-hover:opacity-100 transition-opacity duration-200
-                               hover:bg-red-600"
-                      aria-label="Hapus gambar"
-                    >
-                      <X size={16} />
-                    </button>
-                  )}
-                  {index === 0 && multiple && !isLocal && (
-                    <div className="absolute bottom-2 left-2 px-2 py-1 bg-primary-600 text-white text-xs rounded">
-                      Utama
-                    </div>
-                  )}
                 </div>
-              );
-            })}
+                <button
+                  type="button"
+                  onClick={() => removeExistingUrl(index)}
+                  className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full 
+                           opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                  aria-label="Hapus gambar"
+                >
+                  <X size={14} />
+                </button>
+                {index === 0 && multiple && (
+                  <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-gray-900 text-white text-xs rounded">
+                    Utama
+                  </div>
+                )}
+              </div>
+            ))}
+            
+            {/* Pending Files (local preview) */}
+            {pendingPreviews.map((previewUrl, index) => (
+              <div key={`file-${index}`} className="relative group">
+                <div className="relative aspect-square rounded-lg overflow-hidden border-2 border-dashed border-orange-300 bg-orange-50">
+                  <img src={previewUrl} alt={`New ${index + 1}`} className="w-full h-full object-cover" />
+                  <div className="absolute top-2 left-2 px-1.5 py-0.5 bg-orange-500 text-white text-xs rounded">
+                    Baru
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => removePendingFile(index)}
+                  className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full 
+                           opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                  aria-label="Hapus gambar"
+                >
+                  <X size={14} />
+                </button>
+                {existingUrls.length === 0 && index === 0 && multiple && (
+                  <div className="absolute bottom-2 left-2 px-2 py-0.5 bg-gray-900 text-white text-xs rounded">
+                    Utama
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
+          <p className="text-xs text-gray-500">
+            Gambar dengan label "Baru" akan diupload saat menyimpan produk.
+          </p>
         </div>
       )}
-
-
     </div>
   );
 }

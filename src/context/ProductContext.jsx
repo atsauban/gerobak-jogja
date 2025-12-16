@@ -69,14 +69,15 @@ export const ProductProvider = ({ children }) => {
 
       const newProduct = {
         name: product.name || '',
-        slug: product.slug || '', // ✅ Added missing slug field
+        slug: product.slug || '',
         category: product.category || '',
         price: product.price || '0',
         shortDesc: product.shortDesc || '',
         description: product.description || product.shortDesc || '',
         badge: product.badge || '',
-        rating: 0,
-        reviews: 0,
+        rating: product.rating || 0,
+        reviews: product.reviews || 0,
+        featured: product.featured || false,
         images: images,
         specifications: product.specifications || {},
         features: product.features || [],
@@ -84,7 +85,9 @@ export const ProductProvider = ({ children }) => {
       };
       
       const createdProduct = await createProduct(newProduct);
-      setProducts([createdProduct, ...products]);
+      
+      // Use functional update to avoid stale state
+      setProducts(prevProducts => [createdProduct, ...prevProducts]);
       
       // Log sitemap change
       logSitemapChange('added', 'product', createdProduct);
@@ -138,7 +141,12 @@ export const ProductProvider = ({ children }) => {
     }
   };
 
-  const deleteProduct = async (id) => {
+  // Store pending Cloudinary deletions (for undo support)
+  const pendingCloudinaryDeletions = {};
+
+  const deleteProduct = async (id, options = {}) => {
+    const { skipCloudinary = false, undoTimeout = 5000 } = options;
+    
     try {
       // Find product to get images
       const product = products.find(p => p.id === id);
@@ -148,26 +156,58 @@ export const ProductProvider = ({ children }) => {
         logSitemapChange('deleted', 'product', product);
       }
       
-      // Delete images from Cloudinary
-      if (product && product.images && Array.isArray(product.images)) {
-        for (const imageUrl of product.images) {
-          if (imageUrl && imageUrl.includes('cloudinary.com')) {
-            await deleteImageFromCloudinary(imageUrl);
-          }
+      // Delete from Firebase first
+      await deleteProductFirebase(id);
+      
+      // Use functional update to avoid stale state
+      setProducts(prevProducts => prevProducts.filter(p => p.id !== id));
+      
+      // Schedule Cloudinary deletion after undo timeout (if not skipped)
+      if (!skipCloudinary && product && product.images && Array.isArray(product.images)) {
+        const cloudinaryImages = product.images.filter(url => url && url.includes('cloudinary.com'));
+        
+        if (cloudinaryImages.length > 0) {
+          // Schedule deletion after undo timeout
+          const timeoutId = setTimeout(async () => {
+            for (const imageUrl of cloudinaryImages) {
+              try {
+                await deleteImageFromCloudinary(imageUrl);
+              } catch (err) {
+                console.error('Error deleting Cloudinary image:', err);
+              }
+            }
+            // Clean up pending deletion record
+            delete pendingCloudinaryDeletions[id];
+          }, undoTimeout + 500); // Add 500ms buffer
+          
+          // Store timeout ID so it can be cancelled on undo
+          pendingCloudinaryDeletions[id] = {
+            timeoutId,
+            images: cloudinaryImages
+          };
         }
       }
       
-      // Delete from Firebase
-      await deleteProductFirebase(id);
-      setProducts(products.filter(p => p.id !== id));
-      
       // Regenerate sitemap when product is deleted
       debouncedRegenerateSitemap();
+      
+      return { productId: id };
     } catch (err) {
       console.error('Error deleting product:', err);
       setError(err.message);
       throw err;
     }
+  };
+
+  // Cancel pending Cloudinary deletion (called when undo is triggered)
+  const cancelCloudinaryDeletion = (productId) => {
+    if (pendingCloudinaryDeletions[productId]) {
+      clearTimeout(pendingCloudinaryDeletions[productId].timeoutId);
+      delete pendingCloudinaryDeletions[productId];
+      console.log('Cloudinary deletion cancelled for product:', productId);
+      return true;
+    }
+    return false;
   };
 
   const getProductById = (id) => {
@@ -200,6 +240,7 @@ export const ProductProvider = ({ children }) => {
         addProduct,
         updateProduct,
         deleteProduct,
+        cancelCloudinaryDeletion,
         getProductById,
         getProductBySlug,
         getProductsByCategory,
