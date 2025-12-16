@@ -74,61 +74,6 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- Product: sdfsd -->
-  <url>
-    <loc>https://gerobakjogja.vercel.app/produk/sdfsd</loc>
-    <lastmod>2025-12-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765884562/gerobak-jogja/products/ljpa7g8g8qpyu2pzcfcy.jpg</image:loc>
-      <image:title>sdfsd</image:title>
-    </image:image>
-  </url>
-  <!-- Product: qwsq -->
-  <url>
-    <loc>https://gerobakjogja.vercel.app/produk/qwsq</loc>
-    <lastmod>2025-12-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765884949/gerobak-jogja/products/aejvwdhldcnedofxc6yi.jpg</image:loc>
-      <image:title>qwsq</image:title>
-    </image:image>
-  </url>
-  <!-- Product: d -->
-  <url>
-    <loc>https://gerobakjogja.vercel.app/produk/d</loc>
-    <lastmod>2025-12-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765882861/gerobak-jogja/products/oaljh2qhzmimzrg7rgl4.jpg</image:loc>
-      <image:title>d</image:title>
-    </image:image>
-  </url>
-  <!-- Product: DSd -->
-  <url>
-    <loc>https://gerobakjogja.vercel.app/produk/dsd</loc>
-    <lastmod>2025-12-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765885939/gerobak-jogja/products/v33ca7gzukgyojrprlsz.jpg</image:loc>
-      <image:title>DSd</image:title>
-    </image:image>
-  </url>
-  <!-- Product: sadsa -->
-  <url>
-    <loc>https://gerobakjogja.vercel.app/produk/sadsa</loc>
-    <lastmod>2025-12-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1765887706/gerobak-jogja/products/a2cafyttwiyfxzybrfp7.jpg</image:loc>
-      <image:title>sadsa</image:title>
-    </image:image>
-  </url>
   <!-- Blog: Inspirasi Desain Gerobak untuk Berbagai Jenis Usaha -->
   <url>
     <loc>https://gerobakjogja.vercel.app/blog/inspirasi-desain-gerobak</loc>

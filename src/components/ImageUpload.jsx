@@ -128,7 +128,9 @@ export default function ImageUpload({
       // No crop - add files directly
       const newPendingFiles = multiple ? [...pendingFiles, ...fileArray] : fileArray;
       setPendingFiles(newPendingFiles);
-      notifyChange(existingUrls, newPendingFiles);
+      if (onFilesChangeRef.current) {
+        onFilesChangeRef.current({ existingUrls, pendingFiles: newPendingFiles });
+      }
     }
   };
 
@@ -208,13 +210,17 @@ export default function ImageUpload({
   const removeExistingUrl = (index) => {
     const newUrls = existingUrls.filter((_, i) => i !== index);
     setExistingUrls(newUrls);
-    notifyChange(newUrls, pendingFiles);
+    if (onFilesChangeRef.current) {
+      onFilesChangeRef.current({ existingUrls: newUrls, pendingFiles });
+    }
   };
 
   const removePendingFile = (index) => {
     const newFiles = pendingFiles.filter((_, i) => i !== index);
     setPendingFiles(newFiles);
-    notifyChange(existingUrls, newFiles);
+    if (onFilesChangeRef.current) {
+      onFilesChangeRef.current({ existingUrls, pendingFiles: newFiles });
+    }
   };
 
   // Create preview URLs for pending files

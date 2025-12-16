@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, X, Image as ImageIcon } from 'lucide-react';
-import ImageUpload from '../ImageUpload';
+import { Plus, Edit, Trash2, X, Image as ImageIcon, Loader } from 'lucide-react';
+import ImageUpload, { uploadToCloudinary } from '../ImageUpload';
 import { useToast } from '../Toast';
 import { logSitemapChange } from '../../utils/sitemapUpdater';
 import { debouncedRegenerateSitemap } from '../../services/sitemapService';
@@ -19,10 +19,13 @@ export default function GalleryManager({ showDeleteConfirmation }) {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [formData, setFormData] = useState({
     url: '',
     title: '',
-    category: 'aluminium'
+    category: 'aluminium',
+    pendingImage: null // New file to upload
   });
 
   const categories = [
@@ -52,31 +55,49 @@ export default function GalleryManager({ showDeleteConfirmation }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.url) {
+    // Check if we have existing URL or pending image
+    if (!formData.url && !formData.pendingImage) {
       toast.error('Upload gambar terlebih dahulu!');
       return;
     }
 
+    setIsSaving(true);
+    setUploadProgress(0);
+
     try {
+      // Upload pending image to Cloudinary if exists
+      let imageUrl = formData.url;
+      if (formData.pendingImage) {
+        imageUrl = await uploadToCloudinary(formData.pendingImage, 'gallery', (progress) => {
+          setUploadProgress(Math.round(progress));
+        });
+      }
+
+      const dataToSave = {
+        url: imageUrl,
+        title: formData.title,
+        category: formData.category
+      };
+
       let result;
       if (editingId) {
-        await updateGalleryImage(editingId, formData);
-        result = { id: editingId, ...formData };
+        await updateGalleryImage(editingId, dataToSave);
+        result = { id: editingId, ...dataToSave };
 
         // Log sitemap change for updated gallery image
         logSitemapChange('updated', 'gallery', {
           id: editingId,
-          title: formData.title,
-          url: formData.url
+          title: dataToSave.title,
+          url: dataToSave.url
         });
       } else {
-        result = await createGalleryImage(formData);
+        result = await createGalleryImage(dataToSave);
 
         // Log sitemap change for new gallery image
         logSitemapChange('added', 'gallery', {
           id: result.id || 'new',
-          title: formData.title,
-          url: formData.url
+          title: dataToSave.title,
+          url: dataToSave.url
         });
       }
 
@@ -84,13 +105,16 @@ export default function GalleryManager({ showDeleteConfirmation }) {
       debouncedRegenerateSitemap();
 
       await loadImages();
-      setFormData({ url: '', title: '', category: 'aluminium' });
+      setFormData({ url: '', title: '', category: 'aluminium', pendingImage: null });
       setShowForm(false);
       setEditingId(null);
 
       toast.success('Gambar berhasil disimpan!');
     } catch (error) {
       handleError(error, 'Gagal menyimpan gambar. Silakan coba lagi.', toast);
+    } finally {
+      setIsSaving(false);
+      setUploadProgress(0);
     }
   };
 
@@ -98,7 +122,8 @@ export default function GalleryManager({ showDeleteConfirmation }) {
     setFormData({
       url: image.url,
       title: image.title,
-      category: image.category
+      category: image.category,
+      pendingImage: null
     });
     setEditingId(image.id);
     setShowForm(true);
@@ -219,10 +244,14 @@ export default function GalleryManager({ showDeleteConfirmation }) {
               multiple={false}
               maxFiles={1}
               folder="gallery"
+              enableCrop={false}
               currentImages={formData.url ? [formData.url] : []}
-              onUploadComplete={(url) => {
-                const imageUrl = Array.isArray(url) ? url[0] : url;
-                setFormData({ ...formData, url: imageUrl || '' });
+              onFilesChange={({ existingUrls, pendingFiles }) => {
+                setFormData(prev => ({
+                  ...prev,
+                  url: existingUrls[0] || '',
+                  pendingImage: pendingFiles[0] || null
+                }));
               }}
             />
           </div>
@@ -257,14 +286,23 @@ export default function GalleryManager({ showDeleteConfirmation }) {
           <div className="flex gap-2">
             <button
               type="submit"
-              className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
+              disabled={isSaving}
+              className="bg-green-500 text-white px-6 py-3 rounded hover:bg-green-600 min-h-[44px] transition-colors focus:outline-none focus:ring-2 focus:ring-green-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              {editingId ? 'Update Gambar' : 'Simpan Gambar'}
+              {isSaving ? (
+                <>
+                  <Loader size={18} className="animate-spin" />
+                  {uploadProgress > 0 ? `Uploading ${uploadProgress}%` : 'Menyimpan...'}
+                </>
+              ) : (
+                editingId ? 'Update Gambar' : 'Simpan Gambar'
+              )}
             </button>
             <button
               type="button"
               onClick={handleCancel}
-              className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600"
+              disabled={isSaving}
+              className="bg-gray-500 text-white px-6 py-3 rounded hover:bg-gray-600 min-h-[44px] transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-50"
             >
               Batal
             </button>
