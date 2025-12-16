@@ -164,60 +164,62 @@ export default function ImageGallery({
 
       {/* Image Container */}
       <div
-        className="max-w-7xl w-full animate-scale-in relative"
+        className="flex flex-col items-center justify-center w-full h-full max-w-6xl mx-auto animate-scale-in"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="relative">
+        {/* Title - Top */}
+        {title && (
+          <div className="text-center mb-4 px-4">
+            <p id="gallery-modal-title" className="text-white text-xl sm:text-2xl font-semibold">
+              {title}
+            </p>
+          </div>
+        )}
+
+        {/* Image Wrapper - Contain without cropping */}
+        <div className="relative flex items-center justify-center w-full" style={{ maxHeight: 'calc(100vh - 200px)' }}>
           <img
             ref={imageRef}
             src={currentImage}
             alt={title || `Image ${currentIndex + 1} of ${images.length}`}
-            className={`w-full h-auto rounded-xl shadow-xl transition-transform duration-300 ${
-              isZoomed ? 'cursor-zoom-out' : 'cursor-zoom-in'
+            className={`max-w-full max-h-[70vh] w-auto h-auto object-contain rounded-2xl shadow-2xl transition-transform duration-300 bg-white/5 ${
+              isZoomed ? 'cursor-zoom-out scale-150' : 'cursor-zoom-in'
             }`}
             style={{
-              transform: isZoomed ? `scale(2)` : 'scale(1)',
               transformOrigin: isZoomed ? `${zoomPosition.x}% ${zoomPosition.y}%` : 'center',
             }}
             onMouseMove={handleImageMouseMove}
             onClick={toggleZoom}
             id="gallery-modal-description"
           />
+        </div>
 
+        {/* Bottom Info Bar */}
+        <div className="flex items-center justify-center gap-4 mt-6 px-4">
           {/* Image Counter */}
           {showCounter && images.length > 1 && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-medium">
+            <div className="bg-white/10 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm font-medium border border-white/10">
               {currentIndex + 1} / {images.length}
             </div>
           )}
-        </div>
-
-        {/* Title */}
-        {title && (
-          <div className="text-center mt-6">
-            <p id="gallery-modal-title" className="text-white text-2xl font-bold mb-2">
-              {title}
-            </p>
-          </div>
-        )}
-
-        {/* Keyboard Hints */}
-        <div className="absolute bottom-6 right-6 bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-xs space-y-1 hidden md:block">
-          <div className="flex items-center gap-2">
-            <kbd className="px-2 py-1 bg-white/20 rounded">←</kbd>
-            <kbd className="px-2 py-1 bg-white/20 rounded">→</kbd>
-            <span>Navigate</span>
-          </div>
-          {enableZoom && (
-            <div className="flex items-center gap-2">
-              <kbd className="px-2 py-1 bg-white/20 rounded">+</kbd>
-              <kbd className="px-2 py-1 bg-white/20 rounded">-</kbd>
-              <span>Zoom</span>
-            </div>
-          )}
-          <div className="flex items-center gap-2">
-            <kbd className="px-2 py-1 bg-white/20 rounded">ESC</kbd>
-            <span>Close</span>
+          
+          {/* Keyboard Hints - Desktop only */}
+          <div className="hidden md:flex items-center gap-3 bg-white/10 backdrop-blur-md text-white/70 px-4 py-2 rounded-full text-xs border border-white/10">
+            <span className="flex items-center gap-1">
+              <kbd className="px-1.5 py-0.5 bg-white/20 rounded text-white">←</kbd>
+              <kbd className="px-1.5 py-0.5 bg-white/20 rounded text-white">→</kbd>
+            </span>
+            <span className="text-white/50">|</span>
+            {enableZoom && (
+              <>
+                <span className="flex items-center gap-1">
+                  <kbd className="px-1.5 py-0.5 bg-white/20 rounded text-white">+</kbd>
+                  <kbd className="px-1.5 py-0.5 bg-white/20 rounded text-white">-</kbd>
+                </span>
+                <span className="text-white/50">|</span>
+              </>
+            )}
+            <kbd className="px-1.5 py-0.5 bg-white/20 rounded text-white">ESC</kbd>
           </div>
         </div>
       </div>
