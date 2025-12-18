@@ -11,6 +11,7 @@ import {
   Wrench,
 } from 'lucide-react';
 import LazyImage from '../components/LazyImage';
+import PageTransition, { FadeInView } from '../components/PageTransition';
 
 export default function Tentang() {
   const stats = [
@@ -84,11 +85,11 @@ export default function Tentang() {
   };
 
   return (
-    <div className="pt-16 min-h-screen bg-gray-50/50">
+    <PageTransition className="pt-16 min-h-screen bg-gray-50/50">
       {/* Hero Header - Konsisten dengan Katalog & Galeri */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="max-w-2xl">
+          <div className="max-w-2xl animate-slide-up">
             <div className="flex items-center gap-2 mb-4">
               <span className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 bg-primary-50 px-3 py-1 rounded-full">
                 <MapPin size={14} />
@@ -279,6 +280,6 @@ export default function Tentang() {
           </div>
         </div>
       </div>
-    </div>
+    </PageTransition>
   );
 }

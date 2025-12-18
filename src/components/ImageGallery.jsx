@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut } from 'lucide-react';
 import { useFocusTrap } from '../hooks/useFocusTrap';
 
 export default function ImageGallery({ 
@@ -11,11 +11,15 @@ export default function ImageGallery({
   enableZoom = true
 }) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
-  const [isZoomed, setIsZoomed] = useState(false);
-  const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 });
   const modalRef = useRef(null);
   const imageRef = useRef(null);
   const closeButtonRef = useRef(null);
+
+  const MIN_ZOOM = 1;
+  const MAX_ZOOM = 3;
+  const ZOOM_STEP = 0.5;
 
   // Focus trap for accessibility
   useFocusTrap(true, modalRef);
@@ -50,15 +54,15 @@ export default function ImageGallery({
           break;
         case '+':
         case '=':
-          if (enableZoom && !isZoomed) {
+          if (enableZoom) {
             e.preventDefault();
-            setIsZoomed(true);
+            zoomIn();
           }
           break;
         case '-':
-          if (enableZoom && isZoomed) {
+          if (enableZoom) {
             e.preventDefault();
-            setIsZoomed(false);
+            zoomOut();
           }
           break;
         default:
@@ -68,20 +72,20 @@ export default function ImageGallery({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex, isZoomed, enableZoom, onClose]);
+  }, [currentIndex, zoomLevel, enableZoom, onClose]);
 
   const goToPrevious = () => {
     setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-    setIsZoomed(false);
+    setZoomLevel(1);
   };
 
   const goToNext = () => {
     setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
-    setIsZoomed(false);
+    setZoomLevel(1);
   };
 
   const handleImageMouseMove = (e) => {
-    if (!isZoomed || !imageRef.current) return;
+    if (zoomLevel <= 1 || !imageRef.current) return;
 
     const rect = imageRef.current.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -90,9 +94,41 @@ export default function ImageGallery({
     setZoomPosition({ x, y });
   };
 
+  const handleWheel = useCallback((e) => {
+    if (!enableZoom) return;
+    
+    e.preventDefault();
+    
+    setZoomLevel((prev) => {
+      const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
+      const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, prev + delta));
+      return newZoom;
+    });
+
+    // Update zoom position based on mouse position
+    if (imageRef.current) {
+      const rect = imageRef.current.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      setZoomPosition({ x, y });
+    }
+  }, [enableZoom]);
+
   const toggleZoom = () => {
     if (enableZoom) {
-      setIsZoomed(!isZoomed);
+      setZoomLevel((prev) => prev > 1 ? 1 : 2);
+    }
+  };
+
+  const zoomIn = () => {
+    if (enableZoom) {
+      setZoomLevel((prev) => Math.min(MAX_ZOOM, prev + ZOOM_STEP));
+    }
+  };
+
+  const zoomOut = () => {
+    if (enableZoom) {
+      setZoomLevel((prev) => Math.max(MIN_ZOOM, prev - ZOOM_STEP));
     }
   };
 
@@ -105,21 +141,21 @@ export default function ImageGallery({
   return (
     <div
       ref={modalRef}
-      className="fixed inset-0 bg-black/95 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in"
+      className="fixed inset-0 bg-black/95 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-labelledby="gallery-modal-title"
       aria-describedby="gallery-modal-description"
     >
-      {/* Close Button */}
+      {/* Close Button - positioned below navbar area */}
       <button
         ref={closeButtonRef}
         onClick={onClose}
-        className="absolute top-6 right-6 text-white hover:text-gray-300 transition-colors bg-white/10 backdrop-blur-sm rounded-full p-3 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black/50 z-10"
+        className="absolute top-20 sm:top-6 right-4 sm:right-6 text-white hover:text-gray-300 transition-colors bg-white/10 backdrop-blur-sm rounded-full p-3 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black/50 z-[60]"
         aria-label="Close gallery"
       >
-        <X size={28} />
+        <X size={24} />
       </button>
 
       {/* Navigation Buttons */}
@@ -130,36 +166,53 @@ export default function ImageGallery({
               e.stopPropagation();
               goToPrevious();
             }}
-            className="absolute left-6 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors bg-white/10 backdrop-blur-sm rounded-full p-3 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black/50 z-10"
+            className="absolute left-4 sm:left-6 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors bg-white/10 backdrop-blur-sm rounded-full p-2.5 sm:p-3 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white z-[60]"
             aria-label="Previous image"
           >
-            <ChevronLeft size={28} />
+            <ChevronLeft size={24} />
           </button>
           <button
             onClick={(e) => {
               e.stopPropagation();
               goToNext();
             }}
-            className="absolute right-6 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors bg-white/10 backdrop-blur-sm rounded-full p-3 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black/50 z-10"
+            className="absolute right-4 sm:right-6 top-1/2 -translate-y-1/2 text-white hover:text-gray-300 transition-colors bg-white/10 backdrop-blur-sm rounded-full p-2.5 sm:p-3 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white z-[60]"
             aria-label="Next image"
           >
-            <ChevronRight size={28} />
+            <ChevronRight size={24} />
           </button>
         </>
       )}
 
-      {/* Zoom Button */}
+      {/* Zoom Buttons */}
       {enableZoom && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            toggleZoom();
-          }}
-          className="absolute top-6 left-6 text-white hover:text-gray-300 transition-colors bg-white/10 backdrop-blur-sm rounded-full p-3 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black/50 z-10"
-          aria-label={isZoomed ? 'Zoom out' : 'Zoom in'}
-        >
-          {isZoomed ? <ZoomOut size={24} /> : <ZoomIn size={24} />}
-        </button>
+        <div className="absolute top-20 sm:top-6 left-4 sm:left-6 flex items-center gap-2 z-[60]">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              zoomOut();
+            }}
+            disabled={zoomLevel <= MIN_ZOOM}
+            className="text-white hover:text-gray-300 transition-colors bg-white/10 backdrop-blur-sm rounded-full p-2.5 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white disabled:opacity-30 disabled:cursor-not-allowed"
+            aria-label="Zoom out"
+          >
+            <ZoomOut size={18} />
+          </button>
+          <span className="text-white text-xs font-medium bg-white/10 backdrop-blur-sm px-2 py-1 rounded-full min-w-[3rem] text-center">
+            {Math.round(zoomLevel * 100)}%
+          </span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              zoomIn();
+            }}
+            disabled={zoomLevel >= MAX_ZOOM}
+            className="text-white hover:text-gray-300 transition-colors bg-white/10 backdrop-blur-sm rounded-full p-2.5 hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white disabled:opacity-30 disabled:cursor-not-allowed"
+            aria-label="Zoom in"
+          >
+            <ZoomIn size={18} />
+          </button>
+        </div>
       )}
 
       {/* Image Container */}
@@ -177,19 +230,25 @@ export default function ImageGallery({
         )}
 
         {/* Image Wrapper - Contain without cropping */}
-        <div className="relative flex items-center justify-center w-full" style={{ maxHeight: 'calc(100vh - 200px)' }}>
+        <div 
+          className="relative flex items-center justify-center w-full overflow-hidden" 
+          style={{ maxHeight: 'calc(100vh - 200px)' }}
+          onWheel={handleWheel}
+        >
           <img
             ref={imageRef}
             src={currentImage}
             alt={title || `Image ${currentIndex + 1} of ${images.length}`}
-            className={`max-w-full max-h-[70vh] w-auto h-auto object-contain rounded-2xl shadow-2xl transition-transform duration-300 bg-white/5 ${
-              isZoomed ? 'cursor-zoom-out scale-150' : 'cursor-zoom-in'
+            className={`max-w-full max-h-[70vh] w-auto h-auto object-contain rounded-2xl shadow-2xl transition-transform duration-200 bg-white/5 ${
+              zoomLevel > 1 ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in'
             }`}
             style={{
-              transformOrigin: isZoomed ? `${zoomPosition.x}% ${zoomPosition.y}%` : 'center',
+              transform: `scale(${zoomLevel})`,
+              transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
             }}
             onMouseMove={handleImageMouseMove}
             onClick={toggleZoom}
+            draggable={false}
             id="gallery-modal-description"
           />
         </div>
@@ -212,10 +271,12 @@ export default function ImageGallery({
             <span className="text-white/50">|</span>
             {enableZoom && (
               <>
+                <span className="text-white/60">Scroll/</span>
                 <span className="flex items-center gap-1">
                   <kbd className="px-1.5 py-0.5 bg-white/20 rounded text-white">+</kbd>
                   <kbd className="px-1.5 py-0.5 bg-white/20 rounded text-white">-</kbd>
                 </span>
+                <span className="text-white/60">zoom</span>
                 <span className="text-white/50">|</span>
               </>
             )}

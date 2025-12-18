@@ -47,38 +47,38 @@ export default function SearchOverlay({ isOpen, onClose }) {
             ></div>
 
             {/* 2. Content Container */}
-            <div className="relative z-[160] max-w-4xl mx-auto pt-24 px-6">
+            <div className="relative z-[160] max-w-4xl mx-auto pt-16 md:pt-24 px-4 md:px-6">
                 {/* Close Button */}
                 <button
                     onClick={onClose}
-                    className="absolute top-8 right-6 p-2 bg-gray-100 rounded-full hover:bg-red-50 hover:text-red-500 transition-colors"
+                    className="absolute top-4 md:top-8 right-4 md:right-6 p-2 bg-gray-100 rounded-full hover:bg-red-50 hover:text-red-500 transition-colors"
                     aria-label="Tutup pencarian"
                 >
-                    <X size={24} />
+                    <X size={20} className="md:w-6 md:h-6" />
                 </button>
 
                 {/* Search Form */}
-                <form onSubmit={handleSearch} className="mb-12">
+                <form onSubmit={handleSearch} className="mb-8 md:mb-12">
                     <div className="relative group">
                         <Search
-                            className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary-600 transition-colors"
-                            size={32}
+                            className="absolute left-4 md:left-6 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary-600 transition-colors"
+                            size={20}
                         />
                         <input
                             ref={inputRef}
                             type="text"
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
-                            placeholder="Cari gerobak impian Anda..."
-                            className="w-full bg-gray-50 border-2 border-transparent focus:border-primary-500 rounded-2xl py-8 pl-20 pr-8 text-2xl md:text-4xl font-display font-bold text-gray-900 placeholder:text-gray-300 focus:outline-none focus:ring-4 focus:ring-primary-100 transition-all shadow-xl"
+                            placeholder="Cari gerobak..."
+                            className="w-full bg-gray-50 border-2 border-transparent focus:border-primary-500 rounded-xl md:rounded-2xl py-4 md:py-6 pl-12 md:pl-16 pr-14 md:pr-16 text-lg md:text-2xl font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-4 focus:ring-primary-100 transition-all shadow-lg"
                         />
                         <button
                             type="submit"
-                            className="absolute right-6 top-1/2 -translate-y-1/2 bg-gray-900 text-white p-3 rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="absolute right-3 md:right-4 top-1/2 -translate-y-1/2 bg-gray-900 text-white p-2.5 md:p-3 rounded-lg md:rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             disabled={!query.trim()}
                             aria-label="Cari"
                         >
-                            <ArrowRight size={24} />
+                            <ArrowRight size={18} className="md:w-6 md:h-6" />
                         </button>
                     </div>
                 </form>

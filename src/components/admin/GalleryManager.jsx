@@ -5,6 +5,7 @@ import { useToast } from '../Toast';
 import { logSitemapChange } from '../../utils/sitemapUpdater';
 import { debouncedRegenerateSitemap } from '../../services/sitemapService';
 import { handleError } from '../../utils/errorHandler';
+import { sanitizeText, sanitizeUrl } from '../../utils/sanitize';
 import {
   getGalleryImages,
   createGalleryImage,
@@ -73,11 +74,19 @@ export default function GalleryManager({ showDeleteConfirmation }) {
         });
       }
 
+      // Sanitize all inputs
       const dataToSave = {
-        url: imageUrl,
-        title: formData.title,
-        category: formData.category
+        url: sanitizeUrl(imageUrl),
+        title: sanitizeText(formData.title, 100),
+        category: sanitizeText(formData.category, 50)
       };
+
+      // Validate sanitized data
+      if (!dataToSave.url || !dataToSave.title) {
+        toast.error('Data tidak valid. Periksa input Anda.');
+        setIsSaving(false);
+        return;
+      }
 
       let result;
       if (editingId) {

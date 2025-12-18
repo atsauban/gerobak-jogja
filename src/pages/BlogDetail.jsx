@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Home, ChevronRight, FileText } from 'lucide-react';
 import { getBlogPosts } from '../services/firebaseService';
 import SEO from '../components/SEO';
+import PageTransition from '../components/PageTransition';
 
 // Sub-components
 import BlogHeader from '../components/blog/BlogHeader';
@@ -152,7 +153,7 @@ export default function BlogDetail() {
   };
 
   return (
-    <>
+    <PageTransition>
       <SEO
         title={displayArticle.title}
         description={`Baca artikel tentang ${displayArticle.title} di Gerobak Jogja Blog.`}
@@ -213,6 +214,6 @@ export default function BlogDetail() {
           </div>
         </article>
       </div>
-    </>
+    </PageTransition>
   );
 }

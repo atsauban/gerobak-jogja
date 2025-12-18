@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2, X, Star } from 'lucide-react';
 import { useToast } from '../Toast';
+import { sanitizeText, sanitizeUrl, sanitizeInteger } from '../../utils/sanitize';
 import {
     getTestimonials,
     createTestimonial,
@@ -41,11 +42,26 @@ export default function AdminTestimonialManager({ showDeleteConfirmation }) {
     const handleTestimonialSubmit = async (e) => {
         e.preventDefault();
 
+        // Sanitize all inputs
+        const sanitizedData = {
+            name: sanitizeText(formData.name, 100),
+            business: sanitizeText(formData.business, 100),
+            rating: sanitizeInteger(formData.rating, 1, 5),
+            text: sanitizeText(formData.text, 500),
+            image: formData.image ? sanitizeUrl(formData.image) : ''
+        };
+
+        // Validate sanitized data
+        if (!sanitizedData.name || !sanitizedData.business || !sanitizedData.text) {
+            toast.error('Data tidak valid. Periksa input Anda.');
+            return;
+        }
+
         try {
             if (editingId) {
-                await updateTestimonial(editingId, formData);
+                await updateTestimonial(editingId, sanitizedData);
             } else {
-                await createTestimonial(formData);
+                await createTestimonial(sanitizedData);
             }
 
             await loadTestimonials();

@@ -2,6 +2,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Home, ChevronRight } from 'lucide-react';
 import { useProducts } from '../context/ProductContext';
 import SEO from '../components/SEO';
+import PageTransition from '../components/PageTransition';
 
 // Sub-components
 import ProductImageGallery from '../components/product/ProductImageGallery';
@@ -132,7 +133,7 @@ export default function ProductDetail() {
   };
 
   return (
-    <>
+    <PageTransition>
       <SEO
         title={product.name}
         description={product.shortDesc}
@@ -207,6 +208,6 @@ export default function ProductDetail() {
 
       {/* Mobile Sticky Action Bar */}
       <StickyBottomBar product={product} />
-    </>
+    </PageTransition>
   );
 }

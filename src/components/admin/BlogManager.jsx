@@ -5,6 +5,7 @@ import { useToast } from '../Toast';
 import BlogCard from '../BlogCard';
 import { logSitemapChange } from '../../utils/sitemapUpdater';
 import { debouncedRegenerateSitemap } from '../../services/sitemapService';
+import { sanitizeText, sanitizeUrl } from '../../utils/sanitize';
 import {
     getBlogPosts,
     createBlogPost,
@@ -73,11 +74,25 @@ export default function AdminBlogManager({ showDeleteConfirmation }) {
             }
         }
 
+        // Sanitize all inputs
         const blogData = {
-            ...formData,
+            title: sanitizeText(formData.title, 200),
             slug: formData.slug || generateSlug(formData.title),
+            excerpt: sanitizeText(formData.excerpt, 500),
+            content: formData.content, // Allow markdown, sanitized on render
+            category: sanitizeText(formData.category, 50),
+            image: sanitizeUrl(formData.image),
+            author: sanitizeText(formData.author, 100),
+            readTime: sanitizeText(formData.readTime, 20),
+            featured: Boolean(formData.featured),
             date: new Date().toISOString().split('T')[0]
         };
+
+        // Validate sanitized data
+        if (!blogData.title || !blogData.excerpt || !blogData.content) {
+            toast.error('Data tidak valid. Periksa input Anda.');
+            return;
+        }
 
         try {
             let resultBlog;

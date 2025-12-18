@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Send, Mail, User, MessageSquare, CheckCircle, AlertCircle, Phone } from 'lucide-react';
 import { useToast } from './Toast';
+import { sanitizeText, sanitizeEmail, sanitizePhone } from '../utils/sanitize';
 
 // Validation functions
 const validateName = (name) => {
@@ -191,16 +192,29 @@ export default function ContactForm() {
       // Import dynamically to avoid build errors if package is missing during initial checks
       const emailjs = await import('@emailjs/browser');
 
+      // Sanitize all inputs before sending
+      const sanitizedData = {
+        name: sanitizeText(formData.name, 50),
+        email: sanitizeEmail(formData.email),
+        phone: formData.phone ? sanitizePhone(formData.phone) : '-',
+        message: sanitizeText(formData.message, 1000)
+      };
+
+      // Validate sanitized data
+      if (!sanitizedData.name || !sanitizedData.email || !sanitizedData.message) {
+        throw new Error('Data tidak valid setelah sanitasi.');
+      }
+
       await emailjs.default.send(
         serviceId,
         templateId,
         {
           to_name: "Admin Gerobak Jogja",
-          from_name: formData.name,
-          from_email: formData.email,
-          phone: formData.phone || '-',
-          message: formData.message,
-          reply_to: formData.email
+          from_name: sanitizedData.name,
+          from_email: sanitizedData.email,
+          phone: sanitizedData.phone,
+          message: sanitizedData.message,
+          reply_to: sanitizedData.email
         },
         publicKey
       );

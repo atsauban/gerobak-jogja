@@ -12,6 +12,7 @@ import { getBlogPosts } from '../services/firebaseService';
 import { handleError } from '../utils/errorHandler';
 import LazyImage from '../components/LazyImage';
 import { BlogGridSkeleton } from '../components/LoadingSkeleton';
+import PageTransition from '../components/PageTransition';
 
 export default function Blog() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -61,11 +62,11 @@ export default function Blog() {
   };
 
   return (
-    <div className="pt-16 min-h-screen bg-gray-50/50">
+    <PageTransition className="pt-16 min-h-screen bg-gray-50/50">
       {/* Hero Header */}
       <div className="bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="max-w-2xl">
+          <div className="max-w-2xl animate-slide-up">
             <div className="flex items-center gap-2 mb-4">
               <span className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-600 bg-primary-50 px-3 py-1 rounded-full">
                 <BookOpen size={14} />
@@ -330,6 +331,6 @@ export default function Blog() {
           </div>
         )}
       </div>
-    </div>
+    </PageTransition>
   );
 }

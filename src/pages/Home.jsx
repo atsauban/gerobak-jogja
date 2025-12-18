@@ -20,6 +20,7 @@ import { CONTACT_INFO } from '../config/contact';
 import { useProducts } from '../context/ProductContext';
 import PremiumProductCard from '../components/PremiumProductCard';
 import SEO from '../components/SEO';
+import PageTransition from '../components/PageTransition';
 
 export default function Home() {
   const { products, loading } = useProducts();
@@ -107,6 +108,7 @@ export default function Home() {
   };
 
   return (
+    <PageTransition>
     <div className="pt-16">
       <SEO
         title="Spesialis Gerobak & Booth Custom"
@@ -314,5 +316,6 @@ export default function Home() {
         </div>
       </section>
     </div>
+    </PageTransition>
   );
 }
