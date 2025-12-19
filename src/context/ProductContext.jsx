@@ -204,7 +204,6 @@ export const ProductProvider = ({ children }) => {
     if (pendingCloudinaryDeletions[productId]) {
       clearTimeout(pendingCloudinaryDeletions[productId].timeoutId);
       delete pendingCloudinaryDeletions[productId];
-      console.log('Cloudinary deletion cancelled for product:', productId);
       return true;
     }
     return false;

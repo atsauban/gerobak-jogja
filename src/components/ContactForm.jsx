@@ -156,7 +156,7 @@ export default function ContactForm() {
 
     // 1. Honeypot Check (Silent Fail for Bots)
     if (honeyPot) {
-      console.log('Bot detected via honeypot');
+      // Bot detected - silent fail
       // Simulate success delay
       setIsSubmitting(true);
       setTimeout(() => {

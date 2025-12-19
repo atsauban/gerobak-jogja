@@ -129,11 +129,11 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-10 pt-8">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-gray-500">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm text-gray-400">
             <p>&copy; {new Date().getFullYear()} Gerobak Jogja. All rights reserved.</p>
             <div className="flex gap-6">
-              <Link to="/privacy" className="hover:text-gray-300 transition-colors">Privacy</Link>
-              <Link to="/terms" className="hover:text-gray-300 transition-colors">Terms</Link>
+              <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+              <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
             </div>
           </div>
         </div>
