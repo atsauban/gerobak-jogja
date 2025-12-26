@@ -5,11 +5,11 @@ import { useCountUp } from '../hooks/useCountUp';
  * Animated counter component with intersection observer
  * Starts counting when element is visible in viewport
  */
-export default function CountUpNumber({ 
-  end, 
-  duration = 2000, 
-  suffix = '', 
-  className = '' 
+export default function CountUpNumber({
+  end,
+  duration = 2000,
+  suffix = '',
+  className = ''
 }) {
   const [isVisible, setIsVisible] = useState(false);
   const elementRef = useRef(null);

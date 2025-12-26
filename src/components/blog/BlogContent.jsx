@@ -1,10 +1,12 @@
 import { marked } from 'marked';
+import DOMPurify from 'dompurify';
 
 export default function BlogContent({ article }) {
-    // Convert markdown to HTML
+    // Convert markdown to HTML and sanitize
     const getHtmlContent = (content) => {
         if (!content) return '';
-        return marked(content);
+        const rawHtml = marked(content);
+        return DOMPurify.sanitize(rawHtml);
     };
 
     return (

@@ -44,8 +44,20 @@ export default {
         'glow': 'glow 2s ease-in-out infinite alternate',
         'marquee': 'marquee 40s linear infinite',
         'shimmer': 'shimmer 2s linear infinite',
+        'aurora': 'aurora 60s linear infinite',
+        'gradient-x': 'gradient-x 3s ease infinite',
       },
       keyframes: {
+        'gradient-x': {
+          '0%, 100%': {
+            'background-size': '200% 200%',
+            'background-position': 'left center'
+          },
+          '50%': {
+            'background-size': '200% 200%',
+            'background-position': 'right center'
+          },
+        },
         fadeIn: {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },

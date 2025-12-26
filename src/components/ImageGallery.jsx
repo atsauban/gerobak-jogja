@@ -2,9 +2,9 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut } from 'lucide-react';
 import { useFocusTrap } from '../hooks/useFocusTrap';
 
-export default function ImageGallery({ 
-  images, 
-  initialIndex = 0, 
+export default function ImageGallery({
+  images,
+  initialIndex = 0,
   onClose,
   title = '',
   showCounter = true,
@@ -22,7 +22,7 @@ export default function ImageGallery({
   const ZOOM_STEP = 0.5;
 
   // Focus trap for accessibility
-  useFocusTrap(true, modalRef);
+  // useFocusTrap(true, modalRef);
 
   useEffect(() => {
     // Prevent body scroll
@@ -96,9 +96,9 @@ export default function ImageGallery({
 
   const handleWheel = useCallback((e) => {
     if (!enableZoom) return;
-    
+
     e.preventDefault();
-    
+
     setZoomLevel((prev) => {
       const delta = e.deltaY > 0 ? -ZOOM_STEP : ZOOM_STEP;
       const newZoom = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, prev + delta));
@@ -134,8 +134,8 @@ export default function ImageGallery({
 
   if (!images || images.length === 0) return null;
 
-  const currentImage = typeof images[currentIndex] === 'string' 
-    ? images[currentIndex] 
+  const currentImage = typeof images[currentIndex] === 'string'
+    ? images[currentIndex]
     : images[currentIndex]?.url || images[currentIndex]?.image || images[currentIndex];
 
   return (
@@ -230,8 +230,8 @@ export default function ImageGallery({
         )}
 
         {/* Image Wrapper - Contain without cropping */}
-        <div 
-          className="relative flex items-center justify-center w-full overflow-hidden" 
+        <div
+          className="relative flex items-center justify-center w-full overflow-hidden"
           style={{ maxHeight: 'calc(100vh - 200px)' }}
           onWheel={handleWheel}
         >
@@ -239,9 +239,8 @@ export default function ImageGallery({
             ref={imageRef}
             src={currentImage}
             alt={title || `Image ${currentIndex + 1} of ${images.length}`}
-            className={`max-w-full max-h-[70vh] w-auto h-auto object-contain rounded-2xl shadow-2xl transition-transform duration-200 bg-white/5 ${
-              zoomLevel > 1 ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in'
-            }`}
+            className={`max-w-full max-h-[70vh] w-auto h-auto object-contain rounded-2xl shadow-2xl transition-transform duration-200 bg-white/5 ${zoomLevel > 1 ? 'cursor-grab active:cursor-grabbing' : 'cursor-zoom-in'
+              }`}
             style={{
               transform: `scale(${zoomLevel})`,
               transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
@@ -261,7 +260,7 @@ export default function ImageGallery({
               {currentIndex + 1} / {images.length}
             </div>
           )}
-          
+
           {/* Keyboard Hints - Desktop only */}
           <div className="hidden md:flex items-center gap-3 bg-white/10 backdrop-blur-md text-white/70 px-4 py-2 rounded-full text-xs border border-white/10">
             <span className="flex items-center gap-1">

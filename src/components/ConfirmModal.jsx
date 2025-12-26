@@ -15,7 +15,7 @@ export default function ConfirmModal({
   const modalRef = useRef(null);
   const confirmButtonRef = useRef(null);
 
-  useFocusTrap(isOpen, modalRef);
+  // useFocusTrap(isOpen, modalRef);
 
   useEffect(() => {
     if (isOpen && confirmButtonRef.current) {

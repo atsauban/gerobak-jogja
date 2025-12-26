@@ -15,9 +15,10 @@ import PageTransition, { FadeInView } from '../components/PageTransition';
 
 export default function Tentang() {
   const stats = [
+    { value: '100+', label: 'Pelanggan Puas', icon: Users },
     { value: '10+', label: 'Tahun Pengalaman', icon: Calendar },
-    { value: '500+', label: 'Pelanggan Puas', icon: Users },
-    { value: '1000+', label: 'Gerobak Dibuat', icon: Wrench },
+    { value: '100+', label: 'Gerobak Terjual', icon: Wrench },
+    { value: '10+', label: 'Kota Terjangkau', icon: MapPin },
   ];
 
   const values = [
@@ -110,7 +111,7 @@ export default function Tentang() {
           </div>
 
           {/* Stats */}
-          <div className="mt-10 grid grid-cols-3 gap-6 max-w-lg">
+          <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-6 max-w-4xl">
             {stats.map((stat, index) => (
               <div key={index} className="text-center">
                 <div className="text-3xl sm:text-4xl font-bold text-gray-900 mb-1">

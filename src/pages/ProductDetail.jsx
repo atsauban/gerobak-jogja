@@ -184,12 +184,12 @@ export default function ProductDetail() {
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-8">
             <div className="grid lg:grid-cols-2 gap-0">
               {/* Images */}
-              <div className="p-6 lg:p-8 bg-gray-50/50">
+              <div className="p-0 sm:p-6 lg:p-8 bg-gray-50/50">
                 <ProductImageGallery product={product} />
               </div>
 
               {/* Product Info */}
-              <div className="p-6 lg:p-8 border-t lg:border-t-0 lg:border-l border-gray-100">
+              <div className="p-4 sm:p-6 lg:p-8 border-t lg:border-t-0 lg:border-l border-gray-100">
                 <ProductInfo product={product} />
               </div>
             </div>

@@ -172,11 +172,10 @@ export default function Admin() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${
-                    activeTab === tab.id
-                      ? 'bg-gray-900 text-white shadow-md'
-                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                  }`}
+                  className={`px-4 py-2.5 rounded-xl text-sm font-medium transition-all flex items-center gap-2 ${activeTab === tab.id
+                    ? 'bg-gray-900 text-white shadow-md'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    }`}
                 >
                   <Icon size={16} />
                   <span className="hidden sm:inline">{tab.label}</span>
@@ -232,19 +231,18 @@ export default function Admin() {
           isOpen={deleteConfirmState.isOpen}
           onClose={closeDeleteConfirmation}
           onConfirm={handleDeleteConfirmation}
-          title={`Hapus ${
-            deleteConfirmState.type === 'product'
-              ? 'Produk'
-              : deleteConfirmState.type === 'testimonial'
-                ? 'Testimoni'
-                : deleteConfirmState.type === 'blog'
-                  ? 'Blog'
-                  : deleteConfirmState.type === 'faq'
-                    ? 'FAQ'
-                    : deleteConfirmState.type === 'gallery'
-                      ? 'Gambar'
-                      : 'Item'
-          }`}
+          title={`Hapus ${deleteConfirmState.type === 'product'
+            ? 'Produk'
+            : deleteConfirmState.type === 'testimonial'
+              ? 'Testimoni'
+              : deleteConfirmState.type === 'blog'
+                ? 'Blog'
+                : deleteConfirmState.type === 'faq'
+                  ? 'FAQ'
+                  : deleteConfirmState.type === 'gallery'
+                    ? 'Gambar'
+                    : 'Item'
+            }`}
           message={`Apakah Anda yakin ingin menghapus "${deleteConfirmState.name}"? Tindakan ini tidak dapat dibatalkan.`}
           confirmText="Ya, Hapus"
           cancelText="Batal"
@@ -374,27 +372,40 @@ export default function Admin() {
 
         {/* Info Footer */}
         <div className="mt-6 bg-gray-50 rounded-2xl border border-gray-100 p-6">
-          <div className="flex items-start gap-4">
+          <div className="flex items-center gap-4 mb-4">
             <div className="w-10 h-10 bg-gray-900 rounded-xl flex items-center justify-center flex-shrink-0 text-white">
               <Info size={20} />
             </div>
-            <div className="flex-1">
-              <h3 className="font-bold text-gray-900 mb-3">Informasi Sistem</h3>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 text-sm text-gray-600">
-                <div className="space-y-1.5">
-                  <p>• Data tersimpan di Firebase Cloud</p>
-                  <p>• Perubahan langsung terlihat di website</p>
-                  <p>• Maksimal 5 gambar per produk</p>
-                  <p>• Format: JPG, PNG, WebP (max 5MB)</p>
-                </div>
-                <div className="space-y-1.5">
-                  <p>• Gambar pertama = foto utama produk</p>
-                  <p>• Testimoni muncul di halaman utama</p>
-                  <p>• Blog bisa di-featured untuk home</p>
-                  <p>• FAQ membantu customer support</p>
-                </div>
-              </div>
-            </div>
+            <h3 className="font-bold text-gray-900">Informasi Sistem</h3>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 text-sm text-gray-600">
+            <ul className="space-y-2">
+              {[
+                'Data tersimpan di Firebase Cloud',
+                'Perubahan langsung terlihat di website',
+                'Maksimal 5 gambar per produk',
+                'Format: JPG, PNG, WebP (max 5MB)',
+              ].map((item, index) => (
+                <li key={index} className="flex items-start gap-2">
+                  <span className="mt-1.5 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0" />
+                  <span className="leading-relaxed">{item}</span>
+                </li>
+              ))}
+            </ul>
+            <ul className="space-y-2">
+              {[
+                'Gambar pertama = foto utama produk',
+                'Testimoni muncul di halaman utama',
+                'Blog bisa di-featured untuk home',
+                'FAQ membantu customer support',
+              ].map((item, index) => (
+                <li key={index} className="flex items-start gap-2">
+                  <span className="mt-1.5 w-1.5 h-1.5 bg-gray-400 rounded-full flex-shrink-0" />
+                  <span className="leading-relaxed">{item}</span>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </div>

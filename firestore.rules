@@ -10,6 +10,7 @@ service cloud.firestore {
     // Helper function to check if user is admin
     function isAdmin() {
       return isAuthenticated() && 
+             request.auth.token.email_verified == true &&
              request.auth.token.email in [
                'abdullahatsauban@gmail.com',
                'gerobakjogja@gmail.com',
@@ -46,14 +47,14 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
     
-    // Audit logs collection - FIX HERE!
+    // Audit logs collection
     match /audit_logs/{logId} {
       // Admins can read audit logs
       allow read: if isAdmin();
       
-      // Any authenticated user can write logs (for audit trail)
-      // Changed from "if false" to "if isAuthenticated()"
-      allow write: if isAuthenticated();
+      // Only admins can write logs (since there is no public registration)
+      // This prevents potential spam from authenticated but unauthorized users if auth is ever opened
+      allow write: if isAdmin();
     }
     
     // Deny access to all other collections by default

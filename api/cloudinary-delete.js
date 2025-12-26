@@ -4,6 +4,7 @@
  */
 
 import { v2 as cloudinary } from 'cloudinary';
+import admin from 'firebase-admin';
 
 // Configure Cloudinary
 cloudinary.config({
@@ -25,13 +26,60 @@ export default async function handler(req, res) {
 
   // Only allow POST requests
   if (req.method !== 'POST') {
-    return res.status(405).json({ 
+    return res.status(405).json({
       error: 'Method not allowed. Use POST.',
       allowedMethods: ['POST']
     });
   }
 
   try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({
+        success: false,
+        error: 'Unauthorized: Missing or invalid token',
+      });
+    }
+
+    const idToken = authHeader.split('Bearer ')[1];
+
+    if (!admin.apps.length) {
+      if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+        const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+        admin.initializeApp({
+          credential: admin.credential.cert(serviceAccount)
+        });
+      } else {
+        // Fallback for when basic env vars are used (safer for Vercel/Netlify UI)
+        admin.initializeApp({
+          credential: admin.credential.cert({
+            projectId: process.env.FIREBASE_PROJECT_ID,
+            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+            // Replace literal \n or escaped \\n with actual newlines
+            privateKey: process.env.FIREBASE_PRIVATE_KEY
+              ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n')
+              : undefined,
+          }),
+        });
+      }
+    }
+
+    // Verify token
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+
+    // Check if user is admin (email whitelist match)
+    const adminEmails = [
+      'abdullahatsauban@gmail.com',
+      'gerobakjogja@gmail.com'
+    ];
+
+    if (!decodedToken.email_verified || !adminEmails.includes(decodedToken.email)) {
+      return res.status(403).json({
+        success: false,
+        error: 'Forbidden: Insufficient permissions',
+      });
+    }
+
     const { publicId } = req.body;
 
     if (!publicId) {
@@ -74,6 +122,13 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('❌ Vercel Function: Cloudinary deletion error:', error);
+
+    if (error.code === 'auth/argument-error' || error.code === 'auth/id-token-expired') {
+      return res.status(401).json({
+        success: false,
+        error: 'Unauthorized: Invalid or expired token'
+      });
+    }
 
     return res.status(500).json({
       success: false,

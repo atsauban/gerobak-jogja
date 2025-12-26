@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Star, ArrowUpRight } from 'lucide-react';
+import { Star, ArrowUpRight, Eye } from 'lucide-react';
 import LazyImage from './LazyImage';
 import WhatsAppButton from './WhatsAppButton';
 
@@ -79,59 +79,61 @@ export default function PremiumProductCard({ product, variant = 'grid' }) {
 
     // Grid View (default)
     return (
-        <div className="group relative bg-white rounded-2xl overflow-hidden h-full flex flex-col border border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-300 hover:-translate-y-1">
+        <div className="group relative bg-white rounded-2xl overflow-hidden h-full flex flex-col border border-gray-100 hover:border-gray-200 transition-all duration-300">
+
+
             {/* Image */}
-            <Link to={productUrl} className="relative aspect-square overflow-hidden bg-gray-50">
+            <Link to={productUrl} className="relative aspect-square overflow-hidden block bg-gray-50">
                 <LazyImage
                     src={imageUrl}
                     alt={`Gerobak ${product.name} - ${product.category}`}
-                    className="w-full h-full object-contain p-2 transition-transform duration-500 group-hover:scale-105"
+                    className="w-full h-full object-contain"
                 />
 
                 {/* Badges */}
                 {isFeatured && (
-                    <span className="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 bg-amber-400 text-amber-900 text-xs font-bold rounded-full shadow-sm">
+                    <span className="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 bg-amber-400 text-amber-900 text-xs font-bold rounded-full shadow-sm z-20">
                         <Star size={10} fill="currentColor" />
                         Unggulan
                     </span>
                 )}
                 {product.badge && (
-                    <span className="absolute top-3 right-3 px-2.5 py-1 bg-primary-600 text-white text-xs font-bold rounded-full shadow-sm">
+                    <span className="absolute top-3 right-3 px-2.5 py-1 bg-primary-600 text-white text-xs font-bold rounded-full shadow-sm z-20">
                         {product.badge}
                     </span>
                 )}
             </Link>
 
             {/* Content */}
-            <div className="p-5 flex-1 flex flex-col">
+            <div className="p-3 sm:p-5 flex-1 flex flex-col relative z-20 bg-white">
                 {product.category && (
-                    <span className="inline-block w-fit text-xs font-medium text-primary-600 bg-primary-50 px-2 py-0.5 rounded mb-2">
+                    <span className="inline-block w-fit text-[10px] sm:text-xs font-medium text-primary-600 bg-primary-50 px-1.5 py-0.5 rounded mb-1.5 sm:mb-2">
                         {product.category}
                     </span>
                 )}
 
                 <Link to={productUrl}>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1.5 line-clamp-1 group-hover:text-primary-600 transition-colors">
+                    <h3 className="text-sm sm:text-lg font-bold text-gray-900 mb-1 line-clamp-2 sm:line-clamp-1 group-hover:text-primary-600 transition-colors">
                         {product.name}
                     </h3>
                 </Link>
-                
-                <p className="text-sm text-gray-500 line-clamp-2 mb-4 flex-1">
+
+                <p className="hidden sm:block text-sm text-gray-500 line-clamp-2 mb-4 flex-1">
                     {product.shortDesc || product.description}
                 </p>
 
                 {/* Price & CTA */}
-                <div className="flex items-end justify-between pt-4 border-t border-gray-100">
+                <div className="flex items-end justify-between pt-3 sm:pt-4 border-t border-gray-100 mt-auto">
                     <div>
-                        <span className="text-xs text-gray-400 block">Mulai dari</span>
-                        <span className="text-xl font-bold text-gray-900">Rp {priceFormatted}</span>
+                        <span className="text-[10px] sm:text-xs text-gray-400 block">Mulai dari</span>
+                        <span className="text-base sm:text-xl font-bold text-gray-900">Rp {priceFormatted}</span>
                     </div>
 
                     <Link
                         to={productUrl}
-                        className="flex items-center justify-center w-10 h-10 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-900 hover:text-white transition-all duration-200 group/btn"
+                        className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-gray-100 text-gray-600 rounded-lg sm:rounded-xl hover:bg-gray-900 hover:text-white transition-all duration-200 group/btn"
                     >
-                        <ArrowUpRight size={18} className="group-hover/btn:rotate-45 transition-transform duration-200" />
+                        <ArrowUpRight size={16} className="sm:w-[18px] sm:h-[18px] group-hover/btn:rotate-45 transition-transform duration-200" />
                     </Link>
                 </div>
             </div>

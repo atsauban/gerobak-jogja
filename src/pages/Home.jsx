@@ -5,7 +5,6 @@ import {
   Users,
   Wrench,
   ArrowRight,
-  TrendingUp,
   Sparkles,
 } from 'lucide-react';
 import WhatsAppButton from '../components/WhatsAppButton';
@@ -21,6 +20,93 @@ import { useProducts } from '../context/ProductContext';
 import PremiumProductCard from '../components/PremiumProductCard';
 import SEO from '../components/SEO';
 import PageTransition from '../components/PageTransition';
+import AuroraBackground from '../components/AuroraBackground';
+import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
+
+function Hero3DCard() {
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseXSpring = useSpring(x);
+  const mouseYSpring = useSpring(y);
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["7deg", "-7deg"]);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-7deg", "7deg"]);
+
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.div
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        rotateY,
+        rotateX,
+        transformStyle: "preserve-3d",
+      }}
+      className="relative group w-full h-[500px]"
+    >
+      <div
+        className="absolute inset-4 rounded-3xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm border border-white/20 shadow-2xl overflow-hidden"
+        style={{ transform: "translateZ(50px)" }}
+      >
+        <LazyImage
+          src="/images/hero-gerobak-3d.png"
+          alt="Gerobak Premium 3D Design"
+          className="w-full h-full object-contain p-8"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent"></div>
+
+        {/* Shine */}
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-tr from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform ease-in-out"></div>
+      </div>
+
+      {/* Floating Elements */}
+      <motion.div
+        style={{ transform: "translateZ(80px)" }}
+        className="absolute -bottom-6 -left-6 bg-white rounded-2xl p-4 shadow-[0_20px_50px_rgba(0,0,0,0.3)] flex items-center gap-4"
+      >
+        <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600">
+          <Award size={24} />
+        </div>
+        <div>
+          <p className="font-bold text-gray-900 text-lg">Premium</p>
+          <p className="text-gray-500 text-sm">Quality Guaranteed</p>
+        </div>
+      </motion.div>
+
+      <motion.div
+        style={{ transform: "translateZ(60px)" }}
+        className="absolute top-10 -right-6 bg-white/90 backdrop-blur-md rounded-2xl p-4 shadow-xl border border-white/50"
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-3xl">🔥</span>
+          <div>
+            <p className="font-bold text-gray-900">Best Seller</p>
+            <p className="text-xs text-gray-500">Minggu ini</p>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
 
 export default function Home() {
   const { products, loading } = useProducts();
@@ -95,6 +181,7 @@ export default function Home() {
     { value: 100, suffix: '+', label: 'Pelanggan Puas', duration: 2000 },
     { value: 10, suffix: '+', label: 'Tahun Pengalaman', duration: 1500 },
     { value: 100, suffix: '+', label: 'Gerobak Terjual', duration: 2500 },
+    { value: 10, suffix: '+', label: 'Kota Terjangkau', duration: 1800 },
   ];
 
   const getColorClasses = (color) => {
@@ -109,213 +196,186 @@ export default function Home() {
 
   return (
     <PageTransition>
-    <div className="pt-16">
-      <SEO
-        title="Spesialis Gerobak & Booth Custom"
-        description="Jasa pembuatan gerobak aluminium, kayu, dan baja ringan di Jogja. Desain custom, harga kompetitif, dan pengerjaan rapi. Gratis konsultasi!"
-        schema={[websiteSchema, organizationSchema]}
-      />
+      <div className="pt-16">
+        <SEO
+          title="Spesialis Gerobak & Booth Custom"
+          description="Jasa pembuatan gerobak aluminium, kayu, dan baja ringan di Jogja. Desain custom, harga kompetitif, dan pengerjaan rapi. Gratis konsultasi!"
+          schema={[websiteSchema, organizationSchema]}
+        />
 
-      {/* Hero Section */}
-      <section className="relative min-h-[85vh] flex items-center overflow-hidden bg-gray-900">
-        <div className="absolute inset-0">
-          <LazyImage
-            src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80"
-            alt="Workshop Gerobak Jogja"
-            className="w-full h-full object-cover opacity-40"
-            loading="eager"
-            fetchPriority="high"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-900/90 to-gray-900/70"></div>
-        </div>
+        {/* Hero Section */}
+        <AuroraBackground className="min-h-[90vh]">
+          <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
+            <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 items-center">
+              {/* Left Content */}
+              <div className="max-w-2xl text-center sm:text-left mx-auto sm:mx-0">
+                {/* Badge Removed */}
 
-        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="max-w-2xl">
-            <RevealOnScroll delay={200}>
-              <div className="flex items-center gap-2 mb-6">
-                <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-sm font-medium text-white border border-white/10">
-                  <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                  Dipercaya 100+ Pelanggan
+                <RevealOnScroll delay={400}>
+                  <h1 className="text-3xl sm:text-5xl lg:text-7xl font-display font-bold leading-[1.2] sm:leading-[1.1] mb-4 sm:mb-6 text-white tracking-tight">
+                    Gerobak Premium <br />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 animate-gradient-x">
+                      Bisnis Sukses
+                    </span>
+                  </h1>
+                </RevealOnScroll>
+
+                <RevealOnScroll delay={600}>
+                  <p className="text-base sm:text-xl text-gray-300 mb-6 sm:mb-8 leading-relaxed max-w-lg mx-auto sm:mx-0">
+                    Melayani pembuatan dan pemesanan berbagai jenis gerobak, booth, etalase, dan berbagai jenis produk dengan kualitas terjamin.
+                  </p>
+                </RevealOnScroll>
+
+                <RevealOnScroll delay={800}>
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+                    <Link
+                      to="/katalog"
+                      className="group inline-flex items-center justify-center gap-2 px-6 py-3 sm:px-8 sm:py-4 bg-white text-gray-900 font-bold rounded-xl hover:bg-gray-100 transition-all duration-300 hover:-translate-y-1 shadow-[0_10px_30px_-10px_rgba(255,255,255,0.3)] w-full sm:w-auto text-sm sm:text-base"
+                    >
+                      Lihat Katalog
+                      <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                    <WhatsAppButton
+                      message={CONTACT_INFO.messages.consultation}
+                      className="!bg-white/10 !backdrop-blur-md !border-white/20 !text-white hover:!bg-white/20 !px-6 !py-3 !sm:px-8 !sm:py-4 !rounded-xl w-full sm:w-auto text-sm sm:text-base justify-center inline-flex items-center gap-2"
+                    >
+                      Konsultasi Gratis
+                    </WhatsAppButton>
+                  </div>
+                </RevealOnScroll>
+
+                <RevealOnScroll delay={1000}>
+                  <div className="flex flex-wrap gap-10 mt-16 pt-8 border-t border-white/10">
+                    {stats.map((stat, index) => (
+                      <div key={index} className="text-center sm:text-left">
+                        <CountUpNumber
+                          end={stat.value}
+                          suffix={stat.suffix}
+                          duration={stat.duration}
+                          className="text-4xl font-display font-bold text-white mb-1"
+                        />
+                        <div className="text-sm font-medium text-gray-400 uppercase tracking-widest text-xs">
+                          {stat.label}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </RevealOnScroll>
+              </div>
+
+              {/* Right Image - 3D Effect */}
+              <div className="hidden lg:block perspective-1000">
+                <RevealOnScroll delay={600}>
+                  <Hero3DCard />
+                </RevealOnScroll>
+              </div>
+            </div>
+          </div>
+        </AuroraBackground>
+
+        {/* Features */}
+        <section className="py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <RevealOnScroll>
+              <div className="text-center mb-14">
+                <span className="inline-block text-sm font-semibold text-primary-600 uppercase tracking-wider mb-3">
+                  Keunggulan Kami
                 </span>
+                <h2 className="text-3xl sm:text-4xl font-display font-bold text-gray-900 mb-4">
+                  Mengapa Pilih Kami?
+                </h2>
+                <p className="text-lg text-gray-600 max-w-xl mx-auto">
+                  Komitmen kami untuk memberikan produk terbaik dengan layanan
+                  memuaskan
+                </p>
               </div>
             </RevealOnScroll>
 
-            <RevealOnScroll delay={400}>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold leading-tight mb-6 text-white tracking-tight">
-                Gerobak Premium untuk{' '}
-                <span className="text-primary-400">Bisnis Sukses</span>
-              </h1>
-            </RevealOnScroll>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
+              {features.map((feature, index) => {
+                const Icon = feature.icon;
+                return (
+                  <RevealOnScroll key={index} delay={index * 100}>
+                    <div className="bg-gray-50 rounded-2xl p-4 sm:p-6 border border-gray-100 hover:border-gray-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group h-full">
+                      <div
+                        className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-3 sm:mb-4 ${getColorClasses(feature.color)} group-hover:scale-110 transition-transform`}
+                      >
+                        <Icon size={20} className="sm:w-6 sm:h-6" />
+                      </div>
+                      <h3 className="text-sm sm:text-lg font-bold text-gray-900 mb-1 sm:mb-2">
+                        {feature.title}
+                      </h3>
+                      <p className="text-gray-600 text-xs sm:text-sm leading-relaxed">
+                        {feature.desc}
+                      </p>
+                    </div>
+                  </RevealOnScroll>
+                );
+              })}
+            </div>
+          </div>
+        </section>
 
-            <RevealOnScroll delay={600}>
-              <p className="text-lg sm:text-xl text-gray-300 mb-8 leading-relaxed">
-                Mulai dari{' '}
-                <span className="text-white font-semibold">Rp 2.5 juta</span> —
-                dapatkan gerobak berkualitas tinggi dengan desain custom sesuai
-                kebutuhan bisnis Anda.
-              </p>
-            </RevealOnScroll>
-
-            <RevealOnScroll delay={800}>
-              <div className="flex flex-col sm:flex-row gap-4">
+        {/* Products Preview */}
+        <section className="py-20 bg-gray-50/50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+              <div>
+                <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 uppercase tracking-wider mb-3">
+                  <Sparkles size={16} />
+                  Produk Pilihan
+                </span>
+                <h2 className="text-3xl sm:text-4xl font-display font-bold text-gray-900 mb-2">
+                  Produk Unggulan
+                </h2>
+                <p className="text-gray-600">
+                  Pilihan terbaik untuk memulai bisnis gerobak Anda
+                </p>
+              </div>
+              {!loading && featuredProducts.length > 0 && (
                 <Link
                   to="/katalog"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-white text-gray-900 font-semibold rounded-xl hover:bg-gray-100 transition-all duration-200 shadow-lg"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-all"
                 >
-                  Lihat Katalog
-                  <ArrowRight size={18} />
+                  Lihat Semua
+                  <ArrowRight size={16} />
                 </Link>
-                <WhatsAppButton
-                  message={CONTACT_INFO.messages.consultation}
-                  className="btn-whatsapp justify-center"
-                >
-                  Konsultasi Gratis
-                </WhatsAppButton>
-              </div>
-            </RevealOnScroll>
+              )}
+            </div>
 
-            <RevealOnScroll delay={1000}>
-              <div className="flex flex-wrap gap-8 mt-12 pt-8 border-t border-white/10">
-                {stats.map((stat, index) => (
-                  <div key={index} className="text-center sm:text-left">
-                    <CountUpNumber
-                      end={stat.value}
-                      suffix={stat.suffix}
-                      duration={stat.duration}
-                      className="text-3xl font-display font-bold text-white"
-                    />
-                    <div className="text-sm text-gray-400 mt-1">
-                      {stat.label}
-                    </div>
-                  </div>
+            {loading && <ProductGridSkeleton count={3} />}
+
+            {!loading && featuredProducts.length > 0 && (
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+                {featuredProducts.map((product, index) => (
+                  <RevealOnScroll key={product.id} delay={index * 100}>
+                    <PremiumProductCard product={product} />
+                  </RevealOnScroll>
                 ))}
               </div>
-            </RevealOnScroll>
-          </div>
-        </div>
-      </section>
+            )}
 
-      {/* Features */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <RevealOnScroll>
-            <div className="text-center mb-14">
-              <span className="inline-block text-sm font-semibold text-primary-600 uppercase tracking-wider mb-3">
-                Keunggulan Kami
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-display font-bold text-gray-900 mb-4">
-                Mengapa Pilih Kami?
-              </h2>
-              <p className="text-lg text-gray-600 max-w-xl mx-auto">
-                Komitmen kami untuk memberikan produk terbaik dengan layanan
-                memuaskan
-              </p>
-            </div>
-          </RevealOnScroll>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <RevealOnScroll key={index} delay={index * 100}>
-                  <div className="bg-gray-50 rounded-2xl p-6 border border-gray-100 hover:border-gray-200 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
-                    <div
-                      className={`w-12 h-12 rounded-xl flex items-center justify-center mb-4 ${getColorClasses(feature.color)} group-hover:scale-110 transition-transform`}
-                    >
-                      <Icon size={24} />
-                    </div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-2">
-                      {feature.title}
-                    </h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">
-                      {feature.desc}
-                    </p>
-                  </div>
-                </RevealOnScroll>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* Products Preview */}
-      <section className="py-20 bg-gray-50/50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
-            <div>
-              <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 uppercase tracking-wider mb-3">
-                <Sparkles size={16} />
-                Produk Pilihan
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-display font-bold text-gray-900 mb-2">
-                Produk Unggulan
-              </h2>
-              <p className="text-gray-600">
-                Pilihan terbaik untuk memulai bisnis gerobak Anda
-              </p>
-            </div>
-            {!loading && featuredProducts.length > 0 && (
-              <Link
-                to="/katalog"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-all"
-              >
-                Lihat Semua
-                <ArrowRight size={16} />
-              </Link>
+            {!loading && featuredProducts.length === 0 && (
+              <EmptyState
+                type="products"
+                title="Belum Ada Produk Unggulan"
+                description="Produk unggulan akan ditampilkan di sini."
+                actionText="Lihat Semua Produk"
+                actionLink="/katalog"
+              />
             )}
           </div>
+        </section>
 
-          {loading && <ProductGridSkeleton count={3} />}
+        {/* Testimonials */}
+        <Testimonials />
 
-          {!loading && featuredProducts.length > 0 && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredProducts.map((product, index) => (
-                <RevealOnScroll key={product.id} delay={index * 100}>
-                  <PremiumProductCard product={product} />
-                </RevealOnScroll>
-              ))}
-            </div>
-          )}
+        {/* FAQ */}
+        <FAQ />
 
-          {!loading && featuredProducts.length === 0 && (
-            <EmptyState
-              type="products"
-              title="Belum Ada Produk Unggulan"
-              description="Produk unggulan akan ditampilkan di sini."
-              actionText="Lihat Semua Produk"
-              actionLink="/katalog"
-            />
-          )}
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <Testimonials />
-
-      {/* FAQ */}
-      <FAQ />
-
-      {/* CTA Section */}
-      <section className="py-20 bg-gray-900 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIvPjwvZz48L2c+PC9zdmc+')] opacity-50"></div>
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <RevealOnScroll>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-white mb-4">
-              Siap Memulai Bisnis Anda?
-            </h2>
-            <p className="text-lg text-gray-400 mb-8 max-w-xl mx-auto">
-              Konsultasikan kebutuhan gerobak Anda dengan tim kami. Gratis!
-            </p>
-            <WhatsAppButton
-              message={CONTACT_INFO.messages.consultation}
-              className="!bg-white !text-gray-900 hover:!bg-gray-100 !px-8 !py-3.5 !rounded-xl !font-semibold inline-flex shadow-lg"
-            >
-              Hubungi Kami Sekarang
-            </WhatsAppButton>
-          </RevealOnScroll>
-        </div>
-      </section>
-    </div>
+        {/* CTA Section */}
+        {/* CTA Section Removed */}
+      </div>
     </PageTransition>
   );
 }

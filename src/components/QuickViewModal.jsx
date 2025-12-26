@@ -10,18 +10,18 @@ export default function QuickViewModal({ product, onClose }) {
   const modalRef = useRef(null);
   const closeButtonRef = useRef(null);
 
-  useFocusTrap(true, modalRef);
+  // useFocusTrap(true, modalRef);
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
-    
+
     const handleEscape = (e) => {
       if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', handleEscape);
-    
+
     if (closeButtonRef.current) closeButtonRef.current.focus();
-    
+
     return () => {
       document.body.style.overflow = 'unset';
       window.removeEventListener('keydown', handleEscape);
@@ -33,14 +33,14 @@ export default function QuickViewModal({ product, onClose }) {
   const images = product.images || [product.image] || [];
 
   return (
-    <div 
+    <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
       aria-labelledby="quick-view-title"
     >
-      <div 
+      <div
         ref={modalRef}
         className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl animate-scale-in"
         onClick={(e) => e.stopPropagation()}
@@ -83,11 +83,10 @@ export default function QuickViewModal({ product, onClose }) {
                     <button
                       key={index}
                       onClick={() => setCurrentImageIndex(index)}
-                      className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                        currentImageIndex === index
+                      className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${currentImageIndex === index
                           ? 'border-primary-600'
                           : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                        }`}
                     >
                       <img src={image} alt={`Thumbnail ${index + 1}`} className="w-full h-full object-cover" />
                     </button>
@@ -123,11 +122,10 @@ export default function QuickViewModal({ product, onClose }) {
                     { icon: Shield, label: 'Premium', color: 'purple' },
                   ].map((item, index) => (
                     <div key={index} className="text-center p-3 bg-gray-50 rounded-xl border border-gray-100">
-                      <item.icon className={`w-5 h-5 mx-auto mb-1 ${
-                        item.color === 'blue' ? 'text-blue-600' :
-                        item.color === 'green' ? 'text-green-600' :
-                        'text-purple-600'
-                      }`} />
+                      <item.icon className={`w-5 h-5 mx-auto mb-1 ${item.color === 'blue' ? 'text-blue-600' :
+                          item.color === 'green' ? 'text-green-600' :
+                            'text-purple-600'
+                        }`} />
                       <p className="text-xs text-gray-600 font-medium">{item.label}</p>
                     </div>
                   ))}

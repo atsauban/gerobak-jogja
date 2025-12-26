@@ -49,14 +49,14 @@ export default function ProductImageGallery({ product }) {
                 )}
 
                 {/* Image */}
-                <div 
+                <div
                     className="aspect-[4/3] cursor-pointer"
                     onClick={() => setShowGallery(true)}
                 >
                     <LazyImage
                         src={images[currentImageIndex]}
                         alt={`${product.name} - Gambar ${currentImageIndex + 1}`}
-                        className="w-full h-full object-contain p-6 transition-transform duration-500 group-hover:scale-[1.02]"
+                        className="w-full h-full object-contain p-2 sm:p-6 transition-transform duration-500 group-hover:scale-[1.02]"
                     />
                 </div>
 
@@ -97,11 +97,10 @@ export default function ProductImageGallery({ product }) {
                         <button
                             key={index}
                             onClick={() => setCurrentImageIndex(index)}
-                            className={`relative flex-1 max-w-[80px] aspect-square rounded-xl overflow-hidden border-2 transition-all ${
-                                currentImageIndex === index
+                            className={`relative flex-1 max-w-[80px] aspect-square rounded-xl overflow-hidden border-2 transition-all ${currentImageIndex === index
                                     ? 'border-gray-900'
                                     : 'border-gray-100 hover:border-gray-300 opacity-60 hover:opacity-100'
-                            }`}
+                                }`}
                         >
                             <LazyImage
                                 src={image}
