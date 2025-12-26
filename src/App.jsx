@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 import { ProductProvider } from './context/ProductContext';
 import { AuthProvider } from './context/AuthContext';
@@ -53,7 +53,8 @@ function App() {
                       <Route path="/blog" element={<Blog />} />
                       <Route path="/blog/:slug" element={<BlogDetail />} />
                       <Route path="/admin" element={<Admin />} />
-                      <Route path="*" element={<NotFound />} />
+                      <Route path="/notfound" element={<NotFound />} />
+                      <Route path="*" element={<Navigate to="/notfound" replace />} />
                     </Routes>
                   </main>
                   <Footer />

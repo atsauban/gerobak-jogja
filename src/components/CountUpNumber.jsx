@@ -11,9 +11,14 @@ export default function CountUpNumber({
   suffix = '',
   className = ''
 }) {
+  /* Safe component render */
   const [isVisible, setIsVisible] = useState(false);
   const elementRef = useRef(null);
-  const count = useCountUp(end, duration, isVisible);
+
+  // Ensure valid number, default to 0 if NaN/null
+  const targetEnd = Number.isFinite(end) ? end : 0;
+
+  const count = useCountUp(targetEnd, duration, isVisible);
 
   useEffect(() => {
     const observer = new IntersectionObserver(

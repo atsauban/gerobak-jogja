@@ -94,33 +94,7 @@ async function generateSitemapXML() {
   </url>
   
   <!-- Product Categories -->
-  <url>
-    <loc>${SITE_URL}/katalog?category=aluminium</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>${SITE_URL}/katalog?category=kayu</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>${SITE_URL}/katalog?category=stainless</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>${SITE_URL}/katalog?category=kombinasi</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
+  /* Categories removed from sitemap */
 `;
 
   try {
@@ -136,7 +110,7 @@ async function generateSitemapXML() {
       const lastmod = formatDate(product.updatedAt || product.createdAt);
       const imageUrl = product.images?.[0] || product.image || '';
       const slug = product.slug || product.id;
-      
+
       xml += `
   <!-- Product: ${escapeXml(product.name)} -->
   <url>
@@ -144,7 +118,7 @@ async function generateSitemapXML() {
     <lastmod>${lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>`;
-      
+
       if (imageUrl) {
         xml += `
     <image:image>
@@ -152,7 +126,7 @@ async function generateSitemapXML() {
       <image:title>${escapeXml(product.name)}</image:title>
     </image:image>`;
       }
-      
+
       xml += `
   </url>`;
     });
@@ -168,7 +142,7 @@ async function generateSitemapXML() {
     blogPosts.forEach((post) => {
       const lastmod = formatDate(post.updatedAt || post.createdAt);
       const imageUrl = post.image || '';
-      
+
       xml += `
   <!-- Blog: ${escapeXml(post.title)} -->
   <url>
@@ -176,7 +150,7 @@ async function generateSitemapXML() {
     <lastmod>${lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>`;
-      
+
       if (imageUrl) {
         xml += `
     <image:image>
@@ -184,7 +158,7 @@ async function generateSitemapXML() {
       <image:title>${escapeXml(post.title)}</image:title>
     </image:image>`;
       }
-      
+
       xml += `
   </url>`;
     });
@@ -203,7 +177,7 @@ async function generateSitemapXML() {
 // Submit sitemap to search engines
 async function submitToSearchEngines() {
   const sitemapUrl = `${SITE_URL}/sitemap.xml`;
-  
+
   try {
     // Ping Google
     const googlePingUrl = `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`;
@@ -249,14 +223,14 @@ export const handler = async (event, context) => {
   try {
     // Generate new sitemap
     const sitemapXML = await generateSitemapXML();
-    
+
     // Write sitemap to public/sitemap.xml
     const fs = await import('fs');
     const path = await import('path');
-    
+
     // Get the project root directory - in Netlify dev, we need to find the actual project root
     const currentDir = process.cwd();
-    
+
     // Find the project root by looking for package.json
     let projectRoot = currentDir;
     const findProjectRoot = (dir) => {
@@ -271,24 +245,24 @@ export const handler = async (event, context) => {
       }
       return findProjectRoot(parentDir);
     };
-    
+
     projectRoot = findProjectRoot(currentDir);
     const sitemapPath = path.join(projectRoot, 'public', 'sitemap.xml');
-    
+
     try {
       fs.writeFileSync(sitemapPath, sitemapXML, 'utf8');
     } catch (writeError) {
       console.error('Error writing sitemap file:', writeError);
       // Continue with search engine submission even if file write fails
     }
-    
+
     // Submit to search engines
     await submitToSearchEngines();
-    
+
     // Count products and blogs for response
     const productsSnapshot = await getDocs(collection(db, 'products'));
     const blogSnapshot = await getDocs(collection(db, 'blogPosts'));
-    
+
     return {
       statusCode: 200,
       headers,
@@ -308,10 +282,10 @@ export const handler = async (event, context) => {
         }
       })
     };
-    
+
   } catch (error) {
     console.error('Error regenerating sitemap:', error);
-    
+
     return {
       statusCode: 500,
       headers,

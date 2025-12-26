@@ -12,7 +12,6 @@ import Testimonials from '../components/Testimonials';
 import FAQ from '../components/FAQ';
 import EmptyState from '../components/EmptyState';
 import LazyImage from '../components/LazyImage';
-import CountUpNumber from '../components/CountUpNumber';
 import RevealOnScroll from '../components/RevealOnScroll';
 import { ProductGridSkeleton } from '../components/LoadingSkeleton';
 import { CONTACT_INFO } from '../config/contact';
@@ -68,9 +67,9 @@ function Hero3DCard() {
         style={{ transform: "translateZ(50px)" }}
       >
         <LazyImage
-          src="/images/hero-gerobak-3d.png"
+          src="https://res.cloudinary.com/dpjpj7l1y/image/upload/v1766787992/1762505508924_result-removebg-preview_vqntrn.webp"
           alt="Gerobak Premium 3D Design"
-          className="w-full h-full object-contain p-8"
+          className="w-full h-full object-contain -translate-y-20 scale-[0.9] select-none pointer-events-none"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent"></div>
 
@@ -100,7 +99,7 @@ function Hero3DCard() {
           <span className="text-3xl">🔥</span>
           <div>
             <p className="font-bold text-gray-900">Best Seller</p>
-            <p className="text-xs text-gray-500">Minggu ini</p>
+            <p className="text-xs text-gray-500">Tahun Ini</p>
           </div>
         </div>
       </motion.div>
@@ -177,12 +176,7 @@ export default function Home() {
     .filter((p) => p.featured === true)
     .slice(0, 3);
 
-  const stats = [
-    { value: 100, suffix: '+', label: 'Pelanggan Puas', duration: 2000 },
-    { value: 10, suffix: '+', label: 'Tahun Pengalaman', duration: 1500 },
-    { value: 100, suffix: '+', label: 'Gerobak Terjual', duration: 2500 },
-    { value: 10, suffix: '+', label: 'Kota Terjangkau', duration: 1800 },
-  ];
+
 
   const getColorClasses = (color) => {
     const colors = {
@@ -208,11 +202,11 @@ export default function Home() {
           <div className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
             <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 items-center">
               {/* Left Content */}
-              <div className="max-w-2xl text-center sm:text-left mx-auto sm:mx-0">
+              <div className="max-w-2xl text-left mx-0">
                 {/* Badge Removed */}
 
                 <RevealOnScroll delay={400}>
-                  <h1 className="text-3xl sm:text-5xl lg:text-7xl font-display font-bold leading-[1.2] sm:leading-[1.1] mb-4 sm:mb-6 text-white tracking-tight">
+                  <h1 className="text-5xl sm:text-6xl lg:text-7xl font-display font-bold leading-[1.1] sm:leading-[1.1] mb-4 sm:mb-6 text-white tracking-tight">
                     Gerobak Premium <br />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 animate-gradient-x">
                       Bisnis Sukses
@@ -221,46 +215,30 @@ export default function Home() {
                 </RevealOnScroll>
 
                 <RevealOnScroll delay={600}>
-                  <p className="text-base sm:text-xl text-gray-300 mb-6 sm:mb-8 leading-relaxed max-w-lg mx-auto sm:mx-0">
+                  <p className="text-base sm:text-xl text-gray-300 mb-6 sm:mb-8 leading-relaxed max-w-lg mx-0">
                     Melayani pembuatan dan pemesanan berbagai jenis gerobak, booth, etalase, dan berbagai jenis produk dengan kualitas terjamin.
                   </p>
                 </RevealOnScroll>
 
                 <RevealOnScroll delay={800}>
-                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
+                  <div className="flex flex-row gap-3 sm:gap-4 w-full sm:w-auto">
                     <Link
                       to="/katalog"
-                      className="group inline-flex items-center justify-center gap-2 px-6 py-3 sm:px-8 sm:py-4 bg-white text-gray-900 font-bold rounded-xl hover:bg-gray-100 transition-all duration-300 hover:-translate-y-1 shadow-[0_10px_30px_-10px_rgba(255,255,255,0.3)] w-full sm:w-auto text-sm sm:text-base"
+                      className="group flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-3 sm:px-8 sm:py-4 bg-white text-gray-900 font-bold rounded-xl hover:bg-gray-100 transition-all duration-300 hover:-translate-y-1 shadow-[0_10px_30px_-10px_rgba(255,255,255,0.3)] text-xs sm:text-base whitespace-nowrap"
                     >
                       Lihat Katalog
-                      <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                     </Link>
                     <WhatsAppButton
                       message={CONTACT_INFO.messages.consultation}
-                      className="!bg-white/10 !backdrop-blur-md !border-white/20 !text-white hover:!bg-white/20 !px-6 !py-3 !sm:px-8 !sm:py-4 !rounded-xl w-full sm:w-auto text-sm sm:text-base justify-center inline-flex items-center gap-2"
+                      className="!bg-white/10 !backdrop-blur-md !border-white/20 !text-white hover:!bg-white/20 !px-4 !py-3 !sm:px-8 !sm:py-4 !rounded-xl flex-1 sm:flex-none text-xs sm:text-base justify-center inline-flex items-center gap-2 whitespace-nowrap"
                     >
                       Konsultasi Gratis
                     </WhatsAppButton>
                   </div>
                 </RevealOnScroll>
 
-                <RevealOnScroll delay={1000}>
-                  <div className="flex flex-wrap gap-10 mt-16 pt-8 border-t border-white/10">
-                    {stats.map((stat, index) => (
-                      <div key={index} className="text-center sm:text-left">
-                        <CountUpNumber
-                          end={stat.value}
-                          suffix={stat.suffix}
-                          duration={stat.duration}
-                          className="text-4xl font-display font-bold text-white mb-1"
-                        />
-                        <div className="text-sm font-medium text-gray-400 uppercase tracking-widest text-xs">
-                          {stat.label}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </RevealOnScroll>
+
               </div>
 
               {/* Right Image - 3D Effect */}
@@ -319,7 +297,7 @@ export default function Home() {
         {/* Products Preview */}
         <section className="py-20 bg-gray-50/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+            <div className="flex flex-col items-start sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
               <div>
                 <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-600 uppercase tracking-wider mb-3">
                   <Sparkles size={16} />

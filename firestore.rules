@@ -10,7 +10,6 @@ service cloud.firestore {
     // Helper function to check if user is admin
     function isAdmin() {
       return isAuthenticated() && 
-             request.auth.token.email_verified == true &&
              request.auth.token.email in [
                'abdullahatsauban@gmail.com',
                'gerobakjogja@gmail.com',
@@ -47,14 +46,24 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
     
+    // Contact Messages collection (FIXED: Added this rule)
+    match /contactMessages/{messageId} {
+      // Allow anyone to create (send) a message if it has valid fields
+      allow create: if request.resource.data.keys().hasAll(['name', 'email', 'message'])
+                   && request.resource.data.name is string
+                   && request.resource.data.message.size() < 2000;
+                   
+      // Only admin can read/manage messages
+      allow read, update, delete: if isAdmin();
+    }
+    
     // Audit logs collection
     match /audit_logs/{logId} {
       // Admins can read audit logs
       allow read: if isAdmin();
       
-      // Only admins can write logs (since there is no public registration)
-      // This prevents potential spam from authenticated but unauthorized users if auth is ever opened
-      allow write: if isAdmin();
+      // Any authenticated user can write logs (for audit trail)
+      allow write: if isAuthenticated();
     }
     
     // Deny access to all other collections by default

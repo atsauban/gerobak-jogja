@@ -25,17 +25,11 @@ export default function GalleryManager({ showDeleteConfirmation }) {
   const [formData, setFormData] = useState({
     url: '',
     title: '',
-    category: 'aluminium',
+    // category: 'aluminium', // Removed
     pendingImage: null // New file to upload
   });
 
-  const categories = [
-    { id: 'aluminium', name: 'Aluminium' },
-    { id: 'kayu', name: 'Kayu' },
-    { id: 'stainless', name: 'Stainless Steel' },
-    { id: 'kombinasi', name: 'Kombinasi' },
-    { id: 'custom', name: 'Custom' }
-  ];
+  /* Categories removed */
 
   useEffect(() => {
     loadImages();
@@ -78,7 +72,7 @@ export default function GalleryManager({ showDeleteConfirmation }) {
       const dataToSave = {
         url: sanitizeUrl(imageUrl),
         title: sanitizeText(formData.title, 100),
-        category: sanitizeText(formData.category, 50)
+        // category: sanitizeText(formData.category, 50)
       };
 
       // Validate sanitized data
@@ -114,7 +108,8 @@ export default function GalleryManager({ showDeleteConfirmation }) {
       debouncedRegenerateSitemap();
 
       await loadImages();
-      setFormData({ url: '', title: '', category: 'aluminium', pendingImage: null });
+      await loadImages();
+      setFormData({ url: '', title: '', pendingImage: null });
       setShowForm(false);
       setEditingId(null);
 
@@ -131,7 +126,7 @@ export default function GalleryManager({ showDeleteConfirmation }) {
     setFormData({
       url: image.url,
       title: image.title,
-      category: image.category,
+      // category: image.category,
       pendingImage: null
     });
     setEditingId(image.id);
@@ -195,7 +190,7 @@ export default function GalleryManager({ showDeleteConfirmation }) {
                 await createGalleryImage({
                   url: image.url,
                   title: image.title,
-                  category: image.category
+                  // category: image.category
                 });
 
                 await loadImages();
@@ -215,7 +210,7 @@ export default function GalleryManager({ showDeleteConfirmation }) {
   const handleCancel = () => {
     setShowForm(false);
     setEditingId(null);
-    setFormData({ url: '', title: '', category: 'aluminium' });
+    setFormData({ url: '', title: '', });
   };
 
   if (loading) {
@@ -234,7 +229,7 @@ export default function GalleryManager({ showDeleteConfirmation }) {
         <button
           onClick={() => {
             setShowForm(!showForm);
-            setFormData({ url: '', title: '', category: 'aluminium' });
+            setFormData({ url: '', title: '', });
             setEditingId(null);
           }}
           className="bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors flex items-center gap-2 text-sm"
@@ -277,19 +272,7 @@ export default function GalleryManager({ showDeleteConfirmation }) {
                 required
               />
             </div>
-            <div>
-              <label className="block text-sm font-medium mb-2">Kategori *</label>
-              <select
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              >
-                {categories.map(cat => (
-                  <option key={cat.id} value={cat.id}>{cat.name}</option>
-                ))}
-              </select>
-            </div>
+            {/* Category input removed */}
           </div>
 
           <div className="flex gap-2">
@@ -329,9 +312,7 @@ export default function GalleryManager({ showDeleteConfirmation }) {
                 alt={image.title}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold text-gray-700">
-                {categories.find(c => c.id === image.category)?.name}
-              </div>
+              {/* Category badge removed */}
             </div>
             <div className="p-4">
               <h3 className="font-semibold text-gray-900 mb-3">{image.title}</h3>

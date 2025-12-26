@@ -18,7 +18,7 @@ export default function StickyBottomBar({ product }) {
                         productPrice={product.price}
                         className="w-full btn-whatsapp justify-center py-2.5 text-sm font-bold shadow-none"
                     >
-                        Pesan Sekarang
+                        Pesan
                     </WhatsAppButton>
                 </div>
             </div>

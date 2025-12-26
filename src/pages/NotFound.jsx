@@ -27,19 +27,19 @@ export default function NotFound() {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 justify-center mb-10">
-            <Link to="/" className="btn-primary">
+          <div className="flex flex-row gap-3 justify-center mb-10 w-full sm:w-auto">
+            <Link to="/" className="btn-primary flex-1 sm:flex-none justify-center text-sm px-4">
               <Home size={18} />
-              Kembali ke Beranda
+              Beranda
             </Link>
-            <Link to="/katalog" className="btn-secondary">
+            <Link to="/katalog" className="btn-secondary flex-1 sm:flex-none justify-center text-sm px-4">
               <ShoppingCart size={18} />
-              Lihat Katalog
+              Katalog
             </Link>
           </div>
 
           {/* Back Button */}
-          <button 
+          <button
             onClick={() => window.history.back()}
             className="inline-flex items-center gap-2 text-gray-500 hover:text-gray-700 transition-colors mb-12"
           >
@@ -56,15 +56,15 @@ export default function NotFound() {
             <p className="text-gray-600 text-sm mb-4">
               Hubungi kami jika Anda memerlukan bantuan.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <WhatsAppButton 
+              <WhatsAppButton
                 message={CONTACT_INFO.messages.help}
                 className="btn-whatsapp justify-center"
               >
                 Chat WhatsApp
               </WhatsAppButton>
-              
+
               <Link to="/kontak" className="btn-secondary justify-center">
                 Halaman Kontak
               </Link>

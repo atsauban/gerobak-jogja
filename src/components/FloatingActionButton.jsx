@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { ArrowUp, MessageCircle } from 'lucide-react';
 import WhatsAppButton from './WhatsAppButton';
 
 export default function FloatingActionButton() {
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const location = useLocation();
+
+  // Hide FAB on product detail pages
+  const isProductPage = location.pathname.startsWith('/produk/');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -17,6 +22,8 @@ export default function FloatingActionButton() {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  if (isProductPage) return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-40 flex flex-col gap-3">

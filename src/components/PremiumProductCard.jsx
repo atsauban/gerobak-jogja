@@ -23,22 +23,18 @@ export default function PremiumProductCard({ product, variant = 'grid' }) {
                                 className="w-full h-full object-contain p-3 transition-transform duration-500 group-hover:scale-105"
                             />
                         </Link>
-                        {isFeatured && (
+                        {/* {isFeatured && (
                             <span className="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 bg-amber-400 text-amber-900 text-xs font-bold rounded-full">
                                 <Star size={10} fill="currentColor" />
                                 Unggulan
                             </span>
-                        )}
+                        )} */}
                     </div>
 
                     {/* Content */}
                     <div className="flex-1 p-5 flex flex-col justify-between">
                         <div>
-                            {product.category && (
-                                <span className="inline-block text-xs font-medium text-primary-600 bg-primary-50 px-2 py-0.5 rounded mb-2">
-                                    {product.category}
-                                </span>
-                            )}
+                            {/* Category removed */}
                             <Link to={productUrl}>
                                 <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
                                     {product.name}
@@ -91,12 +87,12 @@ export default function PremiumProductCard({ product, variant = 'grid' }) {
                 />
 
                 {/* Badges */}
-                {isFeatured && (
+                {/* {isFeatured && (
                     <span className="absolute top-3 left-3 inline-flex items-center gap-1 px-2.5 py-1 bg-amber-400 text-amber-900 text-xs font-bold rounded-full shadow-sm z-20">
                         <Star size={10} fill="currentColor" />
                         Unggulan
                     </span>
-                )}
+                )} */}
                 {product.badge && (
                     <span className="absolute top-3 right-3 px-2.5 py-1 bg-primary-600 text-white text-xs font-bold rounded-full shadow-sm z-20">
                         {product.badge}
@@ -106,11 +102,7 @@ export default function PremiumProductCard({ product, variant = 'grid' }) {
 
             {/* Content */}
             <div className="p-3 sm:p-5 flex-1 flex flex-col relative z-20 bg-white">
-                {product.category && (
-                    <span className="inline-block w-fit text-[10px] sm:text-xs font-medium text-primary-600 bg-primary-50 px-1.5 py-0.5 rounded mb-1.5 sm:mb-2">
-                        {product.category}
-                    </span>
-                )}
+                {/* Category removed */}
 
                 <Link to={productUrl}>
                     <h3 className="text-sm sm:text-lg font-bold text-gray-900 mb-1 line-clamp-2 sm:line-clamp-1 group-hover:text-primary-600 transition-colors">

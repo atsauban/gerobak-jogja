@@ -25,7 +25,7 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
     const [formData, setFormData] = useState({
         name: '',
         slug: '',
-        category: '',
+        // category: '', // Removed
         price: '',
         shortDesc: '',
         description: '',
@@ -69,7 +69,7 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
 
         // Validate images (existing + pending)
         const totalImages = (formData.images?.length || 0) + (formData.pendingImages?.length || 0);
-        
+
         if (totalImages === 0) {
             toast.error('Minimal upload 1 gambar produk!');
             return;
@@ -100,7 +100,7 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
             const productData = {
                 name: sanitizeText(formData.name, 100),
                 slug: formData.slug || generateSlug(formData.name),
-                category: formData.category,
+                category: '', // Explicitly empty or removed
                 price: sanitizePrice(formData.price),
                 shortDesc: sanitizeText(formData.shortDesc, 200),
                 description: sanitizeText(formData.description || formData.shortDesc, 2000),
@@ -185,7 +185,7 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
             setFormData({
                 name: '',
                 slug: '',
-                category: '',
+                // category: '',
                 price: '',
                 shortDesc: '',
                 description: '',
@@ -211,7 +211,7 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
         setFormData({
             name: product.name,
             slug: product.slug || generateSlug(product.name),
-            category: product.category,
+            // category: product.category,
             price: product.price,
             shortDesc: product.shortDesc || '',
             description: product.description || product.shortDesc || '',
@@ -246,7 +246,7 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
                     await logProductAction(user, 'delete', {
                         id: id,
                         name: product.name,
-                        category: product.category
+                        // category: product.category
                     });
 
                     // Log sitemap change for deleted product
@@ -265,7 +265,7 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
                             try {
                                 // Cancel pending Cloudinary deletion first
                                 cancelCloudinaryDeletion(deletedProductId);
-                                
+
                                 // Restore product - remove old id to create new one
                                 // eslint-disable-next-line no-unused-vars
                                 const { id: _id, createdAt: _createdAt, updatedAt: _updatedAt, ...productData } = product;
@@ -308,7 +308,7 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
         setFormData({
             name: '',
             slug: '',
-            category: '',
+            // category: '',
             price: '',
             shortDesc: '',
             description: '',
@@ -446,21 +446,7 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
 
                         {/* Row 2: Kategori, Harga, Badge */}
                         <div className="grid md:grid-cols-3 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium mb-2">Kategori *</label>
-                                <select
-                                    value={formData.category}
-                                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                    className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    required
-                                >
-                                    <option value="">Pilih Kategori</option>
-                                    <option value="aluminium">Aluminium</option>
-                                    <option value="kayu">Kayu</option>
-                                    <option value="stainless">Stainless Steel</option>
-                                    <option value="kombinasi">Kombinasi</option>
-                                </select>
-                            </div>
+                            {/* Category input removed */}
                             <div>
                                 <label className="block text-sm font-medium mb-2">Harga (Rp) *</label>
                                 <input
@@ -647,8 +633,8 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
                         />
                     </div>
                     <div className="flex gap-2">
-                        <button 
-                            type="submit" 
+                        <button
+                            type="submit"
                             disabled={isSaving || isCropping}
                             className="bg-green-500 text-white px-6 py-3 rounded hover:bg-green-600 min-h-[44px] transition-colors focus:outline-none focus:ring-2 focus:ring-green-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                         >
@@ -685,7 +671,7 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
                     <thead className="bg-gray-100">
                         <tr>
                             <th className="px-4 py-3 text-left">Nama Produk</th>
-                            <th className="px-4 py-3 text-left">Kategori</th>
+                            {/* <th className="px-4 py-3 text-left">Kategori</th> */}
                             <th className="px-4 py-3 text-left">Harga</th>
                             <th className="px-4 py-3 text-left">Badge</th>
                             <th className="px-4 py-3 text-center">Unggulan</th>
@@ -696,7 +682,7 @@ export default function AdminProductManager({ showDeleteConfirmation }) {
                         {products.map(product => (
                             <tr key={product.id} className="border-b hover:bg-gray-50">
                                 <td className="px-4 py-3 font-medium">{product.name}</td>
-                                <td className="px-4 py-3 capitalize">{product.category}</td>
+                                {/* <td className="px-4 py-3 capitalize">{product.category}</td> */}
                                 <td className="px-4 py-3">Rp {parseInt(product.price).toLocaleString('id-ID')}</td>
                                 <td className="px-4 py-3">
                                     {product.badge && (

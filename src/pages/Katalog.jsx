@@ -16,7 +16,7 @@ export default function Katalog() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Get initial values from URL or defaults
-  const selectedCategory = searchParams.get('kategori') || 'semua';
+  // const selectedCategory = searchParams.get('kategori') || 'semua';
   const searchQuery = searchParams.get('cari') || '';
 
   const [quickViewProduct, setQuickViewProduct] = useState(null);
@@ -40,9 +40,7 @@ export default function Katalog() {
     setSearchParams(nextParams);
   };
 
-  const handleCategoryChange = (category) => {
-    updateParams({ kategori: category === 'semua' ? '' : category });
-  };
+  /* Category handler removed */
 
   const handleSearchChange = (query) => {
     updateParams({ cari: query });
@@ -54,33 +52,27 @@ export default function Katalog() {
 
   /* Removed hardcoded products - now using context */
 
-  const categories = [
-    { id: 'semua', name: 'Semua Produk', icon: '🏪' },
-    { id: 'aluminium', name: 'Aluminium', icon: '⚡' },
-    { id: 'kayu', name: 'Kayu', icon: '🌳' },
-    { id: 'stainless', name: 'Stainless Steel', icon: '✨' },
-    { id: 'kombinasi', name: 'Kombinasi', icon: '🎨' },
-  ];
+  /* Categories array removed */
 
-  // Filter products by category and search query
+  // Filter products by search query only
   const filteredProducts = useMemo(() => {
-    let products = getProductsByCategory(selectedCategory);
+    let products = getProductsByCategory('semua'); // Default get all
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       products = products.filter(product =>
         product.name.toLowerCase().includes(query) ||
-        product.category.toLowerCase().includes(query) ||
+        // product.category.toLowerCase().includes(query) || // Removed category search
         (product.shortDesc && product.shortDesc.toLowerCase().includes(query)) ||
         (product.description && product.description.toLowerCase().includes(query))
       );
     }
 
     return products;
-  }, [selectedCategory, searchQuery, getProductsByCategory]);
+  }, [searchQuery, getProductsByCategory]);
 
   const [viewMode, setViewMode] = useState('grid');
-  const hasActiveFilters = selectedCategory !== 'semua' || searchQuery.trim();
+  const hasActiveFilters = searchQuery.trim().length > 0;
 
   return (
     <PageTransition className="pt-16 min-h-screen bg-gray-50/50">
@@ -117,23 +109,7 @@ export default function Katalog() {
               />
             </div>
 
-            {/* Category Pills */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 scrollbar-hide">
-              <SlidersHorizontal size={16} className="text-gray-400 flex-shrink-0 hidden sm:block" />
-              {categories.map(cat => (
-                <button
-                  key={cat.id}
-                  onClick={() => handleCategoryChange(cat.id)}
-                  className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap ${selectedCategory === cat.id
-                      ? 'bg-gray-900 text-white shadow-md'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                    }`}
-                >
-                  <span className="mr-1.5">{cat.icon}</span>
-                  {cat.name}
-                </button>
-              ))}
-            </div>
+            {/* Category Pills - REMOVED */}
 
             {/* View Toggle */}
             <div className="hidden md:flex items-center gap-1 bg-gray-100 p-1 rounded-lg">
@@ -169,18 +145,7 @@ export default function Katalog() {
             {/* Active Filters */}
             {hasActiveFilters && (
               <div className="flex items-center gap-2">
-                {selectedCategory !== 'semua' && (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary-50 text-primary-700 rounded-full text-xs font-medium">
-                    {categories.find(c => c.id === selectedCategory)?.icon} {categories.find(c => c.id === selectedCategory)?.name}
-                    <button
-                      onClick={() => handleCategoryChange('semua')}
-                      className="hover:text-primary-900 ml-1"
-                      aria-label="Remove category filter"
-                    >
-                      <X size={12} />
-                    </button>
-                  </span>
-                )}
+                {/* Category filter removed */}
                 {searchQuery.trim() && (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
                     "{searchQuery}"
@@ -249,8 +214,8 @@ export default function Katalog() {
             onClearFilters={clearFilters}
             suggestions={
               searchQuery
-                ? categories.filter(c => c.id !== selectedCategory).slice(0, 3).map(c => c.name)
-                : categories.filter(c => c.id !== 'semua' && c.id !== selectedCategory).slice(0, 3).map(c => c.name)
+                ? ['Gerobak', 'Kayu', 'Aluminium']
+                : []
             }
           />
         )}

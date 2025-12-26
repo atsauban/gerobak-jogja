@@ -9,18 +9,7 @@ import { GallerySkeleton } from '../components/LoadingSkeleton';
 import PageTransition from '../components/PageTransition';
 
 export default function Galeri() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const selectedCategory = searchParams.get('kategori') || 'semua';
-
-  const handleCategoryChange = (category) => {
-    const nextParams = new URLSearchParams(searchParams);
-    if (category === 'semua') {
-      nextParams.delete('kategori');
-    } else {
-      nextParams.set('kategori', category);
-    }
-    setSearchParams(nextParams);
-  };
+  /* Category logic removed */
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [images, setImages] = useState([]);
@@ -43,19 +32,10 @@ export default function Galeri() {
     }
   };
 
-  const categories = [
-    { id: 'semua', name: 'Semua', icon: '🏪' },
-    { id: 'aluminium', name: 'Aluminium', icon: '⚡' },
-    { id: 'kayu', name: 'Kayu', icon: '🌳' },
-    { id: 'stainless', name: 'Stainless Steel', icon: '✨' },
-    { id: 'kombinasi', name: 'Kombinasi', icon: '🎨' },
-    { id: 'custom', name: 'Custom', icon: '⭐' },
-  ];
+  /* Categories removed */
 
-  const filteredImages =
-    selectedCategory === 'semua'
-      ? images
-      : images.filter((img) => img.category === selectedCategory);
+  // No filtering needed
+  const filteredImages = images;
 
   return (
     <PageTransition className="pt-16 min-h-screen bg-gray-50/50">
@@ -86,25 +66,7 @@ export default function Galeri() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Category Filter */}
-        <div className="bg-white rounded-2xl border border-gray-100 p-4 mb-8 shadow-sm">
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {categories.map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => handleCategoryChange(cat.id)}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 whitespace-nowrap ${
-                  selectedCategory === cat.id
-                    ? 'bg-gray-900 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-                aria-pressed={selectedCategory === cat.id}
-              >
-                <span className="mr-1.5">{cat.icon}</span>
-                {cat.name}
-              </button>
-            ))}
-          </div>
-        </div>
+        {/* Category Filter Removed */}
 
         {/* Results Count */}
         {!loading && filteredImages.length > 0 && (
@@ -114,15 +76,7 @@ export default function Galeri() {
               {filteredImages.length}
             </span>{' '}
             gambar
-            {selectedCategory !== 'semua' && (
-              <span>
-                {' '}
-                dalam kategori{' '}
-                <span className="font-semibold">
-                  {categories.find((c) => c.id === selectedCategory)?.name}
-                </span>
-              </span>
-            )}
+            gambar
           </p>
         )}
 
@@ -165,10 +119,7 @@ export default function Galeri() {
                 </div>
 
                 {/* Category Badge */}
-                <span className="absolute top-3 left-3 px-2.5 py-1 bg-white/95 backdrop-blur-sm rounded-lg text-xs font-medium text-gray-700 shadow-sm">
-                  {categories.find((c) => c.id === image.category)?.icon}{' '}
-                  {categories.find((c) => c.id === image.category)?.name}
-                </span>
+                {/* Category Badge removed */}
               </div>
             ))}
           </div>
@@ -184,18 +135,8 @@ export default function Galeri() {
               Tidak Ada Gambar
             </h3>
             <p className="text-gray-500 mb-6 max-w-sm mx-auto">
-              {selectedCategory !== 'semua'
-                ? `Belum ada gambar dalam kategori ${categories.find((c) => c.id === selectedCategory)?.name}`
-                : 'Galeri masih kosong'}
+              Galeri masih kosong
             </p>
-            {selectedCategory !== 'semua' && (
-              <button
-                onClick={() => handleCategoryChange('semua')}
-                className="px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
-              >
-                Lihat Semua Gambar
-              </button>
-            )}
           </div>
         )}
       </div>

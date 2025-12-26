@@ -1,8 +1,8 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import { 
-  getProducts, 
-  createProduct, 
-  updateProduct as updateProductFirebase, 
+import {
+  getProducts,
+  createProduct,
+  updateProduct as updateProductFirebase,
   deleteProduct as deleteProductFirebase,
   deleteImageFromCloudinary
 } from '../services/firebaseService';
@@ -34,16 +34,16 @@ export const ProductProvider = ({ children }) => {
       setLoading(true);
       setError(null);
       const data = await getProducts();
-      
+
       // Filter out old localStorage products (ID is number or short string)
       const firebaseProducts = data.filter(product => {
         const id = product.id;
         // Keep only Firebase products (long string IDs)
         return typeof id === 'string' && id.length > 10;
       });
-      
+
       setProducts(firebaseProducts);
-      
+
       // Clear old localStorage data
       localStorage.removeItem('gerobak_products');
     } catch (err) {
@@ -70,7 +70,7 @@ export const ProductProvider = ({ children }) => {
       const newProduct = {
         name: product.name || '',
         slug: product.slug || '',
-        category: product.category || '',
+        // category: product.category || '', // Removed
         price: product.price || '0',
         shortDesc: product.shortDesc || '',
         description: product.description || product.shortDesc || '',
@@ -83,18 +83,18 @@ export const ProductProvider = ({ children }) => {
         features: product.features || [],
         includes: product.includes || []
       };
-      
+
       const createdProduct = await createProduct(newProduct);
-      
+
       // Use functional update to avoid stale state
       setProducts(prevProducts => [createdProduct, ...prevProducts]);
-      
+
       // Log sitemap change
       logSitemapChange('added', 'product', createdProduct);
-      
+
       // Regenerate sitemap when new product is added
       debouncedRegenerateSitemap();
-      
+
       return createdProduct;
     } catch (err) {
       console.error('Error adding product:', err);
@@ -107,7 +107,7 @@ export const ProductProvider = ({ children }) => {
     try {
       // Only process images if they are provided in the update
       let productData = { ...updatedProduct };
-      
+
       if (updatedProduct.images !== undefined) {
         let images = updatedProduct.images;
         if (!images || images.length === 0) {
@@ -121,17 +121,17 @@ export const ProductProvider = ({ children }) => {
       }
 
       await updateProductFirebase(id, productData);
-      
+
       // Update local state - merge with existing product data
-      const updatedProducts = products.map(p => 
+      const updatedProducts = products.map(p =>
         p.id === id ? { ...p, ...productData } : p
       );
       setProducts(updatedProducts);
-      
+
       // Log sitemap change
       const updatedProductData = updatedProducts.find(p => p.id === id);
       logSitemapChange('updated', 'product', updatedProductData);
-      
+
       // Regenerate sitemap when product is updated
       debouncedRegenerateSitemap();
     } catch (err) {
@@ -146,26 +146,26 @@ export const ProductProvider = ({ children }) => {
 
   const deleteProduct = async (id, options = {}) => {
     const { skipCloudinary = false, undoTimeout = 5000 } = options;
-    
+
     try {
       // Find product to get images
       const product = products.find(p => p.id === id);
-      
+
       // Log sitemap change before deletion
       if (product) {
         logSitemapChange('deleted', 'product', product);
       }
-      
+
       // Delete from Firebase first
       await deleteProductFirebase(id);
-      
+
       // Use functional update to avoid stale state
       setProducts(prevProducts => prevProducts.filter(p => p.id !== id));
-      
+
       // Schedule Cloudinary deletion after undo timeout (if not skipped)
       if (!skipCloudinary && product && product.images && Array.isArray(product.images)) {
         const cloudinaryImages = product.images.filter(url => url && url.includes('cloudinary.com'));
-        
+
         if (cloudinaryImages.length > 0) {
           // Schedule deletion after undo timeout
           const timeoutId = setTimeout(async () => {
@@ -179,7 +179,7 @@ export const ProductProvider = ({ children }) => {
             // Clean up pending deletion record
             delete pendingCloudinaryDeletions[id];
           }, undoTimeout + 500); // Add 500ms buffer
-          
+
           // Store timeout ID so it can be cancelled on undo
           pendingCloudinaryDeletions[id] = {
             timeoutId,
@@ -187,10 +187,10 @@ export const ProductProvider = ({ children }) => {
           };
         }
       }
-      
+
       // Regenerate sitemap when product is deleted
       debouncedRegenerateSitemap();
-      
+
       return { productId: id };
     } catch (err) {
       console.error('Error deleting product:', err);
@@ -218,7 +218,7 @@ export const ProductProvider = ({ children }) => {
     // First try to find by slug
     const productBySlug = products.find(p => p.slug === slug);
     if (productBySlug) return productBySlug;
-    
+
     // Fallback: try to find by ID (for backward compatibility)
     return products.find(p => p.id === slug || String(p.id) === String(slug));
   };

@@ -81,33 +81,7 @@ export const generateSitemapXML = async () => {
   </url>
   
   <!-- Product Categories -->
-  <url>
-    <loc>${SITE_URL}/katalog?category=aluminium</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>${SITE_URL}/katalog?category=kayu</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>${SITE_URL}/katalog?category=stainless</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>${SITE_URL}/katalog?category=kombinasi</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
+  /* Categories removed from sitemap */
 `;
 
   try {
@@ -123,7 +97,7 @@ export const generateSitemapXML = async () => {
       const lastmod = formatDate(product.updatedAt || product.createdAt);
       const imageUrl = product.images?.[0] || product.image || '';
       const slug = product.slug || product.id;
-      
+
       xml += `
   <!-- Product: ${escapeXml(product.name)} -->
   <url>
@@ -131,7 +105,7 @@ export const generateSitemapXML = async () => {
     <lastmod>${lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>`;
-      
+
       if (imageUrl) {
         xml += `
     <image:image>
@@ -139,7 +113,7 @@ export const generateSitemapXML = async () => {
       <image:title>${escapeXml(product.name)}</image:title>
     </image:image>`;
       }
-      
+
       xml += `
   </url>`;
     });
@@ -155,7 +129,7 @@ export const generateSitemapXML = async () => {
     blogPosts.forEach((post) => {
       const lastmod = formatDate(post.updatedAt || post.createdAt);
       const imageUrl = post.image || '';
-      
+
       xml += `
   <!-- Blog: ${escapeXml(post.title)} -->
   <url>
@@ -163,7 +137,7 @@ export const generateSitemapXML = async () => {
     <lastmod>${lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>`;
-      
+
       if (imageUrl) {
         xml += `
     <image:image>
@@ -171,7 +145,7 @@ export const generateSitemapXML = async () => {
       <image:title>${escapeXml(post.title)}</image:title>
     </image:image>`;
       }
-      
+
       xml += `
   </url>`;
     });
@@ -191,7 +165,7 @@ export const generateSitemapXML = async () => {
 export const submitSitemapToSearchEngines = async () => {
   // Check if we're in development mode
   const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  
+
   if (isDevelopment) {
     return;
   }
@@ -202,10 +176,10 @@ export const regenerateSitemap = async () => {
   try {
     // Check if we're in development or production
     const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    
+
     if (isDevelopment) {
       // In development, regenerate sitemap but skip search engine submission
-      
+
       try {
         // Call the Netlify function to regenerate sitemap
         const response = await fetch('/.netlify/functions/regenerate-sitemap', {
@@ -214,7 +188,7 @@ export const regenerateSitemap = async () => {
             'Content-Type': 'application/json'
           }
         });
-        
+
         if (response.ok) {
           await response.json();
         } else {
@@ -223,18 +197,18 @@ export const regenerateSitemap = async () => {
       } catch (error) {
         console.warn('⚠️ Development: Could not regenerate sitemap, logging change only:', error.message);
       }
-      
+
       // Always try to submit to search engines (will fail due to CORS but logs the attempt)
       await submitSitemapToSearchEngines();
       return true;
     }
-    
+
     // In production, detect platform and call appropriate function
     const isVercel = window.location.hostname.includes('vercel.app');
-    const functionUrl = isVercel 
+    const functionUrl = isVercel
       ? '/api/regenerate-sitemap'  // Vercel Function
       : '/.netlify/functions/regenerate-sitemap';  // Netlify Function
-    
+
     try {
       const response = await fetch(functionUrl, {
         method: 'POST',
@@ -246,13 +220,13 @@ export const regenerateSitemap = async () => {
           timestamp: new Date().toISOString()
         })
       });
-      
+
       if (response.ok) {
         await response.json();
         return true;
       } else {
         console.error('❌ Production: Sitemap regeneration failed:', response.status, response.statusText);
-        
+
         // Try to get error details
         try {
           const errorData = await response.text();
@@ -260,7 +234,7 @@ export const regenerateSitemap = async () => {
         } catch {
           console.error('Could not parse error response');
         }
-        
+
         // Fallback: just log the attempt
         await submitSitemapToSearchEngines();
         return false;
@@ -270,17 +244,17 @@ export const regenerateSitemap = async () => {
       await submitSitemapToSearchEngines();
       return false;
     }
-    
+
   } catch (error) {
     console.error('❌ Sitemap regeneration failed:', error);
-    
+
     // Fallback: try to submit existing sitemap to search engines
     try {
       await submitSitemapToSearchEngines();
     } catch (submitError) {
       console.warn('⚠️ Fallback submission also failed:', submitError.message);
     }
-    
+
     return false;
   }
 };

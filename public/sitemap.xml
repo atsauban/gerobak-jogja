@@ -46,45 +46,8 @@
   </url>
   
   <!-- Product Categories -->
-  <url>
-    <loc>https://gerobakjogja.vercel.app/katalog?category=aluminium</loc>
-    <lastmod>2025-12-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>https://gerobakjogja.vercel.app/katalog?category=kayu</loc>
-    <lastmod>2025-12-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>https://gerobakjogja.vercel.app/katalog?category=stainless</loc>
-    <lastmod>2025-12-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>https://gerobakjogja.vercel.app/katalog?category=kombinasi</loc>
-    <lastmod>2025-12-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
+  /* Categories removed from sitemap */
 
-  <!-- Product: gerobak 2 -->
-  <url>
-    <loc>https://gerobakjogja.vercel.app/produk/gerobak-2</loc>
-    <lastmod>2025-12-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-    <image:image>
-      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1766756654/gerobak-jogja/products/prnmupxevbvryemytx9q.jpg</image:loc>
-      <image:title>gerobak 2</image:title>
-    </image:image>
-  </url>
   <!-- Product: gerobak 1 -->
   <url>
     <loc>https://gerobakjogja.vercel.app/produk/gerobak-1</loc>
@@ -92,7 +55,7 @@
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
     <image:image>
-      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1766754520/gerobak-jogja/products/pnnla1b4lgecgdmwn40e.jpg</image:loc>
+      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1766789550/gerobak-jogja/products/p9gc4mszwtmvy3mxtyeb.jpg</image:loc>
       <image:title>gerobak 1</image:title>
     </image:image>
   </url>

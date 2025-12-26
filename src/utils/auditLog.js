@@ -12,6 +12,34 @@ import { db } from '../config/firebase';
  * @param {string} action - Action type: 'create', 'update', 'delete', 'login', 'logout'
  * @param {Object} details - Action details
  */
+// Cache IP to avoid repeated API calls
+let cachedIp = null;
+
+/**
+ * Get user IP address
+ */
+async function getIpAddress() {
+  if (cachedIp) return cachedIp;
+
+  try {
+    const response = await fetch('https://api.ipify.org?format=json');
+    if (response.ok) {
+      const data = await response.json();
+      cachedIp = data.ip;
+      return data.ip;
+    }
+  } catch (error) {
+    console.warn('Failed to get IP address:', error);
+  }
+  return 'unknown';
+}
+
+/**
+ * Log an admin action
+ * @param {Object} user - Current user object from Firebase Auth
+ * @param {string} action - Action type: 'create', 'update', 'delete', 'login', 'logout'
+ * @param {Object} details - Action details
+ */
 export async function logAction(user, action, details) {
   if (!user) {
     console.warn('Cannot log action: No user provided');
@@ -19,28 +47,29 @@ export async function logAction(user, action, details) {
   }
 
   try {
+    // Get IP address (async)
+    const ipAddress = await getIpAddress();
+
     await addDoc(collection(db, 'audit_logs'), {
       // User info
       userEmail: user.email,
       userId: user.uid,
-      
+      ipAddress: ipAddress, // Added IP tracking
+
       // Action info
       action: action,
       collection: details.collection || 'unknown',
       documentId: details.id || null,
       documentName: details.name || null,
-      
+
       // Additional details
       details: details,
-      
+
       // Timestamp
       timestamp: serverTimestamp(),
-      
-      // Browser info (optional)
+
+      // Browser info
       userAgent: navigator.userAgent,
-      
-      // Note: IP address cannot be obtained on client-side
-      // Use Firebase Functions for server-side logging if IP is needed
     });
   } catch (error) {
     console.error('Failed to log action:', error);

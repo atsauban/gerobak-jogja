@@ -26,7 +26,7 @@ export default function ProductCard({ product, onEdit, onDelete, onToggleFeature
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
               <h3 className="font-semibold text-gray-900 truncate">{product.name}</h3>
-              <p className="text-sm text-gray-500 capitalize">{product.category}</p>
+              {/* <p className="text-sm text-gray-500 capitalize">{product.category}</p> */}
             </div>
             {product.badge && (
               <span className="bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full text-xs font-medium whitespace-nowrap">
@@ -44,11 +44,10 @@ export default function ProductCard({ product, onEdit, onDelete, onToggleFeature
       <div className="flex items-center justify-between px-4 py-3 bg-gray-50/50 border-t border-gray-100">
         <button
           onClick={() => onToggleFeatured(product.id, product.featured)}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-            product.featured
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${product.featured
               ? 'bg-yellow-100 text-yellow-700'
               : 'bg-white text-gray-500 border border-gray-200 hover:bg-gray-50'
-          }`}
+            }`}
           aria-label={product.featured ? 'Hapus dari unggulan' : 'Jadikan unggulan'}
         >
           <Star size={16} fill={product.featured ? 'currentColor' : 'none'} />
