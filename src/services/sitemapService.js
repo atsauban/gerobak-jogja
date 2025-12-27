@@ -6,7 +6,7 @@
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
-const SITE_URL = 'https://gerobakjogja.vercel.app';
+const SITE_URL = 'https://www.gerobakjogja.com';
 
 // Format date to YYYY-MM-DD
 function formatDate(date) {
