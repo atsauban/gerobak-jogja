@@ -83,7 +83,11 @@
   },
   "rewrites": [
     {
-      "source": "/((?!sitemap\\.xml|robots\\.txt|images/|api/).*)",
+      "source": "/sitemap.xml",
+      "destination": "/api/sitemap"
+    },
+    {
+      "source": "/((?!robots\\.txt|images/|api/).*)",
       "destination": "/index.html"
     }
   ]

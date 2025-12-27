@@ -48,6 +48,17 @@
   <!-- Product Categories -->
   /* Categories removed from sitemap */
 
+  <!-- Product: test -->
+  <url>
+    <loc>https://www.gerobakjogja.com/produk/test</loc>
+    <lastmod>2025-12-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <image:image>
+      <image:loc>https://res.cloudinary.com/dpjpj7l1y/image/upload/v1766847809/gerobak-jogja/products/e12fltkjchxwrzzjyhwx.jpg</image:loc>
+      <image:title>test</image:title>
+    </image:image>
+  </url>
   <!-- Product: gerobak 1 -->
   <url>
     <loc>https://www.gerobakjogja.com/produk/gerobak-1</loc>
