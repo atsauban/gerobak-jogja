@@ -1,7 +1,7 @@
-const CACHE_NAME = 'gerobak-jogja-v2';
-const STATIC_CACHE = 'static-v2';
-const DYNAMIC_CACHE = 'dynamic-v2';
-const IMAGE_CACHE = 'images-v2';
+const CACHE_NAME = 'gerobak-jogja-v3';
+const STATIC_CACHE = 'static-v3';
+const DYNAMIC_CACHE = 'dynamic-v3';
+const IMAGE_CACHE = 'images-v3';
 
 // Static assets to cache immediately
 const STATIC_ASSETS = [
@@ -61,19 +61,19 @@ self.addEventListener('fetch', (event) => {
 
   // Skip Firebase/API requests - always network
   if (url.hostname.includes('firestore.googleapis.com') ||
-      url.hostname.includes('firebase') ||
-      url.hostname.includes('cloudinary.com') ||
-      url.pathname.startsWith('/api/')) {
+    url.hostname.includes('firebase') ||
+    url.hostname.includes('cloudinary.com') ||
+    url.pathname.startsWith('/api/')) {
     return;
   }
 
   // Images - Cache First strategy
-  if (request.destination === 'image' || 
-      url.pathname.match(/\.(jpg|jpeg|png|gif|webp|svg|ico)$/i)) {
+  if (request.destination === 'image' ||
+    url.pathname.match(/\.(jpg|jpeg|png|gif|webp|svg|ico)$/i)) {
     event.respondWith(
       caches.match(request).then((cachedResponse) => {
         if (cachedResponse) return cachedResponse;
-        
+
         return fetch(request).then((response) => {
           if (response.status === 200) {
             const responseClone = response.clone();
@@ -126,12 +126,12 @@ self.addEventListener('fetch', (event) => {
       .catch(() => {
         return caches.match(request).then((cachedResponse) => {
           if (cachedResponse) return cachedResponse;
-          
+
           // Return cached homepage as fallback for navigation
           if (request.mode === 'navigate') {
             return caches.match('/');
           }
-          
+
           return new Response('Offline', { status: 503 });
         });
       })
