@@ -285,7 +285,8 @@ export default function Admin() {
               <button
                 onClick={async () => {
                   const isVercel =
-                    window.location.hostname.includes('vercel.app');
+                    window.location.hostname.includes('vercel.app') ||
+                    window.location.hostname.includes('gerobakjogja.com');
                   const testUrl = isVercel
                     ? '/api/test'
                     : '/.netlify/functions/test';
@@ -308,7 +309,8 @@ export default function Admin() {
               <button
                 onClick={async () => {
                   const isVercel =
-                    window.location.hostname.includes('vercel.app');
+                    window.location.hostname.includes('vercel.app') ||
+                    window.location.hostname.includes('gerobakjogja.com');
                   const testUrl = isVercel
                     ? '/api/test-cloudinary'
                     : '/.netlify/functions/test-cloudinary';

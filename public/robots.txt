@@ -1,5 +1,5 @@
 # robots.txt for Gerobak Jogja
-# https://gerobakjogja.vercel.app/robots.txt
+# https://www.gerobakjogja.com/robots.txt
 
 User-agent: *
 Allow: /
@@ -21,7 +21,7 @@ Allow: /*.webp$
 Allow: /*.gif$
 
 # Sitemap location
-Sitemap: https://gerobakjogja.vercel.app/sitemap.xml
+Sitemap: https://www.gerobakjogja.com/sitemap.xml
 
 # Crawl-delay (optional, adjust if needed)
 # Crawl-delay: 1

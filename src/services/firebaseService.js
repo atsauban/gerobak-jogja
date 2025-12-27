@@ -1,14 +1,14 @@
-import { 
-  collection, 
-  getDocs, 
-  getDoc, 
-  doc, 
-  addDoc, 
-  updateDoc, 
+import {
+  collection,
+  getDocs,
+  getDoc,
+  doc,
+  addDoc,
+  updateDoc,
   deleteDoc,
   query,
   orderBy,
-  serverTimestamp 
+  serverTimestamp
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { db, storage } from '../config/firebase';
@@ -28,16 +28,16 @@ const withRetry = async (fn, retries = 3, delay = 1000) => {
       return await fn();
     } catch (error) {
       const isLastAttempt = attempt === retries - 1;
-      const isRetryable = 
-        error.code === 'unavailable' || 
+      const isRetryable =
+        error.code === 'unavailable' ||
         error.code === 'resource-exhausted' ||
         error.message?.includes('network') ||
         error.message?.includes('timeout');
-      
+
       if (isLastAttempt || !isRetryable) {
         throw error;
       }
-      
+
       // Exponential backoff
       const waitTime = delay * Math.pow(2, attempt);
       await new Promise(resolve => setTimeout(resolve, waitTime));
@@ -53,7 +53,7 @@ export const getProducts = async () => {
     const productsRef = collection(db, 'products');
     const q = query(productsRef, orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
-    
+
     return snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
@@ -67,7 +67,7 @@ export const getProduct = async (id) => {
     const docId = String(id);
     const docRef = doc(db, 'products', docId);
     const docSnap = await getDoc(docRef);
-    
+
     if (docSnap.exists()) {
       return { id: docSnap.id, ...docSnap.data() };
     } else {
@@ -79,13 +79,13 @@ export const getProduct = async (id) => {
 // Sanitize data for Firestore (remove undefined, functions, etc)
 const sanitizeData = (data) => {
   const sanitized = {};
-  
+
   for (const [key, value] of Object.entries(data)) {
     // Skip undefined, null, or functions
     if (value === undefined || value === null || typeof value === 'function') {
       continue;
     }
-    
+
     // Handle arrays
     if (Array.isArray(value)) {
       sanitized[key] = value.filter(item => item !== undefined && item !== null);
@@ -99,7 +99,7 @@ const sanitizeData = (data) => {
       sanitized[key] = value;
     }
   }
-  
+
   return sanitized;
 };
 
@@ -108,13 +108,13 @@ export const createProduct = async (productData) => {
   try {
     const productsRef = collection(db, 'products');
     const cleanData = sanitizeData(productData);
-    
+
     const docRef = await addDoc(productsRef, {
       ...cleanData,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     });
-    
+
     return { id: docRef.id, ...cleanData };
   } catch (error) {
     console.error('Error creating product:', error);
@@ -128,12 +128,12 @@ export const updateProduct = async (id, productData) => {
     const docId = String(id);
     const docRef = doc(db, 'products', docId);
     const cleanData = sanitizeData(productData);
-    
+
     await updateDoc(docRef, {
       ...cleanData,
       updatedAt: new Date().toISOString()
     });
-    
+
     return { id: docId, ...cleanData };
   } catch (error) {
     console.error('Error updating product:', error);
@@ -162,13 +162,13 @@ export const uploadImage = async (file, folder = 'products') => {
     const timestamp = Date.now();
     const fileName = `${timestamp}_${file.name}`;
     const storageRef = ref(storage, `${folder}/${fileName}`);
-    
+
     // Upload file
     await uploadBytes(storageRef, file);
-    
+
     // Get download URL
     const downloadURL = await getDownloadURL(storageRef);
-    
+
     return downloadURL;
   } catch (error) {
     console.error('Error uploading image:', error);
@@ -194,7 +194,7 @@ export const deleteImage = async (imageUrl) => {
     // Extract path from URL
     const path = imageUrl.split('/o/')[1].split('?')[0];
     const decodedPath = decodeURIComponent(path);
-    
+
     const storageRef = ref(storage, decodedPath);
     await deleteObject(storageRef);
   } catch (error) {
@@ -214,7 +214,7 @@ export const deleteImageFromCloudinary = async (imageUrl) => {
     // Extract public_id from URL
     const urlParts = imageUrl.split('/');
     const uploadIndex = urlParts.indexOf('upload');
-    
+
     if (uploadIndex === -1) {
       throw new Error('Invalid Cloudinary URL');
     }
@@ -223,14 +223,16 @@ export const deleteImageFromCloudinary = async (imageUrl) => {
     const publicId = pathAfterUpload.replace(/\.[^/.]+$/, '');
 
     // Detect platform and use appropriate function
-    const isVercel = window.location.hostname.includes('vercel.app');
-    const isNetlify = window.location.hostname.includes('netlify.app') || 
-                      window.location.port === '8888' ||
-                      window.location.port === '8889' ||
-                      window.location.hostname === 'localhost' && window.location.port !== '5173';
-    
+    const isVercel =
+      window.location.hostname.includes('vercel.app') ||
+      window.location.hostname.includes('gerobakjogja.com');
+    const isNetlify = window.location.hostname.includes('netlify.app') ||
+      window.location.port === '8888' ||
+      window.location.port === '8889' ||
+      window.location.hostname === 'localhost' && window.location.port !== '5173';
+
     const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    
+
     // Check if we have a supported environment
     if (!isVercel && !isNetlify && !isDevelopment) {
       console.warn('⚠️ Cloudinary auto-delete only works with Vercel, Netlify, or development');
@@ -255,7 +257,7 @@ export const deleteImageFromCloudinary = async (imageUrl) => {
 
     if (!response.ok) {
       console.error(`❌ ${platform} Cloudinary delete failed:`, result);
-      
+
       // Provide specific error messages
       if (result.error && result.error.includes('cloud_name')) {
         console.error('💡 Fix: Set VITE_CLOUDINARY_CLOUD_NAME in Vercel dashboard');
@@ -263,23 +265,23 @@ export const deleteImageFromCloudinary = async (imageUrl) => {
         console.error('💡 Missing environment variables:', result.missing);
         console.error('💡 Fix: Set all Cloudinary variables in Vercel dashboard');
       }
-      
+
       // Don't throw error, just return false so Firebase delete can continue
       return false;
     }
 
     return true;
-    
+
   } catch (error) {
     console.error('❌ Cloudinary delete error:', error.message);
-    
+
     // Provide helpful troubleshooting info
     if (error.message.includes('cloud_name')) {
       console.error('💡 Fix: Set VITE_CLOUDINARY_CLOUD_NAME in Vercel dashboard');
     } else if (error.message.includes('fetch')) {
       console.error('💡 Fix: Function might not be deployed or environment variables missing');
     }
-    
+
     // Don't throw error, just return false so Firebase delete can continue
     return false;
   }
@@ -293,7 +295,7 @@ export const getBlogPosts = async () => {
     const postsRef = collection(db, 'blogPosts');
     const q = query(postsRef, orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
-    
+
     return snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
@@ -306,7 +308,7 @@ export const getBlogPost = async (id) => {
   try {
     const docRef = doc(db, 'blogPosts', id);
     const docSnap = await getDoc(docRef);
-    
+
     if (docSnap.exists()) {
       return { id: docSnap.id, ...docSnap.data() };
     } else {
@@ -327,7 +329,7 @@ export const createBlogPost = async (postData) => {
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     });
-    
+
     return { id: docRef.id, ...postData };
   } catch (error) {
     console.error('Error creating blog post:', error);
@@ -343,7 +345,7 @@ export const updateBlogPost = async (id, postData) => {
       ...postData,
       updatedAt: serverTimestamp()
     });
-    
+
     return { id, ...postData };
   } catch (error) {
     console.error('Error updating blog post:', error);
@@ -371,7 +373,7 @@ export const getTestimonials = async () => {
     const testimonialsRef = collection(db, 'testimonials');
     const q = query(testimonialsRef, orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
-    
+
     return snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
@@ -383,15 +385,15 @@ export const getTestimonials = async () => {
 export const createTestimonial = async (testimonialData) => {
   try {
     const testimonialsRef = collection(db, 'testimonials');
-    
+
     const cleanData = sanitizeData(testimonialData);
-    
+
     const docRef = await addDoc(testimonialsRef, {
       ...cleanData,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     });
-    
+
     return { id: docRef.id, ...cleanData };
   } catch (error) {
     console.error('Error creating testimonial:', error);
@@ -404,14 +406,14 @@ export const updateTestimonial = async (id, testimonialData) => {
   try {
     const docId = String(id);
     const docRef = doc(db, 'testimonials', docId);
-    
+
     const cleanData = sanitizeData(testimonialData);
-    
+
     await updateDoc(docRef, {
       ...cleanData,
       updatedAt: new Date().toISOString()
     });
-    
+
     return { id: docId, ...cleanData };
   } catch (error) {
     console.error('Error updating testimonial:', error);
@@ -440,7 +442,7 @@ export const getFAQs = async () => {
     const faqsRef = collection(db, 'faqs');
     const q = query(faqsRef, orderBy('order', 'asc'));
     const snapshot = await getDocs(q);
-    
+
     return snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
@@ -453,13 +455,13 @@ export const createFAQ = async (faqData) => {
   try {
     const faqsRef = collection(db, 'faqs');
     const cleanData = sanitizeData(faqData);
-    
+
     const docRef = await addDoc(faqsRef, {
       ...cleanData,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     });
-    
+
     return { id: docRef.id, ...cleanData };
   } catch (error) {
     console.error('Error creating FAQ:', error);
@@ -473,12 +475,12 @@ export const updateFAQ = async (id, faqData) => {
     const docId = String(id);
     const docRef = doc(db, 'faqs', docId);
     const cleanData = sanitizeData(faqData);
-    
+
     await updateDoc(docRef, {
       ...cleanData,
       updatedAt: new Date().toISOString()
     });
-    
+
     return { id: docId, ...cleanData };
   } catch (error) {
     console.error('Error updating FAQ:', error);
@@ -510,7 +512,7 @@ export const saveContactMessage = async (messageData) => {
       createdAt: serverTimestamp(),
       read: false
     });
-    
+
     return { id: docRef.id, ...messageData };
   } catch (error) {
     console.error('Error saving contact message:', error);
@@ -524,7 +526,7 @@ export const getContactMessages = async () => {
     const messagesRef = collection(db, 'contactMessages');
     const q = query(messagesRef, orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
-    
+
     return snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
@@ -557,7 +559,7 @@ export const getGalleryImages = async () => {
     const galleryRef = collection(db, 'gallery');
     const q = query(galleryRef, orderBy('createdAt', 'desc'));
     const snapshot = await getDocs(q);
-    
+
     return snapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
@@ -570,13 +572,13 @@ export const createGalleryImage = async (imageData) => {
   try {
     const galleryRef = collection(db, 'gallery');
     const cleanData = sanitizeData(imageData);
-    
+
     const docRef = await addDoc(galleryRef, {
       ...cleanData,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     });
-    
+
     return { id: docRef.id, ...cleanData };
   } catch (error) {
     console.error('Error creating gallery image:', error);
@@ -590,12 +592,12 @@ export const updateGalleryImage = async (id, imageData) => {
     const docId = String(id);
     const docRef = doc(db, 'gallery', docId);
     const cleanData = sanitizeData(imageData);
-    
+
     await updateDoc(docRef, {
       ...cleanData,
       updatedAt: new Date().toISOString()
     });
-    
+
     return { id: docId, ...cleanData };
   } catch (error) {
     console.error('Error updating gallery image:', error);
