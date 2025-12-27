@@ -204,7 +204,7 @@ export const regenerateSitemap = async () => {
     }
 
     // In production, detect platform and call appropriate function
-    const isVercel = window.location.hostname.includes('vercel.app');
+    const isVercel = window.location.hostname.includes('vercel.app') || window.location.hostname.includes('gerobakjogja.com');
     const functionUrl = isVercel
       ? '/api/regenerate-sitemap'  // Vercel Function
       : '/.netlify/functions/regenerate-sitemap';  // Netlify Function
