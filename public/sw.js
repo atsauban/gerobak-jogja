@@ -1,7 +1,7 @@
-const CACHE_NAME = 'gerobak-jogja-v3';
-const STATIC_CACHE = 'static-v3';
-const DYNAMIC_CACHE = 'dynamic-v3';
-const IMAGE_CACHE = 'images-v3';
+const CACHE_NAME = 'gerobak-jogja-v4';
+const STATIC_CACHE = 'static-v4';
+const DYNAMIC_CACHE = 'dynamic-v4';
+const IMAGE_CACHE = 'images-v4';
 
 // Static assets to cache immediately
 const STATIC_ASSETS = [
