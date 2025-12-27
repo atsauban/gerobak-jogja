@@ -21,6 +21,7 @@ import Kontak from './pages/Kontak';
 import Blog from './pages/Blog';
 import BlogDetail from './pages/BlogDetail';
 import Admin from './pages/Admin';
+import MaintenanceWrapper from './components/MaintenanceWrapper';
 import NotFound from './pages/NotFound';
 
 // Lazy Load Pages used to be here but moved to AnimatedRoutes
@@ -35,31 +36,33 @@ function App() {
           <ToastProvider>
             <Router>
               <ErrorBoundary>
-                <SkipToContent />
-                <AriaLiveRegion message="" priority="polite" />
-                <AriaLiveRegion message="" priority="assertive" />
-                <ProgressBar />
-                <ScrollToTopOnMount />
-                <div className="flex flex-col min-h-screen">
-                  <Navbar />
-                  <main id="main-content" className="flex-grow" tabIndex={-1}>
-                    <Routes>
-                      <Route path="/" element={<Home />} />
-                      <Route path="/katalog" element={<Katalog />} />
-                      <Route path="/produk/:id" element={<ProductDetail />} />
-                      <Route path="/galeri" element={<Galeri />} />
-                      <Route path="/tentang" element={<Tentang />} />
-                      <Route path="/kontak" element={<Kontak />} />
-                      <Route path="/blog" element={<Blog />} />
-                      <Route path="/blog/:slug" element={<BlogDetail />} />
-                      <Route path="/admin" element={<Admin />} />
-                      <Route path="/notfound" element={<NotFound />} />
-                      <Route path="*" element={<Navigate to="/notfound" replace />} />
-                    </Routes>
-                  </main>
-                  <Footer />
-                  <FloatingActionButton />
-                </div>
+                <MaintenanceWrapper>
+                  <SkipToContent />
+                  <AriaLiveRegion message="" priority="polite" />
+                  <AriaLiveRegion message="" priority="assertive" />
+                  <ProgressBar />
+                  <ScrollToTopOnMount />
+                  <div className="flex flex-col min-h-screen">
+                    <Navbar />
+                    <main id="main-content" className="flex-grow" tabIndex={-1}>
+                      <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/katalog" element={<Katalog />} />
+                        <Route path="/produk/:id" element={<ProductDetail />} />
+                        <Route path="/galeri" element={<Galeri />} />
+                        <Route path="/tentang" element={<Tentang />} />
+                        <Route path="/kontak" element={<Kontak />} />
+                        <Route path="/blog" element={<Blog />} />
+                        <Route path="/blog/:slug" element={<BlogDetail />} />
+                        <Route path="/admin" element={<Admin />} />
+                        <Route path="/notfound" element={<NotFound />} />
+                        <Route path="*" element={<Navigate to="/notfound" replace />} />
+                      </Routes>
+                    </main>
+                    <Footer />
+                    <FloatingActionButton />
+                  </div>
+                </MaintenanceWrapper>
               </ErrorBoundary>
             </Router>
           </ToastProvider>

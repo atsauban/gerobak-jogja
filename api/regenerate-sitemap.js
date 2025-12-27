@@ -20,7 +20,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const SITE_URL = 'https://gerobakjogja.vercel.app';
+const SITE_URL = 'https://www.gerobakjogja.com';
 
 // Format date to YYYY-MM-DD
 function formatDate(date) {
@@ -93,34 +93,7 @@ async function generateSitemapXML() {
     <priority>0.7</priority>
   </url>
   
-  <!-- Product Categories -->
-  <url>
-    <loc>${SITE_URL}/katalog?category=aluminium</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>${SITE_URL}/katalog?category=kayu</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>${SITE_URL}/katalog?category=stainless</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>${SITE_URL}/katalog?category=kombinasi</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
+  /* Categories removed from sitemap */
 `;
 
   try {
@@ -136,7 +109,7 @@ async function generateSitemapXML() {
       const lastmod = formatDate(product.updatedAt || product.createdAt);
       const imageUrl = product.images?.[0] || product.image || '';
       const slug = product.slug || product.id;
-      
+
       xml += `
   <!-- Product: ${escapeXml(product.name)} -->
   <url>
@@ -144,7 +117,7 @@ async function generateSitemapXML() {
     <lastmod>${lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>`;
-      
+
       if (imageUrl) {
         xml += `
     <image:image>
@@ -152,7 +125,7 @@ async function generateSitemapXML() {
       <image:title>${escapeXml(product.name)}</image:title>
     </image:image>`;
       }
-      
+
       xml += `
   </url>`;
     });
@@ -168,7 +141,7 @@ async function generateSitemapXML() {
     blogPosts.forEach((post) => {
       const lastmod = formatDate(post.updatedAt || post.createdAt);
       const imageUrl = post.image || '';
-      
+
       xml += `
   <!-- Blog: ${escapeXml(post.title)} -->
   <url>
@@ -176,7 +149,7 @@ async function generateSitemapXML() {
     <lastmod>${lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>`;
-      
+
       if (imageUrl) {
         xml += `
     <image:image>
@@ -184,7 +157,7 @@ async function generateSitemapXML() {
       <image:title>${escapeXml(post.title)}</image:title>
     </image:image>`;
       }
-      
+
       xml += `
   </url>`;
     });
@@ -205,7 +178,7 @@ async function generateSitemapXML() {
 // Submit sitemap to search engines (server-side)
 async function submitToSearchEngines() {
   const sitemapUrl = `${SITE_URL}/sitemap.xml`;
-  
+
   try {
     // Ping Google
     const googlePingUrl = `https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`;
@@ -236,7 +209,7 @@ export default async function handler(req, res) {
 
   // Only allow POST requests
   if (req.method !== 'POST') {
-    return res.status(405).json({ 
+    return res.status(405).json({
       error: 'Method not allowed. Use POST.',
       allowedMethods: ['POST']
     });
@@ -245,21 +218,21 @@ export default async function handler(req, res) {
   try {
     // Generate new sitemap
     const sitemapXML = await generateSitemapXML();
-    
+
     // Note: In Vercel, we cannot write to filesystem (read-only)
     // The sitemap XML is generated but not saved to public/sitemap.xml
     // For production, consider using:
     // 1. Vercel Blob Storage
     // 2. External storage (S3, Cloudinary)
     // 3. Database storage with API endpoint
-    
+
     // Submit to search engines
     const submissionResult = await submitToSearchEngines();
-    
+
     // Count products and blogs for response
     const productsSnapshot = await getDocs(collection(db, 'products'));
     const blogSnapshot = await getDocs(collection(db, 'blogPosts'));
-    
+
     return res.status(200).json({
       success: true,
       message: 'Sitemap regenerated successfully via Vercel Function',
@@ -275,10 +248,10 @@ export default async function handler(req, res) {
         totalUrls: 10 + productsSnapshot.size + blogSnapshot.size
       }
     });
-    
+
   } catch (error) {
     console.error('❌ Vercel Function error:', error);
-    
+
     return res.status(500).json({
       success: false,
       error: error.message,

@@ -66,6 +66,12 @@ service cloud.firestore {
       allow write: if isAuthenticated();
     }
     
+    // Settings collection (Maintenance Mode)
+    match /settings/{document=**} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
     // Deny access to all other collections by default
     match /{document=**} {
       allow read, write: if false;

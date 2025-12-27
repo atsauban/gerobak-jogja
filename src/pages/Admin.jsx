@@ -34,6 +34,7 @@ const FAQManager = lazy(() => import('../components/admin/FAQManager'));
 const GalleryManager = lazy(
   () => import('../components/admin/GalleryManager')
 );
+const SettingsManager = lazy(() => import('../components/admin/SettingsManager'));
 
 // Loading Component for Tabs
 const TabLoading = () => (
@@ -98,6 +99,7 @@ export default function Admin() {
     { id: 'testimonials', label: 'Testimoni', icon: MessageSquare },
     { id: 'blog', label: 'Blog', icon: BookOpen },
     { id: 'faq', label: 'FAQ', icon: HelpCircle },
+    { id: 'settings', label: 'Pengaturan', icon: Settings },
   ];
 
   if (authLoading) {
@@ -223,6 +225,8 @@ export default function Admin() {
             {activeTab === 'faq' && (
               <FAQManager showDeleteConfirmation={showDeleteConfirmation} />
             )}
+
+            {activeTab === 'settings' && <SettingsManager />}
           </Suspense>
         </div>
 

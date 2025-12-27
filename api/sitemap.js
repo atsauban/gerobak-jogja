@@ -21,7 +21,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const SITE_URL = 'https://gerobakjogja.vercel.app';
+const SITE_URL = 'https://www.gerobakjogja.com';
 
 // Format date to YYYY-MM-DD
 function formatDate(date) {
@@ -95,33 +95,7 @@ async function generateSitemapXML() {
   </url>
   
   <!-- Product Categories -->
-  <url>
-    <loc>${SITE_URL}/katalog?category=aluminium</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>${SITE_URL}/katalog?category=kayu</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>${SITE_URL}/katalog?category=stainless</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>${SITE_URL}/katalog?category=kombinasi</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
+  /* Categories removed from sitemap */
 `;
 
   try {
@@ -137,7 +111,7 @@ async function generateSitemapXML() {
       const lastmod = formatDate(product.updatedAt || product.createdAt);
       const imageUrl = product.images?.[0] || product.image || '';
       const slug = product.slug || product.id;
-      
+
       xml += `
   <!-- Product: ${escapeXml(product.name)} -->
   <url>
@@ -145,7 +119,7 @@ async function generateSitemapXML() {
     <lastmod>${lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>`;
-      
+
       if (imageUrl) {
         xml += `
     <image:image>
@@ -153,7 +127,7 @@ async function generateSitemapXML() {
       <image:title>${escapeXml(product.name)}</image:title>
     </image:image>`;
       }
-      
+
       xml += `
   </url>`;
     });
@@ -169,7 +143,7 @@ async function generateSitemapXML() {
     blogPosts.forEach((post) => {
       const lastmod = formatDate(post.updatedAt || post.createdAt);
       const imageUrl = post.image || '';
-      
+
       xml += `
   <!-- Blog: ${escapeXml(post.title)} -->
   <url>
@@ -177,7 +151,7 @@ async function generateSitemapXML() {
     <lastmod>${lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>`;
-      
+
       if (imageUrl) {
         xml += `
     <image:image>
@@ -185,7 +159,7 @@ async function generateSitemapXML() {
       <image:title>${escapeXml(post.title)}</image:title>
     </image:image>`;
       }
-      
+
       xml += `
   </url>`;
     });
@@ -206,15 +180,15 @@ export default async function handler(req, res) {
   try {
     const timestamp = new Date().toISOString();
     const isFresh = req.query.fresh === 'true';
-    
+
     // Generate sitemap XML
     const sitemapXML = await generateSitemapXML();
-    
+
     // Set appropriate headers for XML
     res.setHeader('Content-Type', 'application/xml');
     res.setHeader('X-Generated-At', timestamp);
     res.setHeader('X-Cache-Buster', Date.now().toString());
-    
+
     if (isFresh) {
       // No cache for fresh requests
       res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
@@ -224,13 +198,13 @@ export default async function handler(req, res) {
       // Minimal cache for normal requests
       res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=60');
     }
-    
+
     // Return XML directly
     return res.status(200).send(sitemapXML);
-    
+
   } catch (error) {
     console.error('❌ Error generating sitemap:', error);
-    
+
     return res.status(500).json({
       error: 'Failed to generate sitemap',
       message: error.message

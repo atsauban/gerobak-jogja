@@ -26,11 +26,11 @@ const getTimestamp = () => {
 export const generateSitemapEntry = (url, priority = 0.6, changefreq = 'monthly', imageUrl = null, title = null) => {
   let entry = `
   <url>
-    <loc>https://gerobakjogja.vercel.app${url}</loc>
+    <loc>https://www.gerobakjogja.com${url}</loc>
     <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
     <changefreq>${changefreq}</changefreq>
     <priority>${priority}</priority>`;
-  
+
   if (imageUrl && title) {
     entry += `
     <image:image>
@@ -38,10 +38,10 @@ export const generateSitemapEntry = (url, priority = 0.6, changefreq = 'monthly'
       <image:title>${title}</image:title>
     </image:image>`;
   }
-  
+
   entry += `
   </url>`;
-  
+
   return entry;
 };
 
@@ -49,9 +49,9 @@ export const generateSitemapEntry = (url, priority = 0.6, changefreq = 'monthly'
 export const logSitemapChange = (action, itemType, itemData) => {
   const timestamp = getTimestamp();
   const changeId = `${timestamp.iso}_${Math.random().toString(36).substring(2, 11)}`;
-  
+
   let url, priority, changefreq, imageUrl, title;
-  
+
   // Determine URL and metadata based on item type
   switch (itemType) {
     case 'product':
@@ -61,7 +61,7 @@ export const logSitemapChange = (action, itemType, itemData) => {
       imageUrl = itemData.images?.[0] || itemData.image;
       title = itemData.name;
       break;
-      
+
     case 'blog':
       url = `/blog/${itemData.slug}`;
       priority = 0.6;
@@ -69,7 +69,7 @@ export const logSitemapChange = (action, itemType, itemData) => {
       imageUrl = itemData.image;
       title = itemData.title;
       break;
-      
+
     case 'gallery':
       url = `/galeri`;
       priority = 0.8;
@@ -77,13 +77,13 @@ export const logSitemapChange = (action, itemType, itemData) => {
       imageUrl = itemData.url;
       title = itemData.title || 'Gallery Image';
       break;
-      
+
     default:
       url = '/';
       priority = 0.5;
       changefreq = 'monthly';
   }
-  
+
   const logEntry = {
     id: changeId,
     timestamp: timestamp,
@@ -102,10 +102,10 @@ export const logSitemapChange = (action, itemType, itemData) => {
       currentUrl: window.location.href
     }
   };
-  
+
   // Add to changes array
   sitemapChanges.push(logEntry);
-  
+
   return logEntry;
 };
 
@@ -143,12 +143,12 @@ export const generateSitemapReport = () => {
   const total = sitemapChanges.length;
   const byType = {};
   const byAction = {};
-  
+
   sitemapChanges.forEach(change => {
     byType[change.itemType] = (byType[change.itemType] || 0) + 1;
     byAction[change.action] = (byAction[change.action] || 0) + 1;
   });
-  
+
   const report = {
     total,
     byType,
@@ -157,8 +157,8 @@ export const generateSitemapReport = () => {
     oldestChange: sitemapChanges.length > 0 ? sitemapChanges[0] : null,
     newestChange: sitemapChanges.length > 0 ? sitemapChanges[sitemapChanges.length - 1] : null
   };
-  
 
-  
+
+
   return report;
 };

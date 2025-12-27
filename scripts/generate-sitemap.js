@@ -31,7 +31,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const SITE_URL = 'https://gerobakjogja.vercel.app';
+const SITE_URL = 'https://www.gerobakjogja.com';
 
 // Format date to YYYY-MM-DD
 function formatDate(date) {
@@ -105,33 +105,7 @@ async function generateSitemap() {
   </url>
   
   <!-- Product Categories -->
-  <url>
-    <loc>${SITE_URL}/katalog?category=aluminium</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>${SITE_URL}/katalog?category=kayu</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>${SITE_URL}/katalog?category=stainless</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <url>
-    <loc>${SITE_URL}/katalog?category=kombinasi</loc>
-    <lastmod>${formatDate(new Date())}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
+  /* Categories removed from sitemap */
 `;
 
   try {
@@ -148,7 +122,7 @@ async function generateSitemap() {
     products.forEach((product) => {
       const lastmod = formatDate(product.updatedAt || product.createdAt);
       const imageUrl = product.images?.[0] || product.image || '';
-      
+
       xml += `
   <!-- Product: ${escapeXml(product.name)} -->
   <url>
@@ -156,7 +130,7 @@ async function generateSitemap() {
     <lastmod>${lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>`;
-      
+
       if (imageUrl) {
         xml += `
     <image:image>
@@ -164,7 +138,7 @@ async function generateSitemap() {
       <image:title>${escapeXml(product.name)}</image:title>
     </image:image>`;
       }
-      
+
       xml += `
   </url>`;
     });
@@ -182,7 +156,7 @@ async function generateSitemap() {
     blogPosts.forEach((post) => {
       const lastmod = formatDate(post.updatedAt || post.createdAt);
       const imageUrl = post.image || '';
-      
+
       xml += `
   <!-- Blog: ${escapeXml(post.title)} -->
   <url>
@@ -190,7 +164,7 @@ async function generateSitemap() {
     <lastmod>${lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>`;
-      
+
       if (imageUrl) {
         xml += `
     <image:image>
@@ -198,7 +172,7 @@ async function generateSitemap() {
       <image:title>${escapeXml(post.title)}</image:title>
     </image:image>`;
       }
-      
+
       xml += `
   </url>`;
     });
@@ -215,7 +189,7 @@ async function generateSitemap() {
   // Write sitemap to file
   const sitemapPath = path.join(__dirname, '..', 'public', 'sitemap.xml');
   fs.writeFileSync(sitemapPath, xml);
-  
+
   console.log('✅ Sitemap generated successfully!');
   console.log(`📍 Location: ${sitemapPath}`);
   console.log(`🔗 URL: ${SITE_URL}/sitemap.xml`);

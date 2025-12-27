@@ -4,43 +4,43 @@
   
   <!-- Static Pages -->
   <url>
-    <loc>https://gerobakjogja.vercel.app/</loc>
-    <lastmod>2025-12-26</lastmod>
+    <loc>https://www.gerobakjogja.com/</loc>
+    <lastmod>2025-12-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   
   <url>
-    <loc>https://gerobakjogja.vercel.app/katalog</loc>
-    <lastmod>2025-12-26</lastmod>
+    <loc>https://www.gerobakjogja.com/katalog</loc>
+    <lastmod>2025-12-27</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
   
   <url>
-    <loc>https://gerobakjogja.vercel.app/galeri</loc>
-    <lastmod>2025-12-26</lastmod>
+    <loc>https://www.gerobakjogja.com/galeri</loc>
+    <lastmod>2025-12-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://gerobakjogja.vercel.app/tentang</loc>
-    <lastmod>2025-12-26</lastmod>
+    <loc>https://www.gerobakjogja.com/tentang</loc>
+    <lastmod>2025-12-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
-    <loc>https://gerobakjogja.vercel.app/kontak</loc>
-    <lastmod>2025-12-26</lastmod>
+    <loc>https://www.gerobakjogja.com/kontak</loc>
+    <lastmod>2025-12-27</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   
   <url>
-    <loc>https://gerobakjogja.vercel.app/blog</loc>
-    <lastmod>2025-12-26</lastmod>
+    <loc>https://www.gerobakjogja.com/blog</loc>
+    <lastmod>2025-12-27</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -50,7 +50,7 @@
 
   <!-- Product: gerobak 1 -->
   <url>
-    <loc>https://gerobakjogja.vercel.app/produk/gerobak-1</loc>
+    <loc>https://www.gerobakjogja.com/produk/gerobak-1</loc>
     <lastmod>2025-12-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -61,7 +61,7 @@
   </url>
   <!-- Blog: Inspirasi Desain Gerobak untuk Berbagai Jenis Usaha -->
   <url>
-    <loc>https://gerobakjogja.vercel.app/blog/inspirasi-desain-gerobak</loc>
+    <loc>https://www.gerobakjogja.com/blog/inspirasi-desain-gerobak</loc>
     <lastmod>2025-12-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -72,7 +72,7 @@
   </url>
   <!-- Blog: Tips Memilih Gerobak yang Tepat untuk Bisnis Anda -->
   <url>
-    <loc>https://gerobakjogja.vercel.app/blog/tips-memilih-gerobak-yang-tepat</loc>
+    <loc>https://www.gerobakjogja.com/blog/tips-memilih-gerobak-yang-tepat</loc>
     <lastmod>2025-12-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -83,7 +83,7 @@
   </url>
   <!-- Blog: Perawatan Gerobak Agar Awet dan Tahan Lama -->
   <url>
-    <loc>https://gerobakjogja.vercel.app/blog/perawatan-gerobak-agar-awet</loc>
+    <loc>https://www.gerobakjogja.com/blog/perawatan-gerobak-agar-awet</loc>
     <lastmod>2025-12-09</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
